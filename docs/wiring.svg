@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1900 990" width="420mm" height="219mm" font-family="DejaVu Sans, Verdana, Helvetica, sans-serif">
+<rect width="1900" height="990" fill="#F5F3EE"/>
+<text x="950.0" y="54.0" font-size="31" fill="#241F18" text-anchor="middle" font-weight="700">EventPics Fotobox – Kabelplan</text>
+<text x="950.0" y="84.0" font-size="17" fill="#6B6255" text-anchor="middle" font-weight="400">Ein Netzkabel in die Wand · Netzspannung nur im unteren Streifen</text>
+<path d="M60 112h42" stroke="#B3382F" stroke-width="3"/>
+<text x="112.0" y="117.0" font-size="13.5" fill="#6B6255" text-anchor="start" font-weight="400">230 V</text>
+<path d="M260 112h42" stroke="#2F6F4E" stroke-width="3"/>
+<text x="312.0" y="117.0" font-size="13.5" fill="#6B6255" text-anchor="start" font-weight="400">Niederspannung</text>
+<path d="M460 112h42" stroke="#2F4A6B" stroke-width="3"/>
+<text x="512.0" y="117.0" font-size="13.5" fill="#6B6255" text-anchor="start" font-weight="400">Daten</text>
+<path d="M660 112h42" stroke="#8A6A2F" stroke-width="3" stroke-dasharray="8 6"/>
+<text x="712.0" y="117.0" font-size="13.5" fill="#6B6255" text-anchor="start" font-weight="400">Funk</text>
+<rect x="380" y="200" width="1040" height="670" rx="26" fill="#FFFFFF" stroke="#241F18" stroke-width="3"/>
+<text x="420.0" y="186.0" font-size="20" fill="#241F18" text-anchor="start" font-weight="700">Gehäuse</text>
+<rect x="394" y="625" width="1012" height="231" rx="18" fill="#FBF1EF" stroke="#B3382F" stroke-width="1.4" stroke-dasharray="10 6"/>
+<text x="900.0" y="648.0" font-size="14" fill="#B3382F" text-anchor="middle" font-weight="600">230 V – nur in diesem Streifen</text>
+<rect x="420" y="250" width="220" height="110" rx="10" fill="#FFFFFF" stroke="#241F18" stroke-width="2"/><text x="530.0" y="276.0" font-size="16" fill="#241F18" text-anchor="middle" font-weight="700">Bildschirm</text><text x="530.0" y="297.0" font-size="12.5" fill="#6B6255" text-anchor="middle" font-weight="400">15,3″, Touch</text>
+<rect x="420" y="415" width="220" height="80" rx="10" fill="#FFFFFF" stroke="#241F18" stroke-width="2"/><text x="530.0" y="441.0" font-size="16" fill="#241F18" text-anchor="middle" font-weight="700">Kamera</text><text x="530.0" y="462.0" font-size="12.5" fill="#6B6255" text-anchor="middle" font-weight="400">Flachband</text>
+<rect x="700" y="250" width="220" height="110" rx="10" fill="#FFFFFF" stroke="#241F18" stroke-width="2"/><text x="810.0" y="276.0" font-size="16" fill="#241F18" text-anchor="middle" font-weight="700">Raspberry Pi 4</text><text x="810.0" y="297.0" font-size="12.5" fill="#6B6255" text-anchor="middle" font-weight="400">am Bildschirm</text>
+<rect x="980" y="250" width="220" height="110" rx="10" fill="#FFFFFF" stroke="#241F18" stroke-width="2"/><text x="1090.0" y="276.0" font-size="16" fill="#241F18" text-anchor="middle" font-weight="700">USB-Hub</text><text x="1090.0" y="297.0" font-size="12.5" fill="#6B6255" text-anchor="middle" font-weight="400">fünf Anschlüsse</text>
+<rect x="1240" y="410" width="160" height="70" rx="10" fill="#FFFFFF" stroke="#2F4A6B" stroke-width="2"/><text x="1320.0" y="436.0" font-size="16" fill="#241F18" text-anchor="middle" font-weight="700">Buchse 1</text><text x="1320.0" y="457.0" font-size="12.5" fill="#6B6255" text-anchor="middle" font-weight="400">Stick</text>
+<rect x="1240" y="520" width="160" height="70" rx="10" fill="#FFFFFF" stroke="#2F4A6B" stroke-width="2"/><text x="1320.0" y="546.0" font-size="16" fill="#241F18" text-anchor="middle" font-weight="700">Buchse 2</text><text x="1320.0" y="567.0" font-size="12.5" fill="#6B6255" text-anchor="middle" font-weight="400">Drucker</text>
+<rect x="420" y="650" width="280" height="120" rx="10" fill="#FFFFFF" stroke="#B3382F" stroke-width="2"/><text x="560.0" y="676.0" font-size="16" fill="#241F18" text-anchor="middle" font-weight="700">Verteiler</text><text x="560.0" y="697.0" font-size="12.5" fill="#6B6255" text-anchor="middle" font-weight="400">vier Plätze</text><text x="560.0" y="715.0" font-size="12.5" fill="#6B6255" text-anchor="middle" font-weight="400">verschraubt</text>
+<rect x="760" y="650" width="220" height="120" rx="10" fill="#FFFFFF" stroke="#B3382F" stroke-width="2"/><text x="870.0" y="676.0" font-size="16" fill="#241F18" text-anchor="middle" font-weight="700">Netzteil Pi</text><text x="870.0" y="697.0" font-size="12.5" fill="#6B6255" text-anchor="middle" font-weight="400">USB-C</text><text x="870.0" y="715.0" font-size="12.5" fill="#6B6255" text-anchor="middle" font-weight="400">5 V / 3 A</text>
+<rect x="1040" y="650" width="220" height="120" rx="10" fill="#FFFFFF" stroke="#B3382F" stroke-width="2"/><text x="1150.0" y="676.0" font-size="16" fill="#241F18" text-anchor="middle" font-weight="700">Netzteil Hub</text><text x="1150.0" y="697.0" font-size="12.5" fill="#6B6255" text-anchor="middle" font-weight="400">12 V</text>
+<rect x="70" y="660" width="230" height="100" rx="10" fill="#FFFFFF" stroke="#B3382F" stroke-width="2"/><text x="185.0" y="686.0" font-size="16" fill="#241F18" text-anchor="middle" font-weight="700">Steckdose</text><text x="185.0" y="707.0" font-size="12.5" fill="#6B6255" text-anchor="middle" font-weight="400">230 V</text>
+<rect x="1520" y="190" width="240" height="100" rx="10" fill="#FFFFFF" stroke="#B3382F" stroke-width="2"/><text x="1640.0" y="216.0" font-size="16" fill="#241F18" text-anchor="middle" font-weight="700">Godox SL60IID</text><text x="1640.0" y="237.0" font-size="12.5" fill="#6B6255" text-anchor="middle" font-weight="400">auf der Box</text>
+<rect x="1520" y="810" width="240" height="100" rx="10" fill="#FFFFFF" stroke="#B3382F" stroke-width="2"/><text x="1640.0" y="836.0" font-size="16" fill="#241F18" text-anchor="middle" font-weight="700">Selphy CP1500</text><text x="1640.0" y="857.0" font-size="12.5" fill="#6B6255" text-anchor="middle" font-weight="400">auf der Ablage</text>
+<rect x="1520" y="410" width="220" height="70" rx="10" fill="#FFFFFF" stroke="#2F4A6B" stroke-width="2"/><text x="1630.0" y="436.0" font-size="16" fill="#241F18" text-anchor="middle" font-weight="700">USB-Stick</text>
+<rect x="1520" y="520" width="220" height="70" rx="10" fill="#FFFFFF" stroke="#2F4A6B" stroke-width="2"/><text x="1630.0" y="546.0" font-size="16" fill="#241F18" text-anchor="middle" font-weight="700">Drucker</text>
+<path d="M300 710L420 710" fill="none" stroke="#B3382F" stroke-width="2.4" stroke-linejoin="round"/>
+<circle cx="380" cy="710" r="9" fill="#F5F3EE" stroke="#B3382F" stroke-width="2.4"/>
+<text x="340.0" y="690.0" font-size="12.5" fill="#B3382F" text-anchor="middle" font-weight="600">ein Kabel</text>
+<text x="368.0" y="745.0" font-size="12" fill="#B3382F" text-anchor="end" font-weight="400">M20</text>
+<path d="M700 690L760 690" fill="none" stroke="#B3382F" stroke-width="2.4" stroke-linejoin="round"/>
+<path d="M700 740L730 740L730 805L1150 805L1150 770" fill="none" stroke="#B3382F" stroke-width="2.4" stroke-linejoin="round"/>
+<path d="M470 650L400 650L400 150L1460 150L1460 230L1520 230" fill="none" stroke="#B3382F" stroke-width="2.4" stroke-linejoin="round"/><rect x="593.0" y="140.0" width="80.4" height="19" rx="5" fill="#F5F3EE" opacity="0.95"/><text x="633.2" y="154.0" font-size="12.5" fill="#B3382F" text-anchor="middle" font-weight="600">zur Leuchte</text>
+<circle cx="400" cy="200" r="9" fill="#F5F3EE" stroke="#B3382F" stroke-width="2.4"/>
+<text x="415.0" y="232.0" font-size="12" fill="#B3382F" text-anchor="start" font-weight="400">Ausschnitt oben</text>
+<path d="M640 770L640 905L1460 905L1460 860L1520 860" fill="none" stroke="#B3382F" stroke-width="2.4" stroke-linejoin="round"/><rect x="845.8" y="895.0" width="80.4" height="19" rx="5" fill="#F5F3EE" opacity="0.95"/><text x="886.0" y="909.0" font-size="12.5" fill="#B3382F" text-anchor="middle" font-weight="600">zum Drucker</text>
+<circle cx="640" cy="870" r="9" fill="#F5F3EE" stroke="#B3382F" stroke-width="2.4"/>
+<text x="660.0" y="890.0" font-size="12" fill="#B3382F" text-anchor="start" font-weight="400">Ausschnitt unten</text>
+<path d="M870 650L870 360" fill="none" stroke="#2F6F4E" stroke-width="2.4" stroke-linejoin="round"/><rect x="855.4" y="480.5" width="29.2" height="19" rx="5" fill="#F5F3EE" opacity="0.95"/><text x="870.0" y="494.5" font-size="12.5" fill="#2F6F4E" text-anchor="middle" font-weight="600">5 V</text>
+<path d="M1150 650L1150 360" fill="none" stroke="#2F6F4E" stroke-width="2.4" stroke-linejoin="round"/><rect x="1132.2" y="480.5" width="35.6" height="19" rx="5" fill="#F5F3EE" opacity="0.95"/><text x="1150.0" y="494.5" font-size="12.5" fill="#2F6F4E" text-anchor="middle" font-weight="600">12 V</text>
+<path d="M920 288L980 288" fill="none" stroke="#2F4A6B" stroke-width="2.4" stroke-linejoin="round"/>
+<text x="950.0" y="272.0" font-size="12.5" fill="#2F4A6B" text-anchor="middle" font-weight="600">USB</text>
+<path d="M700 322L640 322" fill="none" stroke="#2F4A6B" stroke-width="2.4" stroke-linejoin="round"/>
+<text x="670.0" y="310.0" font-size="12.5" fill="#2F4A6B" text-anchor="middle" font-weight="600">HDMI</text>
+<path d="M1040 250L1040 218L580 218L580 250" fill="none" stroke="#2F4A6B" stroke-width="2.4" stroke-linejoin="round"/><rect x="936.2" y="208.0" width="42.0" height="19" rx="5" fill="#F5F3EE" opacity="0.95"/><text x="957.2" y="222.0" font-size="12.5" fill="#2F4A6B" text-anchor="middle" font-weight="600">Strom</text>
+<path d="M1100 250L1100 236L540 236L540 250" fill="none" stroke="#2F4A6B" stroke-width="2.4" stroke-linejoin="round"/><rect x="619.8" y="226.0" width="42.0" height="19" rx="5" fill="#F5F3EE" opacity="0.95"/><text x="640.8" y="240.0" font-size="12.5" fill="#2F4A6B" text-anchor="middle" font-weight="600">Touch</text>
+<path d="M760 360L760 455L640 455" fill="none" stroke="#2F4A6B" stroke-width="2.4" stroke-linejoin="round"/><rect x="654.2" y="445.0" width="67.6" height="19" rx="5" fill="#F5F3EE" opacity="0.95"/><text x="688.0" y="459.0" font-size="12.5" fill="#2F4A6B" text-anchor="middle" font-weight="600">Flachband</text>
+<path d="M1200 290L1222 290L1222 445L1240 445" fill="none" stroke="#2F4A6B" stroke-width="2.4" stroke-linejoin="round"/>
+<path d="M1200 320L1208 320L1208 555L1240 555" fill="none" stroke="#2F4A6B" stroke-width="2.4" stroke-linejoin="round"/>
+<path d="M1400 445L1520 445" fill="none" stroke="#2F4A6B" stroke-width="2.4" stroke-linejoin="round"/>
+<path d="M1400 555L1520 555" fill="none" stroke="#2F4A6B" stroke-width="2.4" stroke-linejoin="round"/>
+<path d="M810 250L810 178L1500 178L1500 205L1520 205" fill="none" stroke="#8A6A2F" stroke-width="2.4" stroke-linejoin="round" stroke-dasharray="9 7"/><rect x="1003.9" y="168.0" width="67.6" height="19" rx="5" fill="#F5F3EE" opacity="0.95"/><text x="1037.7" y="182.0" font-size="12.5" fill="#8A6A2F" text-anchor="middle" font-weight="600">Bluetooth</text>
+<text x="60.0" y="200.0" font-size="20" fill="#241F18" text-anchor="start" font-weight="700">Wie es läuft</text>
+<text x="60.0" y="230.0" font-size="13.5" fill="#6B6255" text-anchor="start" font-weight="400">Ein Netzkabel geht durch eine M20-Ver-</text>
+<text x="60.0" y="251.0" font-size="13.5" fill="#6B6255" text-anchor="start" font-weight="400">schraubung in die Box. Der Verteiler sitzt</text>
+<text x="60.0" y="272.0" font-size="13.5" fill="#6B6255" text-anchor="start" font-weight="400">unten, verschraubt, und von dort hängt</text>
+<text x="60.0" y="293.0" font-size="13.5" fill="#6B6255" text-anchor="start" font-weight="400">alles ab: die beiden Netzteile, das Kabel</text>
+<text x="60.0" y="314.0" font-size="13.5" fill="#6B6255" text-anchor="start" font-weight="400">nach oben zur Leuchte und das nach unten</text>
+<text x="60.0" y="335.0" font-size="13.5" fill="#6B6255" text-anchor="start" font-weight="400">zum Drucker. Beide gehen durch je einen</text>
+<text x="60.0" y="356.0" font-size="13.5" fill="#6B6255" text-anchor="start" font-weight="400">Ausschnitt in der Tür.</text>
+<text x="60.0" y="377.0" font-size="13.5" fill="#6B6255" text-anchor="start" font-weight="400"></text>
+<text x="60.0" y="398.0" font-size="13.5" fill="#6B6255" text-anchor="start" font-weight="400">Über dem Streifen liegt nichts mehr über</text>
+<text x="60.0" y="419.0" font-size="13.5" fill="#6B6255" text-anchor="start" font-weight="400">12 Volt.</text>
+<text x="60.0" y="440.0" font-size="13.5" fill="#6B6255" text-anchor="start" font-weight="400"></text>
+<text x="60.0" y="461.0" font-size="13.5" fill="#6B6255" text-anchor="start" font-weight="400">Bildschirm und Hub hängen mit zwei Kabeln</text>
+<text x="60.0" y="482.0" font-size="13.5" fill="#6B6255" text-anchor="start" font-weight="400">zusammen: eines für den Strom aus dem</text>
+<text x="60.0" y="503.0" font-size="13.5" fill="#6B6255" text-anchor="start" font-weight="400">Ladeanschluss, eines für die Berührung an</text>
+<text x="60.0" y="524.0" font-size="13.5" fill="#6B6255" text-anchor="start" font-weight="400">einem Datenanschluss.</text>
+<text x="60.0" y="545.0" font-size="13.5" fill="#6B6255" text-anchor="start" font-weight="400"></text>
+<text x="60.0" y="566.0" font-size="13.5" fill="#6B6255" text-anchor="start" font-weight="400">Die Leuchte spricht der Pi über Bluetooth</text>
+<text x="60.0" y="587.0" font-size="13.5" fill="#6B6255" text-anchor="start" font-weight="400">an – dorthin geht nur Strom.</text>
+</svg>

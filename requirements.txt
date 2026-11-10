@@ -1,0 +1,7 @@
+# Nur zum Entwickeln am Rechner (macOS/Linux), dort mit der Mock-Kamera:
+#   python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
+#   .venv/bin/python photobooth.py --window --scale 0.5
+#
+# Auf dem Raspberry Pi kommt alles aus den Paketquellen, siehe install-pi.sh.
+PySide6>=6.8
+Pillow>=10.0

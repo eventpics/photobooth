@@ -1,0 +1,17 @@
+[Unit]
+Description=Photobooth - Touchscreen im Mausmodus als echten Touchscreen einspielen
+# Before the app, so the interface finds the virtual touchscreen already
+# there at startup. cage picks it up if it appears later, too.
+Before=photobooth.service
+
+[Service]
+Type=simple
+# root, because /dev/uinput and grabbing the device exclusively require it.
+ExecStart=/usr/bin/python3 @DIR@/autostart/touch-bridge.py
+Restart=always
+RestartSec=3
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

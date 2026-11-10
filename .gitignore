@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# What a running booth produces. None of this belongs in the repository:
+# captures/ holds photographs of real people, and the database and the log
+# say who was at which party and when.
+captures/
+booth.db
+booth.db-shm
+booth.db-wal
+events.log
+
+# The configuration of an actual box. It carries the settings PIN and, once
+# the gallery is set up, the EventPics API key. config.example.json is the
+# one that ships.
+config.json
+config.local.json
+
+# The Godox mesh keys. Whoever has this file can take over the lamp.
+godox-mesh-state.json
+godox-mesh-state.json.*
+
+# Fetched by install-pi.sh, not ours to redistribute.
+vendor/
+
+.DS_Store

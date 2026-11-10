@@ -1,0 +1,15 @@
+[Unit]
+Description=EventPics Photobooth - Waechter ueber die Oberflaeche
+After=photobooth.service
+
+[Service]
+Type=simple
+# root, so it may restart the booth - without a sudo rule for the user.
+ExecStart=/bin/bash @DIR@/autostart/watchdog.sh
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

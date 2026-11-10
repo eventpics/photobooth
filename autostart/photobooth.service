@@ -1,0 +1,66 @@
+[Unit]
+Description=EventPics Photobooth
+# Deliberately no wait for the network. Uploads sit in a queue anyway and go
+# out as soon as a connection exists. Waiting for "online" cost 9 seconds at
+# startup - and with no network at the venue the box would have shown nothing
+# for up to a minute and a half.
+After=systemd-user-sessions.service photobooth-touch.service
+# cage needs tty1 to itself. Without this the app and the login prompt fight
+# over the same screen.
+After=getty@tty1.service
+Conflicts=getty@tty1.service
+
+[Service]
+Type=simple
+User=@USER@
+WorkingDirectory=@DIR@
+# PAMName and TTYPath together make logind create a proper session. Only then
+# may cage take over the screen and the input devices.
+PAMName=login
+TTYPath=/dev/tty1
+TTYReset=yes
+TTYVHangup=yes
+StandardInput=tty-fail
+StandardOutput=journal
+StandardError=journal
+# The app runs inside cage's login session. Its messages therefore do not show
+# up under "journalctl -u photobooth" but under this identifier:
+#   journalctl -t photobooth -f
+SyslogIdentifier=photobooth
+Environment=XDG_SESSION_TYPE=wayland
+Environment=PYTHONUNBUFFERED=1
+# Invisible mouse pointer. Many touchscreens also register as a mouse; without
+# this a motionless pointer would sit in the middle of the picture. The theme
+# at this path is called "default", because cage loads only that one - it does
+# not read XCURSOR_THEME. The variable is here anyway, for Qt. See
+# hide-cursor.py.
+Environment=XCURSOR_PATH=/home/@USER@/.config/photobooth/cursor
+Environment=XCURSOR_THEME=default
+# cage is assigned tty1 but does not switch to it itself. If the active
+# console is elsewhere - on tty7 after a disabled display manager, say - cage
+# holds the screen but is not allowed to use it. The minus means "a failure
+# here is no reason to give up", the plus means "as root".
+ExecStartPre=-/usr/bin/python3 @DIR@/autostart/hide-cursor.py /home/@USER@/.config/photobooth/cursor
+ExecStartPre=+-/usr/bin/chvt 1
+# The app runs inside cage's login session, not in the service itself. So when
+# systemd stops the service it only reaches cage - a hung app would be left
+# behind holding camera and GPIO, and the new one would start without a camera.
+# Observed exactly like that on the Pi, when the watchdog restarted a frozen
+# app. Hence, before every start and after every stop: old instances go.
+ExecStartPre=+-/bin/sh -c 'pkill -KILL -f "^/usr/bin/python3 @DIR@/photobooth.py" && sleep 2'
+ExecStopPost=+-/bin/sh -c 'sleep 3; pkill -KILL -f "^/usr/bin/python3 @DIR@/photobooth.py"'
+# cage shows exactly one program full screen: no desktop, no task bar.
+ExecStart=/usr/bin/cage -- /usr/bin/python3 @DIR@/photobooth.py
+# If the app hangs without crashing, photobooth-watchdog.service restarts it.
+# Were the app to die in the middle of a party, the box would otherwise just
+# stand there. Three seconds later it is running again with nobody doing
+# anything.
+Restart=always
+RestartSec=3
+# With no screen attached, cage waits and does not respond to SIGTERM. Without
+# this limit every shutdown would hang for a minute and a half.
+TimeoutStopSec=10
+KillMode=mixed
+
+[Install]
+WantedBy=multi-user.target

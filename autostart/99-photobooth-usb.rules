@@ -1,0 +1,7 @@
+# Mount USB volumes ourselves, because with no desktop nobody else will.
+# Only real filesystems on real USB devices - no partition tables, no internal
+# cards.
+ACTION=="add",    SUBSYSTEM=="block", ENV{ID_BUS}=="usb", ENV{ID_FS_USAGE}=="filesystem", \
+  RUN{program}+="/usr/bin/systemd-run --no-block --unit=photobooth-usb-%k @DIR@/autostart/usb-mount.sh mount %k @USER@"
+ACTION=="remove", SUBSYSTEM=="block", ENV{ID_BUS}=="usb", \
+  RUN{program}+="/usr/bin/systemd-run --no-block --unit=photobooth-usb-unmount-%k @DIR@/autostart/usb-mount.sh unmount %k @USER@"

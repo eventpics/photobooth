@@ -1,0 +1,113 @@
+{
+  "camera": {
+    "preview_size": [
+      1440,
+      960
+    ],
+    "preview_fps": 30,
+    "capture_size": [
+      3888,
+      2592
+    ],
+    "hflip": false,
+    "vflip": false,
+    "jpeg_quality": 90,
+    "controls": {
+      "ae_enable": false,
+      "exposure_time_us": 8000,
+      "analogue_gain": 2.0,
+      "awb_enable": false,
+      "colour_gain_red": 1.8,
+      "colour_gain_blue": 1.6,
+      "brightness": 0.0,
+      "contrast": 1.0,
+      "saturation": 1.0,
+      "sharpness": 1.0,
+      "af_mode": 0,
+      "lens_position": 0.5
+    },
+    "sensor": "IMX708 (Camera Module 3 Standard, 76 Grad)",
+    "preview_sensor_size": [
+      2304,
+      1296
+    ]
+  },
+  "gpio": {
+    "shutter_pin": 17,
+    "shutter_pull_up": true,
+    "shutter_bounce_s": 0.05,
+    "light_pin": 18,
+    "light_pwm_frequency": 2000,
+    "light_idle_duty": 0.2,
+    "light_capture_duty": 1.0,
+    "light_ramp_ms": 400,
+    "extra_output_pins": [
+      22,
+      23,
+      24
+    ]
+  },
+  "printer": {
+    "name": "",
+    "media": "Postcard",
+    "extra_options": [
+      "StpBorderless=True",
+      "StpImageType=Photo"
+    ]
+  },
+  "app": {
+    "capture_dir": "captures",
+    "mock": "auto"
+  },
+  "leds": {
+    "count": 12,
+    "brightness": 0.3,
+    "spi_bus": 0,
+    "spi_device": 0,
+    "spi_hz": 2400000
+  },
+  "booth": {
+    "event_title": "Unsere Feier",
+    "event_subtitle": "",
+    "enabled_layouts": [
+      "grid4"
+    ],
+    "countdown_s": 5,
+    "review_s": 60.0,
+    "done_s": 60.0,
+    "frame_aspect": 1.5,
+    "delete_shots_after_sinks": false,
+    "await_s": 120.0,
+    "background_style": "botanical-full",
+    "pin": "1234",
+    "caption_font": "serif",
+    "caption_colour": "",
+    "caption_size_mm": 3.9
+  },
+  "usb": {
+    "enabled": true,
+    "folder": "Fotobox",
+    "copy_shots": true,
+    "require_marker": false,
+    "search_paths": []
+  },
+  "sound": {
+    "enabled": true,
+    "volume": 0.6,
+    "device": "auto"
+  },
+  "light": {
+    "kind": "pwm",
+    "address": "",
+    "mesh_state": "",
+    "dmx_port": "/dev/ttyUSB0",
+    "dmx_channel": 1
+  },
+  "eventpics": {
+    "api_key": "",
+    "link_id": "",
+    "album_id": "",
+    "event_title": "",
+    "enabled": false
+  }
+}
