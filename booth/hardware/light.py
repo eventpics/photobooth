@@ -245,8 +245,13 @@ class GodoxLight(LightBase):
     kind = "godox"
 
     #: How long the first connection is waited for before startup carries on.
-    #: The box must not get stuck on a lamp.
-    CONNECT_TIMEOUT = 25.0
+    #: Short on purpose. Connecting over Bluetooth mesh takes about twenty
+    #: seconds on the booth, and it used to be twenty seconds of a blank
+    #: screen: measured from power-on, the interface appeared at 47 seconds,
+    #: of which 21 were spent here. The thread goes on connecting in the
+    #: background either way, so there is nothing to wait for. Whoever opens
+    #: the settings a minute later sees a lamp that is long since connected.
+    CONNECT_TIMEOUT = 2.0
 
     #: Pause between two connection attempts, in case the lamp is switched off.
     RETRY_S = 15.0
@@ -316,8 +321,11 @@ class GodoxLight(LightBase):
         # Wait for the first connection, but not forever: if the lamp is off
         # the box should still come up and keep trying later.
         if not self._ready.wait(self.CONNECT_TIMEOUT):
-            self.note = ("Godox-Leuchte noch nicht erreicht - die Box versucht es weiter. "
-                         "Ist sie eingeschaltet?")
+            # Not an error yet: connecting simply takes longer than the booth
+            # is willing to stand still for. The thread clears this the
+            # moment the lamp answers.
+            self.note = ("Godox-Leuchte wird verbunden, das dauert einen Moment. "
+                         "Bleibt es dabei: ist sie eingeschaltet?")
 
     def _pfad_vorbereiten(self) -> None:
         """Make the bundled library importable."""

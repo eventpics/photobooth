@@ -28,8 +28,8 @@
     },
     "sensor": "IMX708 (Camera Module 3 Standard, 76 Grad)",
     "preview_sensor_size": [
-      2304,
-      1296
+      4608,
+      2592
     ]
   },
   "gpio": {

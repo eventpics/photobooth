@@ -144,11 +144,14 @@ SCHEMA: dict[str, list[dict[str, Any]]] = {
         # Sliders, not number pads: brightness is judged by looking at the
         # live picture beside it, never by reading a figure. Both sit on the
         # same page as the camera preview for exactly that reason.
+        # Step of one, not the five the other percentages use: between 20 and
+        # 25 per cent there is a visible difference in the picture, and the
+        # live view next to the slider is what the value is judged by.
         _pct("gpio", "light_idle_duty", "Einstelllicht",
              "Brennt dauerhaft. Auch auf der Gästeseite oben rechts verstellbar.",
-             widget="slider"),
+             widget="slider", step=1),
         _pct("gpio", "light_capture_duty", "Aufnahmelicht",
-             "Nur im Moment der Aufnahme", widget="slider"),
+             "Nur im Moment der Aufnahme", widget="slider", step=1),
         # Buttons and a number pad rather than a slider: here one exact value
         # matters, 4000 and not somewhere between 3900 and 4100, and a finger
         # does not hit that on a slider.
