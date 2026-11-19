@@ -119,6 +119,23 @@ framebuffer dumps to `/var/cache/photobooth` and `boot-splash.sh` pushes one
 out with `dd`, no Python involved. Both colour depths are rendered, because
 the framebuffer reports 32 bits early in the boot and 16 a moment later.
 
+Keeping the shutdown screen up took two more changes, both of them found by
+measuring on the booth rather than by reasoning: systemd writes its
+"Stopped ..." lines to the console while the machine goes down, and that
+console lands on whichever terminal is being displayed. The picture vanished
+under a wall of text.
+
+- `cmdline.txt` says `console=tty3` instead of `console=tty1`, so nothing of
+  the console is visible while terminal 1 is on screen.
+- `boot-splash.sh shutdown` unbinds the text console from the framebuffer
+  (`vtcon*/bind`) before it draws. Nothing writes over the picture after
+  that. It lasts until the next boot and the journal still gets everything.
+
+`systemd.show_status=error` on its own is not enough; the status lines come
+back during shutdown regardless. All of this was checked by having the booth
+save its own screen contents at the very end of a shutdown: 44 % covered in
+text before, 98.6 % white after.
+
 ### Copying to the booth
 
 With `tools/deploy.sh`, never with a hand-typed `rsync`. The booth holds files

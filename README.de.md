@@ -122,6 +122,25 @@ schiebt sie mit `dd` auf den Schirm, ohne Python. Beide Farbtiefen werden
 vorgerechnet, weil der Framebuffer früh im Start mit 32 Bit meldet und kurz
 darauf mit 16.
 
+Damit der Abschaltbildschirm stehen bleibt, braucht es zwei Eingriffe, und
+beide sind erst nach einer Messung am Gerät entstanden: systemd schreibt beim
+Herunterfahren seine „Stopped ..."-Zeilen auf die Konsole, und die landet
+dabei auf genau dem Terminal, das gerade zu sehen ist. Das Bild verschwand
+unter einer Wand aus Text.
+
+- In `cmdline.txt` steht `console=tty3` statt `console=tty1`. Im laufenden
+  Betrieb sieht man dadurch nichts mehr von der Konsole, weil Terminal 1
+  angezeigt wird.
+- `boot-splash.sh shutdown` hängt vor dem Zeichnen den Textkonsolentreiber
+  von der Bildfläche ab (`vtcon*/bind`). Danach schreibt nichts mehr darüber.
+  Das gilt nur bis zum nächsten Start, und ins Protokoll kommt weiterhin
+  alles.
+
+`systemd.show_status=error` allein genügt übrigens nicht, die Statuszeilen
+erscheinen beim Herunterfahren trotzdem. Geprüft wurde das, indem die Box am
+Ende des Herunterfahrens ihren eigenen Bildschirminhalt gesichert hat: vorher
+zu 44 % von Text verdeckt, danach zu 98,6 % weiß.
+
 ### Auf die Box übertragen
 
 Mit `tools/deploy.sh`, nie mit einem von Hand getippten `rsync`. Auf der Box

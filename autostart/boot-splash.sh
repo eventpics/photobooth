@@ -37,5 +37,26 @@ tiefe=$(cat /sys/class/graphics/fb0/bits_per_pixel)
 datei="$CACHE/$ROLLE-${breite}x${hoehe}-${tiefe}.raw"
 [ -f "$datei" ] || exit 0
 
+# On the way down, take the framebuffer away from the text console first.
+#
+# systemd writes its "Stopped ..." lines to the console while the machine goes
+# down, and during a shutdown that console lands on the terminal the screen is
+# showing. The picture ends up buried under a wall of white-on-black, which is
+# exactly what it was put there to replace. Neither console=tty3 nor
+# systemd.show_status=error stops it: the output simply reappears on the
+# visible terminal.
+#
+# Unbinding fbcon disconnects the text console from the framebuffer, so
+# nothing is drawn over the picture afterwards. It only lasts until the next
+# boot, and the kernel still logs everywhere it logged before, the serial
+# console included.
+if [ "$ROLLE" = shutdown ]; then
+    for vtcon in /sys/class/vtconsole/vtcon*; do
+        case "$(cat "$vtcon/name" 2>/dev/null)" in
+            *"frame buffer device"*) echo 0 > "$vtcon/bind" 2>/dev/null || true ;;
+        esac
+    done
+fi
+
 # conv=notrunc because /dev/fb0 is a device, not a file to be shortened.
 dd if="$datei" of=/dev/fb0 bs=1M conv=notrunc status=none 2>/dev/null || exit 0

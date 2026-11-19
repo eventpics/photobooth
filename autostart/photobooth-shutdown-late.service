@@ -1,0 +1,28 @@
+[Unit]
+Description=EventPics Photobooth shutdown screen, drawn last
+Documentation=file://@DIR@/autostart/boot-splash.sh
+# photobooth-shutdown.service puts the picture up as soon as the booth lets go
+# of the screen, which is what the host should see. Everything systemd stops
+# after that writes its own lines over it: the console moves to the visible
+# terminal while the machine goes down, and the picture ends up buried under
+# a wall of "Stopped ...". So it is drawn once more here, in final.target,
+# after the last service has gone and before systemd-shutdown takes over.
+DefaultDependencies=no
+After=shutdown.target
+Before=final.target
+# Not on a reboot: "you may pull the plug" is the wrong thing to say to
+# somebody waiting for the booth to come back, and the start screen is only
+# seconds away anyway. systemd skips a unit that conflicts with the target
+# being isolated, which is exactly what is wanted here.
+Conflicts=reboot.target
+
+[Service]
+Type=oneshot
+ExecStart=-/bin/sh @DIR@/autostart/boot-splash.sh shutdown
+# Nothing here is worth delaying a shutdown for.
+TimeoutStartSec=6
+StandardOutput=null
+StandardError=journal
+
+[Install]
+WantedBy=final.target
