@@ -267,8 +267,7 @@ class SettingsScreen(QWidget):
         """Switch to a sub-page, or back to the list with an empty key."""
         if self.capture_light and page != "capture":
             self._toggle_capture_light()
-        if self.log_page is not None:
-            self.log_page.stop()
+        self._stop_log()
         self.page = page
         # Fresh values on every switch: a sub-page may have changed something
         # another one shows, and there is no cheap way to know which.
@@ -287,8 +286,7 @@ class SettingsScreen(QWidget):
     def close_screen(self) -> None:
         if self.capture_light:
             self._toggle_capture_light()
-        if self.log_page is not None:
-            self.log_page.stop()
+        self._stop_log()
         self.keyboard.hide()
         self.chooser.hide()
         self.confirm.hide()
@@ -383,6 +381,22 @@ class SettingsScreen(QWidget):
         self.log_page = LogPage(self.backend.events)
         self.log_page.start()
         return self.log_page
+
+    def _stop_log(self) -> None:
+        """Stop the log page's timer, if there still is a log page.
+
+        Rebuilding a page deletes its widgets, but the attribute pointing at
+        this one survives. Touching it afterwards raised "Internal C++ object
+        already deleted" and took the settings screen down with it, on the
+        way out of the settings of all places.
+        """
+        seite, self.log_page = self.log_page, None
+        if seite is None:
+            return
+        try:
+            seite.stop()
+        except RuntimeError:
+            pass          # already gone with its page
 
     def _top_row(self) -> QHBoxLayout:
         row = QHBoxLayout()

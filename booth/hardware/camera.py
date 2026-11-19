@@ -468,18 +468,14 @@ class PiCamera(CameraBase):
     def measure_exposure(self, timeout: float = 14.0) -> dict[str, Any]:
         """Let auto exposure settle once, then keep the values it found.
 
-        Measured in the mode the photograph is taken in, not in the one the
-        preview runs in. The two differ: the preview reads the sensor at
-        2304x1296 with pixels combined, the still at 3888x2592 without. At
-        the same exposure time and the same gain the still therefore comes
-        out darker, measured on the booth by between 1.4 and 1.8 times,
-        depending on how bright the scene is. Measuring in the preview mode
-        produced a correct-looking preview and an underexposed photograph,
-        which is exactly the complaint that led here.
-
-        The factor is not constant, so it cannot be corrected afterwards with
-        a stored number: the tone curve is not a straight line. Measuring in
-        the right mode avoids the question.
+        Measured on the preview stream, which is not the mode the photograph
+        is taken in: the preview reads the sensor at 2304x1296 with pixels
+        combined, the still at 3888x2592 without, and at the same exposure
+        the still comes out darker. Measuring in the still mode instead was
+        tried and abandoned - the auto exposure needs 24 seconds to settle at
+        14 frames a second, which on its own overran the calibration's time
+        limit. `correct_for_still` afterwards closes the gap in about five
+        seconds by photographing instead of guessing.
 
         Also reports the estimated illuminance in lux, which answers the
         question this whole build hinges on: is there enough light?
@@ -487,30 +483,6 @@ class PiCamera(CameraBase):
         with self.lock:
             if self.picam2 is None:
                 raise RuntimeError("Kamera ist nicht gestartet")
-            still, video = self._still_config, self._video_config
-
-        gewechselt = False
-        if still is not None:
-            try:
-                with self.lock:
-                    self.picam2.switch_mode(still)
-                gewechselt = True
-            except Exception as fehler:  # noqa: BLE001 - measuring beats not measuring
-                log.warning("Could not switch to the capture mode to measure (%s), "
-                            "measuring in the preview mode instead", fehler)
-
-        try:
-            return self._belichtung_messen(timeout)
-        finally:
-            if gewechselt and video is not None:
-                try:
-                    with self.lock:
-                        self.picam2.switch_mode(video)
-                except Exception:  # noqa: BLE001
-                    log.exception("Could not switch back to the preview mode")
-
-    def _belichtung_messen(self, timeout: float) -> dict[str, Any]:
-        """The measurement itself, whatever mode the camera is currently in."""
         self._let_controls_land()
         with self.lock:
             self.picam2.set_controls({"AeEnable": True})
