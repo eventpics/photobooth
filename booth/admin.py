@@ -83,8 +83,9 @@ def _secret(section, key, label, help_=""):
             "type": "secret"}
 
 
-def _bool(section, key, label, help_=""):
-    return {"section": section, "key": key, "label": label, "help": help_, "type": "bool"}
+def _bool(section, key, label, help_="", **kw):
+    return {"section": section, "key": key, "label": label, "help": help_,
+            "type": "bool", **kw}
 
 
 #: Only what a host actually decides. Anything that has one sensible answer is
@@ -92,6 +93,15 @@ def _bool(section, key, label, help_=""):
 #: picture is kept, and whether a frame is drawn follows from the layout.
 SCHEMA: dict[str, list[dict[str, Any]]] = {
     "Kamera": [
+        # First, because it decides what all the measured values below mean.
+        # In stops, the unit every camera uses for this: one step is twice or
+        # half the light. Named for what it does to the picture, not for the
+        # control it moves.
+        _slider("camera", "exposure_bias_ev", "Bildhelligkeit",
+                "Wie hell die Box beim Einmessen zielt. Minus macht die Fotos "
+                "dunkler, plus heller; eine Stufe ist doppelt oder halb so viel "
+                "Licht. Danach neu einmessen.", min=-2, max=1, step=0.25,
+                default=0.0, nested="controls"),
         _slider("camera", "exposure_time_us", "Belichtungszeit",
                 "Länger heißt heller, aber auch verwackelter", min=1000, max=120000,
                 step=500, unit="µs", log=True, nested="controls"),
@@ -152,6 +162,10 @@ SCHEMA: dict[str, list[dict[str, Any]]] = {
              widget="slider", step=1),
         _pct("gpio", "light_capture_duty", "Aufnahmelicht",
              "Nur im Moment der Aufnahme", widget="slider", step=1),
+        _bool("gpio", "light_auto_search", "Aufnahmelicht selbst suchen",
+              "Beim Einmessen sucht die Box die Helligkeit, bei der Bewegung "
+              "nicht verwischt, und stellt das Aufnahmelicht darauf. Aus: dein "
+              "Wert bleibt stehen.", default=True),
         # Buttons and a number pad rather than a slider: here one exact value
         # matters, 4000 and not somewhere between 3900 and 4100, and a finger
         # does not hit that on a slider.
@@ -279,7 +293,10 @@ def read_settings(config) -> dict[str, Any]:
         section = config.section(field["section"])
         if field.get("nested"):
             section = section.get(field["nested"], {})
-        raw = section.get(field["key"])
+        # With the default, not bare: a configuration written before a
+        # setting existed has no entry for it, and a slider handed None has
+        # nothing to show. Upgrading should not mean editing JSON by hand.
+        raw = section.get(field["key"], field.get("default"))
         if field["type"] == "percent" and raw is not None:
             raw = round(float(raw) * 100)
         elif field["type"] == "distance" and raw:

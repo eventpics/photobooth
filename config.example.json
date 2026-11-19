@@ -14,6 +14,7 @@
     "jpeg_quality": 90,
     "controls": {
       "ae_enable": false,
+      "exposure_bias_ev": 0.0,
       "exposure_time_us": 8000,
       "analogue_gain": 2.0,
       "capture_gain_factor": 1.0,
@@ -41,6 +42,7 @@
     "light_pwm_frequency": 2000,
     "light_idle_duty": 0.2,
     "light_capture_duty": 1.0,
+    "light_auto_search": true,
     "light_ramp_ms": 400,
     "extra_output_pins": [
       22,

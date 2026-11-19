@@ -313,10 +313,11 @@ class ShotScreen(QWidget):
         except (TypeError, ValueError):
             duty = 1.0
         if duty < 0.9:
-            return (f"Das Aufnahmelicht steht erst auf {round(duty * 100)} %, "
-                    "dreh es höher und miss noch einmal ein.")
-        return "Das Aufnahmelicht ist schon fast voll aufgedreht; hier hilft nur " \
-               "eine hellere Leuchte oder ein kürzerer Abstand."
+            return (f"Wenn du das willst: das Aufnahmelicht steht auf "
+                    f"{round(duty * 100)} %, höher und neu einmessen hilft.")
+        return "Wenn du das willst: das Aufnahmelicht ist schon fast voll " \
+               "aufgedreht, dann hilft nur eine hellere Leuchte oder ein " \
+               "kürzerer Abstand."
 
     def judge(self, result: dict[str, Any]) -> tuple[str, str, str, str]:
         e = result.get("exposure") or {}
@@ -336,13 +337,16 @@ class ShotScreen(QWidget):
         elif us is None:
             verdict, level, detail = "Eingemessen", "", ""
         elif us > 25000:
-            verdict, level = "Eingemessen, aber zu dunkel", "bad"
-            detail = (f"Bei {fraction(us)} verwischt jeder, der sich bewegt. "
-                      + self._lichtrat())
+            # Not "too dark": how bright the pictures should be is the host's
+            # taste, and the box has a setting for it. What a long exposure
+            # really costs is movement, so that is what is said here.
+            verdict, level = "Eingemessen, Bewegung wird verwischen", ""
+            detail = (f"Bei {fraction(us)} wird unscharf, wer sich bewegt. Für "
+                      "ruhige Posen genügt es. " + self._lichtrat())
         elif us > 12000:
-            verdict, level = "Eingemessen, Licht ist knapp", ""
-            detail = (f"Bei {fraction(us)} reicht es für ruhige Posen, nicht für "
-                      "Bewegung. " + self._lichtrat())
+            verdict, level = "Eingemessen, für ruhige Posen", ""
+            detail = (f"Bei {fraction(us)} bleibt stehen, wer stehen bleibt. "
+                      + self._lichtrat())
         else:
             verdict, level = "Passt, die Box ist eingemessen", "good"
             detail = f"Bei {fraction(us)} wird Bewegung eingefroren."

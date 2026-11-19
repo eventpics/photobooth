@@ -369,13 +369,21 @@ class GuestScreen(QWidget):
             self.count_timer.stop()
 
         rahmen = PREVIEW_FULL if only_picture else PREVIEW
-        place(self.preview, *rahmen)
         place(self.preview_corners, *rahmen)
         place(self.count, *rahmen)
         showing_result = state in ("review", "done")
         # With no real camera, no test pattern for the guests - just the notice.
         bild_sichtbar = not showing_result and not self.camera_lost()
-        self.preview.setVisible(bild_sichtbar)
+        # The live image only takes orders here while it is actually here.
+        # There is only one of it, and during a test photo from the settings
+        # it is lent to that page. A test photo runs through the same states
+        # as a guest's picture, so this used to stretch it to the guest
+        # screen's 1392 by 928 inside a 576 by 384 slot - which is why the
+        # live image came back from a test photo cut off - and hide it while
+        # the result was up.
+        if self.preview.parent() is self:
+            place(self.preview, *rahmen)
+            self.preview.setVisible(bild_sichtbar)
         # The same condition, not isVisible() of the live image: that used to
         # sit here one pass too early, and while the window was not open yet
         # it reported False regardless. The corners stayed invisible.

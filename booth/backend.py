@@ -220,6 +220,14 @@ class Backend:
         capture_duty = float(gpio_cfg.get("light_capture_duty", 1.0))
         ramp_s = float(gpio_cfg.get("light_ramp_ms", 200)) / 1000.0
         result: dict[str, Any] = {}
+        # The search raises the lamp until a moving hand is frozen. That is
+        # the right default for somebody setting up their first booth, and
+        # the wrong one for a host who has already chosen how bright the
+        # pictures should be - so it can be switched off and then nothing
+        # touches the capture light.
+        if tune_light and not bool(gpio_cfg.get("light_auto_search", True)):
+            tune_light = False
+            result["light_search"] = "aus"
         if tune_light:
             gefunden = self._tune_capture_light(capture_duty, ramp_s)
             result["light"] = {"before": round(capture_duty, 2),

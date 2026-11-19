@@ -537,8 +537,10 @@ class PiCamera(CameraBase):
                          "bisherigen Werte bleiben erhalten."),
             }
 
-        controls["exposure_time_us"] = int(round(current[0]))
-        controls["analogue_gain"] = round(current[1], 2)
+        belichtung, verstaerkung = self._apply_bias(current[0], current[1],
+                                                    float(controls.get("exposure_bias_ev", 0.0) or 0.0))
+        controls["exposure_time_us"] = int(round(belichtung))
+        controls["analogue_gain"] = round(verstaerkung, 2)
         if lux:
             # Remembered so that a later change of light can be noticed.
             controls["calibrated_lux"] = round(float(lux), 1)
@@ -548,12 +550,45 @@ class PiCamera(CameraBase):
         self.config.save()
 
         return {
-            "exposure_time_us": int(round(current[0])),
-            "analogue_gain": round(current[1], 2),
+            "exposure_time_us": int(round(belichtung)),
+            "analogue_gain": round(verstaerkung, 2),
+            "metered_exposure_time_us": int(round(current[0])),
+            "exposure_bias_ev": round(float(controls.get("exposure_bias_ev", 0.0) or 0.0), 2),
             "lux": round(float(lux), 1) if lux else None,
             "settled": settled,
             "samples": samples,
         }
+
+    def _apply_bias(self, exposure: float, gain: float, bias: float) -> tuple[float, float]:
+        """Shift the measured exposure by the host's taste, in stops.
+
+        What the automatic exposure calls correct is an average, and an
+        average is not a taste: measured against a bright wall it aims higher
+        than most people want their guests to look. One step here is one
+        stop, so minus one gives half the light.
+
+        Spent on the time first, because a shorter time is the quieter lever;
+        only what the mode's longest frame cannot take goes to the gain, and
+        that only when somebody asks for brighter.
+        """
+        if not bias:
+            return exposure, gain
+        gewuenscht = exposure * (2.0 ** bias)
+        grenze = self._exposure_limit()
+        if grenze and gewuenscht > grenze:
+            gain = min(gain * gewuenscht / grenze, 16.0)
+            gewuenscht = grenze
+        gewuenscht = max(1.0, gewuenscht)
+        log.info("Exposure bias %+.2f EV: %.0f us -> %.0f us, gain %.2f",
+                 bias, exposure, gewuenscht, gain)
+        return gewuenscht, gain
+
+    def _exposure_limit(self) -> float | None:
+        """The longest exposure the current mode allows, in microseconds."""
+        try:
+            return float(self.picam2.camera_controls["ExposureTime"][1])
+        except Exception:  # noqa: BLE001 - only used to keep a value in range
+            return None
 
     def set_capture_size(self, width: int, height: int) -> None:
         from libcamera import Transform  # noqa: PLC0415
@@ -658,7 +693,11 @@ class PiCamera(CameraBase):
         with self.lock:
             if self.picam2 is None:
                 raise RuntimeError("Kamera ist nicht gestartet")
-        self._let_controls_land(6)
+        # Twelve frames, not the usual four. Measured while testing the
+        # brightness setting: after a change of exposure the live image still
+        # showed the old brightness eight frames later, and a target measured
+        # then is simply the previous one.
+        self._let_controls_land(12)
         with self.lock:
             ziel = self._frame_mean(self.picam2.capture_array("main"))
         if ziel <= 1.0:
