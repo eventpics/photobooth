@@ -86,7 +86,7 @@ class ShotScreen(QWidget):
         self.picture.setParent(self)
         self.verdict = self._label("verdict", wrap=True)
         self.detail = self._label("detail", wrap=True)
-        # Ohne Umbruch, dafuer zeilenweise: umbrochener Text in dieser Spalte
+        # No wrapping, one line per value: wrapped text in this column
         # wurde abgeschnitten.
         self.values = self._label("values")
         for w in (self.title, self.hint, self.count, self.busy, self.clock):
@@ -112,10 +112,10 @@ class ShotScreen(QWidget):
         self.tick.timeout.connect(self._tick)
         self.left = 0
         self.started = 0.0
-        #: Der Wert, auf den "Altes Licht behalten" zurückstellt.
+        #: The value that "Altes Licht behalten" puts back.
         self._licht_vorher: float | None = None
-        #: Beim nächsten Einmessen nach dem Licht suchen? Nur das Zurücknehmen
-        #: schaltet das ab, damit es nicht sofort wieder verstellt wird.
+        #: Search for the light on the next calibration? Only reverting turns
+        #: this off, so that the reverted value is not changed straight back.
         self._licht_suchen = True
         self.hide()
 
@@ -164,7 +164,7 @@ class ShotScreen(QWidget):
                   self.revert, self.close_btn):
             w.setVisible(w in widgets)
 
-    # -- Ablauf ----------------------------------------------------------------------
+    # -- sequence --------------------------------------------------------------------
     def open(self, mode: str) -> None:
         self.mode = mode
         self.title.setText("Testfoto" if mode == "photo" else "Automatisch einmessen")
@@ -174,7 +174,7 @@ class ShotScreen(QWidget):
             "drei Sekunden herunter und löst dann mit dem vollen Aufnahmelicht aus."
             if mode == "photo" else
             "Stell dich dorthin, wo später die Gäste stehen. Nach dem Start zählt die Box "
-            "drei Sekunden herunter und misst dann Belichtung, Weißabgleich und Fokus – mit "
+            "drei Sekunden herunter und misst dann Belichtung, Weißabgleich und Fokus, mit "
             "dem vollen Aufnahmelicht. Das dauert etwa eine halbe Minute, bitte still stehen "
             "bleiben.")
         self._show_only(self.title, self.hint, self.go, self.close_btn)
@@ -214,8 +214,8 @@ class ShotScreen(QWidget):
                 self._say(self.busy, "Moment …")
             else:
                 self._say(self.busy, "Wird eingemessen, bitte still stehen bleiben …")
-                # Nach dem Zurücknehmen einmal ohne Lichtsuche, sonst stellt
-                # die Box genau das wieder ein, was gerade verworfen wurde.
+                # After a revert, once without the light search, or the booth
+                # would set exactly what was just discarded.
                 suchen = self._licht_suchen
                 self._licht_suchen = True
                 self._run(lambda: self.backend.calibrate(tune_light=suchen))
@@ -297,12 +297,12 @@ class ShotScreen(QWidget):
         self._show_only(self.verdict, self.again, self.close_btn)
 
     def _lichtrat(self) -> str:
-        """Was der Gastgeber tun soll, wenn die Belichtung zu lang ausfällt.
+        """What the host should do when the exposure comes out too long.
 
-        "Hier hilft nur eine hellere Leuchte" stand hier frueher immer - auch
-        dann, wenn das Aufnahmelicht auf 30 Prozent stand. Die Box misst unter
-        genau diesem Wert, also ist er die erste Stellschraube und nicht die
-        Leuchte.
+        "Only a brighter lamp helps here" used to stand in this spot always,
+        even when the capture light was set to 30 per cent. The booth measures
+        under exactly that value, so that is the first thing to turn, not the
+        lamp.
         """
         try:
             duty = float(self.backend.config.section("gpio")
@@ -310,7 +310,7 @@ class ShotScreen(QWidget):
         except (TypeError, ValueError):
             duty = 1.0
         if duty < 0.9:
-            return (f"Das Aufnahmelicht steht erst auf {round(duty * 100)} % – "
+            return (f"Das Aufnahmelicht steht erst auf {round(duty * 100)} %, "
                     "dreh es höher und miss noch einmal ein.")
         return "Das Aufnahmelicht ist schon fast voll aufgedreht; hier hilft nur " \
                "eine hellere Leuchte oder ein kürzerer Abstand."

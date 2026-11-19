@@ -31,7 +31,7 @@ log = logging.getLogger(__name__)
 
 SHADOW = QColor(60, 50, 35)
 
-# -- Geometrie der Buehne -----------------------------------------------------------
+# -- Geometry of the stage ----------------------------------------------------------
 #: 5 mm stay clear all round (theme.SAFE_MARGIN_PX). Not by shrinking the
 #: stage - that would stop the dimmer behind an enlarged picture covering the
 #: screen - but by insetting the elements that far.
@@ -73,7 +73,7 @@ ABBRECHBAR = ("ready", "await", "countdown", "capturing", "composing")
 
 
 class _Bridge(QObject):
-    """Bringt Ergebnisse aus Hintergrund-Threads zurueck in die Oberflaeche."""
+    """Carries results from background threads back into the interface."""
 
     toast = Signal(str)
     status = Signal(dict)
@@ -86,7 +86,7 @@ class GuestScreen(QWidget):
         self.backend = backend
         self.session: BoothSession = backend.session
         self.on_settings = on_settings
-        #: Wird bei jedem Zustandswechsel gerufen: (neu, vorher).
+        #: Called on every change of state: (new, previous).
         self.on_state_change = None
 
         self.state: str | None = None
@@ -124,7 +124,7 @@ class GuestScreen(QWidget):
         threading.Thread(target=self._status_loop, name="ui-status", daemon=True).start()
         self._tick()
 
-    # -- Aufbau ---------------------------------------------------------------------
+    # -- building -------------------------------------------------------------------
     def _build(self) -> None:
         bar_shadow = (SHADOW, 0.08, 2, 8)
         self.lamp = Button(self, shadow=bar_shadow, on_click=self._on_lamp)
@@ -291,11 +291,32 @@ class GuestScreen(QWidget):
         p.fillRect(self.rect(), theme.INK)
         p.end()
 
-    # -- Takt -----------------------------------------------------------------------
+    # -- tick -----------------------------------------------------------------------
     def _zeige_stick_hinweis(self) -> None:
-        """Show and hide the notice as the stick comes and goes."""
+        """Show and hide the notice as the stick comes and goes.
+
+        Two different sentences, because there are two different situations.
+        A stick that is plugged in but not mounted yet is normal right after
+        switching on: the udev rule that mounts it needs its time, measured at
+        98 seconds on the Pi while the interface was up after 49. Telling the
+        guests the stick is missing would send somebody hunting for a stick
+        that is sitting right there.
+        """
         usb = self.status.get("usb") or {}
         fehlt = usb.get("present") is False
+        wartet = fehlt and bool(usb.get("attached"))
+        if fehlt:
+            if wartet:
+                self.usb_banner.set_text(
+                    "USB-Stick wird eingebunden",
+                    "Der Stick steckt, die Box richtet ihn gerade ein. Das dauert "
+                    "nach dem Einschalten einen Moment. Gleich geht es los.")
+            else:
+                self.usb_banner.set_text(
+                    "USB-Stick fehlt",
+                    "Die Bilder gehören euch und ihr nehmt sie auf dem Stick mit. "
+                    "Ohne ihn macht die Box keine Aufnahmen. Steckt den Stick an, "
+                    "dann geht es sofort weiter.")
         if fehlt == self.usb_banner.isVisible():
             return
         self.usb_banner.setVisible(fehlt)
@@ -321,14 +342,14 @@ class GuestScreen(QWidget):
         self._render(view)
 
     def camera_lost(self) -> bool:
-        """Auf echter Hardware, aber mit der Ersatzkamera unterwegs."""
+        """On real hardware, but running on the stand-in camera."""
         return not self.backend.mock and getattr(self.backend.camera, "backend", "") == "mock"
 
     def _enter(self, state: str, previous: str | None) -> None:
         if self.on_state_change is not None:
             self.on_state_change(state, previous)
-        # Loest jemand am Knopf aus, waehrend ein Fenster offen ist, gehoert
-        # der Schirm wieder dem Ablauf.
+        # If someone triggers a shot while an overlay is open, the screen
+        # belongs to the sequence again.
         if previous is not None:
             for overlay in self.overlays:
                 overlay.close_overlay()
@@ -399,7 +420,7 @@ class GuestScreen(QWidget):
         self._render_actions(view)
         self._render_timebar(view)
 
-    # -- Countdown ------------------------------------------------------------------
+    # -- countdown ------------------------------------------------------------------
     def _update_count(self) -> None:
         shutter_at = self.view.get("shutter_at") if self.view else None
         if self.state != "countdown" or shutter_at is None:
@@ -407,7 +428,7 @@ class GuestScreen(QWidget):
         rest = shutter_at - time.monotonic()
         self.count.set_text(str(max(0, math.ceil(rest))))
 
-    # -- Galerie --------------------------------------------------------------------
+    # -- gallery --------------------------------------------------------------------
     def _render_gallery(self) -> None:
         settings = self.settings
         if not settings.gallery_enabled:
@@ -460,7 +481,7 @@ class GuestScreen(QWidget):
         for pic in self.gallery[index:]:
             pic.hide()
 
-    # -- Ergebnis -------------------------------------------------------------------
+    # -- result ---------------------------------------------------------------------
     def _render_result(self, view: dict[str, Any]) -> None:
         result: Path | None = view.get("result_path")
         if result is None:
@@ -523,7 +544,7 @@ class GuestScreen(QWidget):
             pic.set_selected(pic.path == self.selected)
 
     def _fit(self, path: Path | None, max_w: float, max_h: float) -> tuple[float, float]:
-        """So gross wie moeglich in max_w x max_h, im Seitenverhaeltnis des Bildes."""
+        """As large as will fit in max_w x max_h, keeping the picture's aspect ratio."""
         aspect = self._aspect(path)
         if aspect is None:
             return max_w, max_h
@@ -543,15 +564,15 @@ class GuestScreen(QWidget):
         return aspect
 
     def _select(self, path: Path) -> None:
-        """Eine Miniatur antippen: dieses Bild steht gross in der Mitte."""
+        """Tap a thumbnail: that picture goes large in the middle."""
         self.selected = path
         self._render(self.view)
 
     def _link_for(self, path: Path | None) -> str | None:
         if path is None:
             return None
-        # Der Link entsteht erst nach dem Hochladen. Einmal je Sekunde nachsehen
-        # genuegt; die Datei jedes Mal zu lesen waere Arbeit ohne Nutzen.
+        # The link only exists once the upload is through. Looking once a
+        # second is enough; re-reading the file every time buys nothing.
         now = time.monotonic()
         if self.qr_for and self.qr_for[0] == path.name and now - self.links_checked < 1.0:
             return self.qr_for[1]
@@ -564,7 +585,7 @@ class GuestScreen(QWidget):
         self.qr_for = (path.name, link)
         self.qr.set_svg(qr_svg(link))
 
-    # -- Knoepfe unten --------------------------------------------------------------
+    # -- buttons at the bottom ------------------------------------------------------
     def _render_actions(self, view: dict[str, Any]) -> None:
         state = view["state"]
         shot, shots = view.get("shot", 0), view.get("shots", 0)
@@ -581,8 +602,8 @@ class GuestScreen(QWidget):
 
         row: list[tuple[QWidget, float, float]] = []
         if state == "idle" and self.camera_lost():
-            # Ohne Kamera wuerde ein Testbild fotografiert, gedruckt und
-            # hochgeladen. Lieber gar kein Start.
+            # Without a camera a dummy picture would be shot, printed and
+            # uploaded. Better to offer no start at all.
             pass
         elif state == "idle":
             layouts = self.session.available_layouts()
@@ -667,7 +688,7 @@ class GuestScreen(QWidget):
             return
         self.timebar.set_fraction((deadline - time.monotonic()) / total)
 
-    # -- Handlungen -----------------------------------------------------------------
+    # -- actions --------------------------------------------------------------------
     def _act(self, name: str, *args) -> dict[str, Any]:
         try:
             result = getattr(self.session, name)(*args)
@@ -687,7 +708,7 @@ class GuestScreen(QWidget):
         knowing whether the press registered at all.
         """
         if self._act("abort").get("scope") == "shot":
-            self._toast("Aufnahme abgebrochen – noch einmal auslösen, oder ✕ zum Beenden")
+            self._toast("Aufnahme abgebrochen. Noch einmal auslösen, oder ✕ zum Beenden")
 
     def _on_start(self) -> None:
         if self.state == "await":
@@ -756,7 +777,7 @@ class GuestScreen(QWidget):
         self.toast.raise_()
 
     def _view_picture(self, path: Path | None) -> None:
-        """Ein Bild aus der Galerie gross, mit QR-Code und Drucken - ohne den Ablauf."""
+        """One gallery picture full size, with QR code and printing, outside the sequence."""
         if path is None or not path.exists():
             return
         can, reason = self._print_state()
@@ -776,7 +797,7 @@ class GuestScreen(QWidget):
             self.on_settings()
 
     def refresh_after_settings(self) -> None:
-        """Zurueck aus den Einstellungen: alles neu lesen, was sich geaendert haben kann."""
+        """Back from the settings: re-read everything that may have changed."""
         self.settings = BoothSettings.from_config(self.backend.config)
         self.gallery_key = ()
         self.buttons_key = ()
@@ -790,7 +811,7 @@ class GuestScreen(QWidget):
     def _toast(self, text: str) -> None:
         self.toast.show_text(text)
 
-    # -- Zustand der Box ------------------------------------------------------------
+    # -- State of the booth ---------------------------------------------------------
     def _status_loop(self) -> None:
         """Printer, USB stick, temperature - own thread, every three seconds.
 

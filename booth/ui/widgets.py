@@ -26,7 +26,7 @@ log = logging.getLogger(__name__)
 
 @lru_cache(maxsize=32)
 def qr_svg(text: str) -> bytes | None:
-    """Ein QR-Code als SVG, oder nichts, wenn qrencode fehlt."""
+    """A QR code as SVG, or nothing when qrencode is missing."""
     if not text or not shutil.which("qrencode"):
         return None
     try:
@@ -38,9 +38,9 @@ def qr_svg(text: str) -> bytes | None:
     return done.stdout if done.returncode == 0 and done.stdout else None
 
 
-# -- Bilder --------------------------------------------------------------------
-#: Zuletzt benutzte Bilder in Anzeigegroesse, die aeltesten fliegen zuerst raus.
-#: Begrenzt nach Speicher, nicht nach Anzahl: ein Ergebnisbild in voller
+# -- Pictures ------------------------------------------------------------------
+#: The most recently used pictures at display size, oldest evicted first.
+#: Bounded by memory rather than by count, because the sizes differ wildly:
 #: A full-screen picture takes over 6 MB, a gallery thumbnail 0.1 MB. Eighty
 #: entries counted without regard to size came to several hundred MB on a Pi
 #: with 1 GB.
@@ -136,7 +136,7 @@ def _build_shadow(w: int, h: int, radius: float, blur: float, colour: QColor,
                                            radius=max(0, round(radius)),
                                            fill=round(255 * alpha))
     if blur > 0:
-        # Im Browser entspricht blur ungefaehr der doppelten Standardabweichung.
+        # In a browser, blur is roughly twice the standard deviation.
         mask = mask.filter(ImageFilter.GaussianBlur(blur / 2))
     rgba = Image.new("RGBA", mask.size, (colour.red(), colour.green(), colour.blue(), 0))
     rgba.putalpha(mask)
@@ -145,11 +145,11 @@ def _build_shadow(w: int, h: int, radius: float, blur: float, colour: QColor,
     return QPixmap.fromImage(image)
 
 
-# -- Knoepfe -------------------------------------------------------------------
+# -- buttons -------------------------------------------------------------------
 class Button(QAbstractButton):
-    """Ein gezeichneter Knopf: Form, Farben, Text oder Symbol.
+    """A drawn button: shape, colours, text or icon.
 
-    shape: "rect" (abgerundetes Rechteck), "pill" (ganz rund an den Enden) oder
+    shape: "rect" (rounded rectangle), "pill" (fully round at the ends) or
     "circle".
     """
 
@@ -191,7 +191,7 @@ class Button(QAbstractButton):
             self.update()
 
     def natural_size(self, pad_x: float, pad_y: float) -> QSize:
-        """Groesse aus Text und Innenabstand, wie ein Knopf im Browser."""
+        """Size from text plus padding, the way a browser sizes a button."""
         fm = QFontMetricsF(self.label_font)
         w = fm.horizontalAdvance(self.label)
         h = fm.height() * 1.05
@@ -292,9 +292,9 @@ def put_centered(widget: QWidget, cx: float, cy: float, w: float, h: float) -> N
     put(widget, cx - w / 2, cy - h / 2, w, h)
 
 
-# -- Bilder als Elemente -------------------------------------------------------
+# -- Pictures as widgets -------------------------------------------------------
 class Picture(QAbstractButton):
-    """Ein Bild mit abgerundeten Ecken, auf Wunsch antippbar und umrahmt."""
+    """A picture with rounded corners, optionally tappable and framed."""
 
     def __init__(self, parent: QWidget, *, radius: float = 7, cover: bool = True,
                  shadow_alpha: float = 0.14, frame_colour: QColor | None = None,
@@ -327,7 +327,7 @@ class Picture(QAbstractButton):
             self.update()
 
     def image_rect(self) -> QRectF:
-        """Wo das Bild tatsaechlich steht (bei cover=False kleiner als das Element)."""
+        """Where the picture actually sits (smaller than the widget when cover=False)."""
         m = self.pad + self.frame_w
         area = QRectF(self.rect()).adjusted(m, m, -m, -m)
         if self.cover or self.path is None:
@@ -370,7 +370,7 @@ class Picture(QAbstractButton):
         p.end()
 
 
-# -- Einblendungen -------------------------------------------------------------
+# -- overlays ------------------------------------------------------------------
 class CountdownText(QWidget):
     """The big digit over the live image. Does not intercept touches."""
 
@@ -570,6 +570,13 @@ class Banner(QWidget):
         self.title = title
         self.text = text
 
+    def set_text(self, title: str, text: str) -> None:
+        """Change what the notice says without building a second one."""
+        if (title, text) == (self.title, self.text):
+            return
+        self.title, self.text = title, text
+        self.update()
+
     def paintEvent(self, _event) -> None:  # noqa: N802
         p = QPainter(self)
         p.setRenderHint(QPainter.RenderHint.Antialiasing)
@@ -591,7 +598,7 @@ class Banner(QWidget):
 
 
 class Panel(QWidget):
-    """Ein weisser Kasten mit Rand, etwa fuer den QR-Code."""
+    """A white box with a border, for the QR code among other things."""
 
     def __init__(self, parent: QWidget, radius: float = 12) -> None:
         super().__init__(parent)
@@ -608,7 +615,7 @@ class Panel(QWidget):
 
 
 class SvgView(QWidget):
-    """Ein SVG, etwa der QR-Code, scharf in jeder Groesse."""
+    """An SVG, the QR code for instance, sharp at any size."""
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent)

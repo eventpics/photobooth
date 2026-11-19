@@ -80,6 +80,35 @@ class UsbTarget:
             return None
         return candidates[0] if candidates else None
 
+    def attached(self) -> bool:
+        """Is a USB partition physically plugged in, mounted or not?
+
+        Two different questions hide behind "is there a stick". Mounting is
+        done by a udev rule, and at power-on that rule fires late: measured on
+        the Pi, the interface was up after 49 seconds and the stick appeared
+        at 98. In between, a stick that was plugged in the whole time looked
+        missing, and the box said so in a banner across the screen. Somebody
+        unplugged it and plugged it in again, which "helped" - the system was
+        up by then and udev answered at once.
+
+        Read from sysfs, so it costs nothing and needs no privilege: a block
+        device that is a partition and sits on a USB bus.
+        """
+        try:
+            eintraege = list(Path("/sys/class/block").iterdir())
+        except OSError:
+            return False
+        for geraet in eintraege:
+            if not (geraet / "partition").exists():
+                continue
+            try:
+                pfad = str(geraet.resolve())
+            except OSError:
+                continue
+            if "/usb" in pfad:
+                return True
+        return False
+
     def poll_presence(self) -> None:
         """Notice a stick being plugged in or pulled out, and say so."""
         present = self.find_mount() is not None
@@ -92,6 +121,9 @@ class UsbTarget:
         mount = self.find_mount()
         info: dict[str, Any] = {
             "present": mount is not None,
+            # Hardware there but not usable yet: still being mounted, or the
+            # mount failed. Both deserve a different sentence than "missing".
+            "attached": mount is not None or self.attached(),
             "mount": str(mount) if mount else None,
             "adopted": bool(mount and (mount / MARKER).exists()),
             "last_error": self.last_error,

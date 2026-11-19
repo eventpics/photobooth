@@ -60,7 +60,7 @@ class Backend:
     #: Set while guests may operate the box - not while the settings are open.
     guests_allowed: threading.Event = field(default_factory=threading.Event)
 
-    # -- Handlungen, die jede Oberflaeche braucht ------------------------------
+    # -- The actions every front end needs -------------------------------------
     def set_idle_light(self, value: float) -> float:
         """The modelling light, which anyone at the box may change.
 
@@ -102,7 +102,7 @@ class Backend:
                 extra=list(cfg.get("extra_options", [])))
         except Exception as exc:  # noqa: BLE001 - a printer problem must not stop the box
             log.exception("Printing %s failed", path.name)
-            self.events.add(f"Druck fehlgeschlagen: {path.name} – {exc}", "error")
+            self.events.add(f"Druck fehlgeschlagen: {path.name}: {exc}", "error")
             return {"ok": False, "error": str(exc) or "Druck fehlgeschlagen"}
         self.events.add(f"Gedruckt: {path.name}", "good")
         return {"ok": True, **(result or {})}
@@ -114,13 +114,13 @@ class Backend:
         except Exception:  # noqa: BLE001 - no link is a perfectly normal state
             return None
 
-    # -- Einstellbereich ------------------------------------------------------------
+    # -- settings area --------------------------------------------------------------
     # Everything here can take seconds and waits on camera frames. The native
     # interface therefore never calls it from its own thread: the camera
     # events run there too, and the call would be waiting on itself.
 
     def set_light_preset(self, preset: str) -> None:
-        """Einstell- oder Aufnahmelicht zum Ausrichten, ohne etwas zu speichern."""
+        """Modelling or capture light for aiming, without storing anything."""
         key = "light_capture_duty" if preset == "capture" else "light_idle_duty"
         duty = float(self.config.section("gpio").get(key, 0.2))
         self.session._set_light(max(0.0, min(1.0, duty)))
@@ -244,7 +244,7 @@ class Backend:
                             ("focus", "Fokus")):
             step = result.get(name) or {}
             if step.get("error"):
-                self.events.add(f"Einmessen: {label} fehlgeschlagen – {step['error']}", "error")
+                self.events.add(f"Einmessen: {label} fehlgeschlagen: {step['error']}", "error")
             elif step.get("settled") is False:
                 self.events.add(f"Einmessen: {label} kam nicht zur Ruhe, alter Wert bleibt",
                                 "warn")
@@ -359,7 +359,7 @@ class Backend:
         return {"ok": True}
 
     def eventpics_events(self) -> dict[str, Any]:
-        """Events und Alben des Kontos, zum Auswaehlen statt Abtippen."""
+        """The account's events and albums, to pick from instead of typing out."""
         from booth.eventpics import EventPicsError  # noqa: PLC0415
 
         try:
@@ -392,7 +392,7 @@ class Backend:
 
     def compose_preview(self, layout_id: str, background: str, title: str, subtitle: str,
                         font: str, colour: str, size_mm: float) -> Path | None:
-        """Ein Blatt mit den eingebauten Beispielbildern, so wie es gedruckt wuerde."""
+        """One sheet with the built-in sample pictures, exactly as it would print."""
         from booth.layouts import build_layouts, compose  # noqa: PLC0415
         from booth.overlays import build_background  # noqa: PLC0415
         from booth.samples import sample_paths  # noqa: PLC0415

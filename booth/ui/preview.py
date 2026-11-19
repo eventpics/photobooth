@@ -58,7 +58,7 @@ def create_preview(parent: QWidget, camera) -> QWidget:
 
 
 class MockPreview(QWidget):
-    """Zeigt die Bilder der Mock-Kamera, etwa 15 je Sekunde."""
+    """Shows the frames of the mock camera, about 15 a second."""
 
     def __init__(self, parent: QWidget, camera) -> None:
         super().__init__(parent)

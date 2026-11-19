@@ -1,0 +1,35 @@
+[Unit]
+Description=EventPics Photobooth boot splash
+Documentation=file://@DIR@/autostart/boot-splash.py
+# As early as systemd will allow. The root filesystem is already there - it
+# has to be, systemd was started from it - so nothing else is needed. Without
+# DefaultDependencies the unit does not wait for basic.target, which is seven
+# seconds into userspace on a Pi 4 and far too late for a start screen.
+DefaultDependencies=no
+After=local-fs-pre.target
+# Shut down like any other unit, which DefaultDependencies=no would otherwise
+# have taken away.
+Conflicts=shutdown.target
+Before=shutdown.target photobooth.service
+
+[Service]
+Type=simple
+# The first frame with dd, in milliseconds. Starting Python here instead cost
+# ten to sixteen seconds on a booting Pi, all of it interpreter startup
+# against a saturated SD card, and the screen stayed black for most of the
+# boot it was meant to cover.
+ExecStartPre=-/bin/sh @DIR@/autostart/boot-splash.sh boot
+# Then the same picture again, this time with the bar moving.
+ExecStart=/usr/bin/python3 @DIR@/autostart/boot-splash.py
+SyslogIdentifier=photobooth-splash
+# photobooth.service stops this one before it starts cage. Nothing clears the
+# framebuffer in between, so the last frame stays on the screen until cage
+# paints over it.
+TimeoutStopSec=3
+# A start screen that cannot be drawn is no reason to hold up the boot.
+Restart=no
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=sysinit.target

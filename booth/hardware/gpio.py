@@ -111,7 +111,7 @@ class HardwarePwm:
     def _write(self, name: str, value: Any) -> None:
         (self.path / name).write_text(str(int(value)))
 
-    # -- dieselben Namen wie bei gpiozero --------------------------------------
+    # -- the same names gpiozero uses ------------------------------------------
     @property
     def value(self) -> float:
         return self._value

@@ -36,11 +36,17 @@ Environment=PYTHONUNBUFFERED=1
 # hide-cursor.py.
 Environment=XCURSOR_PATH=/home/@USER@/.config/photobooth/cursor
 Environment=XCURSOR_THEME=default
+# The boot splash has been drawing into the framebuffer since the first
+# second of userspace. It goes now, before cage takes the screen. Nothing
+# clears the framebuffer in between, so its last frame stays up until cage
+# paints over it, and the join is invisible.
+ExecStartPre=+-/bin/systemctl stop photobooth-splash.service
+# The minus means "a failure here is no reason to give up", the plus means
+# "as root".
+ExecStartPre=-/usr/bin/python3 @DIR@/autostart/hide-cursor.py /home/@USER@/.config/photobooth/cursor
 # cage is assigned tty1 but does not switch to it itself. If the active
 # console is elsewhere - on tty7 after a disabled display manager, say - cage
-# holds the screen but is not allowed to use it. The minus means "a failure
-# here is no reason to give up", the plus means "as root".
-ExecStartPre=-/usr/bin/python3 @DIR@/autostart/hide-cursor.py /home/@USER@/.config/photobooth/cursor
+# holds the screen but is not allowed to use it.
 ExecStartPre=+-/usr/bin/chvt 1
 # The app runs inside cage's login session, not in the service itself. So when
 # systemd stops the service it only reaches cage - a hung app would be left

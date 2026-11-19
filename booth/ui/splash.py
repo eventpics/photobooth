@@ -29,7 +29,7 @@ PAPER = QColor("#FFFFFF")
 MARK = QColor("#000000")
 MARK_DIM = QColor("#6B6B6B")
 
-#: Kantenlaenge des Symbols auf der Buehne.
+#: Edge length of the mark on the stage.
 ICON_PX = 190
 
 
@@ -108,8 +108,8 @@ class SplashScreen(QWidget):
         p.fillRect(self.rect(), PAPER)
 
         mitte_x = theme.STAGE_W / 2
-        # The group sits a little above centre: on a screen at head height
-        # Kopfhoehe wirkt genau mittig zu tief.
+        # The group sits a little above centre: on a screen at head height,
+        # dead centre looks too low.
         oben = theme.STAGE_H * 0.33
 
         if not self.icon.isNull():

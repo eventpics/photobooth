@@ -52,7 +52,7 @@ class BoothSettings:
     caption_font: str = "serif"
     caption_colour: str = ""
     caption_size_mm: float = 4.5
-    #: Drucken direkt aus der Gaesteansicht.
+    #: Printing straight from the guest screen.
     printing_enabled: bool = True
     #: Gallery of the last pictures on the start screen. Off, because it shows
     #: everyone at the screen the pictures of everyone before them and allows
@@ -363,7 +363,7 @@ class BoothSession:
         self._note("Aufnahme abgebrochen, die Serie läuft weiter", "warn")
 
     def _abgebrochen(self, nachzuegler: Path | None = None) -> None:
-        """Nach einem Abbruch aufraeumen. Laeuft im Sitzungsfaden."""
+        """Clean up after a cancel. Runs on the session thread."""
         if not self._abort.is_set():
             return          # an ordinary cancel(), which cleaned up already
         self._abort.clear()
@@ -686,7 +686,7 @@ class BoothSession:
                     with self._lock:
                         self.countdown = number
                     ziel = shutter_at - (number - 1)
-                    # Das Aufnahmelicht geht erst kurz vor dem Ausloesen an.
+                    # The capture light only comes on shortly before the shutter.
                     # If that moment falls inside this second, the wait is
                     # split here: up to the light, then up to the next digit.
                     if not licht_an and licht_an_um <= ziel:

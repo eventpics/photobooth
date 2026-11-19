@@ -441,7 +441,7 @@ class PiCamera(CameraBase):
 
     @staticmethod
     def _write_jpeg(pixels, path: Path, quality: int) -> None:
-        """JPEG schreiben, erst unter anderem Namen - ein halbes Bild darf nie liegen bleiben."""
+        """Write the JPEG under another name first: half a picture must never be left behind."""
         try:
             import simplejpeg  # noqa: PLC0415 - kommt mit picamera2
             data = simplejpeg.encode_jpeg(pixels, quality=quality, colorspace="RGB")

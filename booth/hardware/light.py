@@ -76,13 +76,13 @@ class LightBase:
             self.since = time.time()
 
     def start(self) -> None:
-        """Verbindung aufbauen, falls die Lichtart eine braucht."""
+        """Open the connection, if this kind of light needs one."""
 
     def set(self, duty: float) -> None:
         self.value = max(0.0, min(1.0, float(duty)))
 
     def stop(self) -> None:
-        """Licht aus und Verbindung schliessen."""
+        """Light off and connection closed."""
 
 
 class PwmLight(LightBase):
@@ -103,7 +103,7 @@ class PwmLight(LightBase):
         super().set(duty)
         try:
             self.gpio.set_light(self.value)
-        except Exception:  # noqa: BLE001 - ohne Licht laeuft die Box weiter
+        except Exception:  # noqa: BLE001 - the booth carries on without light
             log.debug("set_light failed", exc_info=True)
 
     def stop(self) -> None:
@@ -151,7 +151,7 @@ class DmxLight(LightBase):
 
     kind = "dmx"
 
-    #: Pakete je Sekunde. Die Norm erlaubt bis 44; mehr bringt nichts.
+    #: Packets per second. The standard allows up to 44; more gains nothing.
     RATE = 30
     SLOTS = 512
 
@@ -201,7 +201,7 @@ class DmxLight(LightBase):
                 self._serial.break_condition = False
                 time.sleep(0.00002)                # MAB, Norm: ab 8 us
                 self._serial.write(bytes(self._frame))
-            except Exception:  # noqa: BLE001 - ein abgezogenes Kabel darf nichts umwerfen
+            except Exception:  # noqa: BLE001 - an unplugged cable must not bring anything down
                 log.debug("DMX frame failed", exc_info=True)
                 self._stop.wait(1.0)
                 continue
@@ -304,7 +304,7 @@ class GodoxLight(LightBase):
         #: is believed.
         self._antwortet = False
 
-    # -- Start und Ende --------------------------------------------------------
+    # -- Start and end ---------------------------------------------------------
     def start(self) -> None:
         if not self.address:
             raise ValueError("keine Bluetooth-Adresse eingetragen (light.address)")
@@ -373,7 +373,7 @@ class GodoxLight(LightBase):
         if self._thread is not None:
             self._thread.join(timeout=5.0)
 
-    # -- der Faden -------------------------------------------------------------
+    # -- the thread ------------------------------------------------------------
     def _faden(self) -> None:
         import asyncio  # noqa: PLC0415
 
@@ -383,7 +383,7 @@ class GodoxLight(LightBase):
         self._stop = asyncio.Event()
         try:
             self._loop.run_until_complete(self._arbeiten())
-        except Exception:  # noqa: BLE001 - ohne Licht laeuft die Box weiter
+        except Exception:  # noqa: BLE001 - the booth carries on without light
             log.exception("Godox thread died")
         finally:
             self._loop.close()
@@ -503,11 +503,11 @@ class GodoxLight(LightBase):
                             verpasst = 0
                             self._verbindung(True)
                     await leuchte.set_params(brightness=0)
-            except Exception as fehler:  # noqa: BLE001 - abgeschaltete Leuchte ist normal
+            except Exception as fehler:  # noqa: BLE001 - a lamp switched off is normal
                 self._verbindung(False)
                 self.note = f"Godox-Leuchte nicht erreichbar: {fehler}"
                 log.warning("Godox light unreachable (%s), retrying", fehler)
-                self._ready.set()         # den Start nicht laenger aufhalten
+                self._ready.set()         # do not hold up the start any longer
                 try:
                     await asyncio.wait_for(self._stop.wait(), timeout=self.RETRY_S)
                 except asyncio.TimeoutError:
@@ -518,7 +518,7 @@ class GodoxLight(LightBase):
 
 
 def create_light(config, gpio=None) -> LightBase:
-    """Die Lichtart aus der Konfiguration aufbauen."""
+    """Build the kind of light named in the configuration."""
     cfg = config.section("light")
     kind = str(cfg.get("kind", "pwm") or "pwm").strip().lower()
     if kind not in KINDS:
@@ -534,7 +534,7 @@ def create_light(config, gpio=None) -> LightBase:
         light = PwmLight(config, gpio)
     try:
         light.start()
-    except Exception as fehler:  # noqa: BLE001 - lieber ohne Licht als gar nicht
+    except Exception as fehler:  # noqa: BLE001 - better without light than not at all
         log.warning("Light %s did not start (%s)", kind, fehler)
         light.note = light.note or f"Licht {kind} liess sich nicht starten: {fehler}"
         light.dimmable = False

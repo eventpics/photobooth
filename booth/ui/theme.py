@@ -37,7 +37,7 @@ STAGE_W, STAGE_H = 1920, 1080
 #: divided by width in millimetres, times the millimetres wanted.
 SAFE_MARGIN_PX = 28
 
-# -- Palette -------------------------------------------------------------------------
+# -- palette -------------------------------------------------------------------------
 #
 # Eight colours are chosen, everything else is computed from them. That is the
 # whole point: a palette with twenty knobs produces an unreadable screen on the
@@ -220,7 +220,7 @@ def with_alpha(colour: QColor, alpha: float) -> QColor:
     return c
 
 
-# -- Symbole -----------------------------------------------------------------
+# -- icons -------------------------------------------------------------------
 # The same strokes as on the web interface. "currentColor" is swapped for the
 # button's own colour when the icon is painted.
 ICON_CHECK = ('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" '

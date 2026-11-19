@@ -139,7 +139,7 @@ class EventPicsTarget:
         self.events = events
         self.timeout = timeout
 
-    # -- Einstellungen -----------------------------------------------------
+    # -- settings ----------------------------------------------------------
     @property
     def cfg(self) -> dict[str, Any]:
         return self.config.section("eventpics")
@@ -172,9 +172,9 @@ class EventPicsTarget:
             "event_title": str(self.cfg.get("event_title", "")),
         }
 
-    # -- Einrichten ohne Tastatur -----------------------------------------
+    # -- setup without a keyboard -----------------------------------------
     def uebernehmen(self, gefunden: dict[str, str]) -> list[str]:
-        """Den gefundenen Schlüssel in die Konfiguration schreiben."""
+        """Write the key that was found into the configuration."""
         geaendert = []
         for schluessel in ("api_key",):
             wert = gefunden.get(schluessel)
@@ -283,7 +283,7 @@ class EventPicsTarget:
             raise EventPicsError("Zeitüberschreitung") from exc
 
     def events_and_albums(self) -> dict[str, Any]:
-        """Events und Alben des Kontos - für die Auswahl im Einstellbereich."""
+        """The account's events and albums, for the picker in the settings."""
         if not self.api_key:
             raise EventPicsError("Kein API-Schlüssel eingetragen")
         status, körper = self._anfrage(
@@ -294,8 +294,8 @@ class EventPicsTarget:
         except ValueError as exc:
             raise EventPicsError("Unerwartete Antwort beim Laden der Events") from exc
 
-    # -- Direktlinks je Bild ----------------------------------------------
-    #: Datei neben den Aufnahmen, die Dateiname -> Medien-ID festhaelt.
+    # -- One direct link per picture --------------------------------------
+    #: A file beside the captures holding file name -> media id.
     LINK_DATEI = "eventpics-links.json"
 
     def _links_pfad(self) -> Path:

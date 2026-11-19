@@ -157,7 +157,7 @@ def field(title: str, help_text: str, control: QWidget) -> QWidget:
     return wrap
 
 
-# -- Zahl -------------------------------------------------------------------------------
+# -- number -----------------------------------------------------------------------------
 class NumberControl(QWidget):
     changed = Signal(float)
 
@@ -224,9 +224,9 @@ class NumberControl(QWidget):
             self.changed.emit(float(new))
 
 
-# -- Schalter ---------------------------------------------------------------------------
+# -- switches ---------------------------------------------------------------------------
 class Toggle(QAbstractButton):
-    """Kaestchen mit Text daneben; die ganze Zeile ist antippbar."""
+    """A box with text beside it; the whole row is tappable."""
 
     def __init__(self, title: str, help_text: str, checked: bool) -> None:
         super().__init__()
@@ -284,7 +284,7 @@ class Toggle(QAbstractButton):
         p.end()
 
 
-# -- Regler -----------------------------------------------------------------------------
+# -- sliders ----------------------------------------------------------------------------
 class SliderControl(QWidget):
     """Ein Regler mit Wert daneben. Belichtungszeit auf Wunsch logarithmisch."""
 
@@ -382,7 +382,7 @@ class SliderControl(QWidget):
         p.end()
 
 
-# -- Text -------------------------------------------------------------------------------
+# -- text -------------------------------------------------------------------------------
 class TextControl(QPushButton):
     changed = Signal(str)
 
@@ -425,9 +425,9 @@ class TextControl(QPushButton):
             self.changed.emit(text)
 
 
-# -- Auswahl ----------------------------------------------------------------------------
+# -- choosing ---------------------------------------------------------------------------
 class ChoiceControl(QPushButton):
-    """Zeigt die Wahl; ein Tipp oeffnet eine grosse Liste."""
+    """Shows the choice; a tap opens a large list."""
 
     changed = Signal(str)
 
@@ -450,7 +450,7 @@ class ChoiceControl(QPushButton):
 
     def _show(self) -> None:
         names = dict(self.options)
-        self.setText(amp(names.get(self.current) or "— bitte wählen —") + "   ▾")
+        self.setText(amp(names.get(self.current) or "bitte wählen") + "   ▾")
 
     def _chosen(self, value: str) -> None:
         if value != self.current:
@@ -588,9 +588,9 @@ class ConfirmOverlay(QWidget):
         p.end()
 
 
-# -- Kacheln ----------------------------------------------------------------------------
+# -- tiles ------------------------------------------------------------------------------
 class LayoutTile(QAbstractButton):
-    """Die Aufteilung als Skizze in echten Proportionen des Blattes."""
+    """The layout as a sketch, in the sheet's true proportions."""
 
     def __init__(self, layout: dict[str, Any]) -> None:
         super().__init__()
@@ -877,8 +877,8 @@ class MenuRow(QAbstractButton):
         p.drawText(QRectF(rect.left(), rect.top() + 48, rect.width() - 40, 22),
                    Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignLeft, self.note)
 
-        # Chevron: der einzige Hinweis darauf, dass sich dahinter eine Seite
-        # oeffnet. Von Hand gezeichnet, damit er zur Schriftfarbe passt.
+        # Chevron: the only hint that a page opens behind this row. Drawn by
+        # hand so that it matches the text colour.
         x, y = rect.right() - 20, rect.center().y()
         p.setPen(QPen(FAINT, 2.4, Qt.PenStyle.SolidLine,
                       Qt.PenCapStyle.RoundCap, Qt.PenJoinStyle.RoundJoin))
@@ -914,8 +914,8 @@ class SchemeTile(QAbstractButton):
         p.setPen(QPen(ACCENT if self.selected else LINE, 2 if self.selected else 1))
         p.setBrush(QColor(self.colours["background"]))
         p.drawRoundedRect(rect, 10, 10)
-        # Drei Tupfer: Karte, Hauptknopf, Bestaetigen - daran erkennt man ein
-        # Schema schneller als an seinem Namen.
+        # Three dabs: surface, primary button, confirm. A scheme is recognised
+        # by those faster than by its name.
         x = rect.left() + 14
         for role in ("surface", "primary", "confirm"):
             p.setPen(QPen(QColor(self.colours["text"]), 1))

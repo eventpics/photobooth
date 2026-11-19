@@ -47,7 +47,7 @@ class MainWindow(QWidget):
         self.health.timeout.connect(self._check_health)
         self.health.start(5000)
 
-    # -- Selbstheilung ---------------------------------------------------------------
+    # -- self healing ----------------------------------------------------------------
     def _state_changed(self, state: str, previous: str | None) -> None:
         if state == "failed":
             self.failures_in_row += 1
@@ -78,7 +78,7 @@ class MainWindow(QWidget):
         self.backend.events.add(f"Neustart der Fotobox: {reason}", "error")
         QApplication.exit(RESTART_CODE)
 
-    # -- Wechsel ---------------------------------------------------------------------
+    # -- switching -------------------------------------------------------------------
     def open_pin(self) -> None:
         # Only from the idle start screen: nobody has any business in the
         # settings halfway through a shot.
@@ -123,7 +123,7 @@ class MainWindow(QWidget):
         self.backend.guests_allowed.set()
         self.guest.refresh_after_settings()
 
-    # -- Fenster ---------------------------------------------------------------------
+    # -- windows ---------------------------------------------------------------------
     def resizeEvent(self, _event) -> None:  # noqa: N802
         # Qt does the scaling (QT_SCALE_FACTOR); all that is left here is
         # centring, in case the screen has a different aspect ratio.

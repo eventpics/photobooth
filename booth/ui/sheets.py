@@ -21,7 +21,7 @@ SHADOW = QColor(60, 50, 35)
 
 
 class Overlay(QWidget):
-    """Die abgedunkelte Flaeche. Ein Tipp auf sie (nicht auf den Inhalt) schliesst."""
+    """The dimmed area. A tap on it, but not on the content, closes."""
 
     closed = Signal()
 
@@ -79,7 +79,7 @@ class Card(QWidget):
         p.end()
 
 
-# -- Zustand ---------------------------------------------------------------------------
+# -- state -----------------------------------------------------------------------------
 LEVEL_COLOUR = {"ok": theme.OK, "warn": theme.WARN, "bad": theme.ERR, "": theme.FAINT}
 #: The lettering of the value. Amber means "missing" and should catch the eye
 #: without alarming - red is kept for what actually stops the box.
@@ -94,7 +94,7 @@ def level(value: float | None, warn: float, bad: float) -> str:
 
 def uptime_text(seconds: float | None) -> str:
     if seconds is None:
-        return "–"
+        return "-"
     h = int(seconds // 3600)
     m = round((seconds % 3600) / 60)
     return f"{h} h {m} min" if h > 0 else f"{m} min"
@@ -111,7 +111,7 @@ def clock_text(system: dict[str, Any]) -> str:
         return ""
     if not top:
         return f"Takt {mhz} MHz"
-    return f"Takt {mhz} von {top} MHz" + (" — gedrosselt" if mhz < top * 0.9 else "")
+    return f"Takt {mhz} von {top} MHz" + (", gedrosselt" if mhz < top * 0.9 else "")
 
 
 def seit_text(stempel: Any) -> str:
@@ -130,7 +130,7 @@ def seit_text(stempel: Any) -> str:
 
 
 def status_rows(status: dict[str, Any]) -> dict[str, Any]:
-    """Alle Werte des Zustandsfensters, fertig zum Zeichnen."""
+    """Every value of the status sheet, ready to be drawn."""
     system = status.get("system") or {}
     usb = status.get("usb") or {}
     cards = []
@@ -144,12 +144,22 @@ def status_rows(status: dict[str, Any]) -> dict[str, Any]:
         cards.append(("Kamera", "ok" if ok else "bad", "bereit" if ok else "fehlt",
                       "Livebild läuft" if ok else "kein Bild"))
     present, pending = bool(usb.get("present")), usb.get("pending") or 0
-    # Red, not amber: with no stick the box takes no pictures at all. That is
-    # what separates it from printer, lamp and network, which are merely absent.
-    cards.append(("USB-Stick", "bad" if not present else "warn" if pending else "ok",
-                  "fehlt" if not present else f"{pending} warten" if pending else "bereit",
-                  f"{usb.get('free_gb')} GB frei" if present and usb.get("free_gb") is not None
-                  else "nicht angesteckt"))
+    angesteckt = bool(usb.get("attached"))
+    # Three states, not two. Red, not amber, when nothing is there: with no
+    # stick the box takes no pictures at all, which is what separates it from
+    # printer, lamp and network. But a stick that is plugged in and not yet
+    # mounted is a fourth of a minute of patience, not a fault - at power-on
+    # the udev rule needs its time, and saying "missing" there is a lie.
+    if present:
+        stufe = "warn" if pending else "ok"
+        wert = f"{pending} warten" if pending else "bereit"
+        klein = (f"{usb.get('free_gb')} GB frei" if usb.get("free_gb") is not None
+                 else "eingebunden")
+    elif angesteckt:
+        stufe, wert, klein = "warn", "wird eingebunden", "steckt, noch nicht bereit"
+    else:
+        stufe, wert, klein = "bad", "fehlt", "nicht angesteckt"
+    cards.append(("USB-Stick", stufe, wert, klein))
     # The printer. CUPS keeps a queue forever, so "configured" says nothing
     # about whether a device is on the end of the cable. Both are shown apart.
     drucker = status.get("printer") or {}
@@ -205,15 +215,15 @@ def status_rows(status: dict[str, Any]) -> dict[str, Any]:
     rings = []
     t = system.get("temperature_c")
     rings.append(("Temperatur", None if t is None else (t - 30) / 55,
-                  "–" if t is None else f"{round(t)}°", level(t, 70, 80), "Warnung ab 70 °C"))
+                  "-" if t is None else f"{round(t)}°", level(t, 70, 80), "Warnung ab 70 °C"))
     ram = system.get("memory_used_percent")
     rings.append(("Arbeitsspeicher", None if ram is None else ram / 100,
-                  "–" if ram is None else f"{round(ram)}%", level(ram, 80, 90),
+                  "-" if ram is None else f"{round(ram)}%", level(ram, 80, 90),
                   f"{system.get('memory_used_mb')} von {system.get('memory_total_mb')} MB"
                   if system.get("memory_used_mb") is not None else ""))
     cpu = system.get("cpu_percent")
     rings.append(("Prozessor", None if cpu is None else cpu / 100,
-                  "–" if cpu is None else f"{round(cpu)}%", level(cpu, 85, 96), clock_text(system)))
+                  "-" if cpu is None else f"{round(cpu)}%", level(cpu, 85, 96), clock_text(system)))
 
     def used(free, total):
         # The bar shows the USED share: full means "getting tight", the same
@@ -222,7 +232,7 @@ def status_rows(status: dict[str, Any]) -> dict[str, Any]:
 
     bars = []
     free, total = system.get("disk_free_gb"), system.get("disk_total_gb")
-    bars.append(("Speicherkarte", used(free, total), "–" if free is None else f"{free} GB frei",
+    bars.append(("Speicherkarte", used(free, total), "-" if free is None else f"{free} GB frei",
                  "" if free is None else "bad" if free < 0.5 else "warn" if free < 2 else "ok"))
     bars.append(("USB-Stick", used(usb.get("free_gb"), usb.get("total_gb")),
                  (f"{usb.get('free_gb')} von {usb.get('total_gb')} GB frei"
@@ -257,7 +267,7 @@ def overall_style(level: str) -> tuple[QColor, QColor]:
 
 
 class StatusCard(Card):
-    """Zustand als Ringe und Balken: in einer Sekunde sehen, ob etwas klemmt."""
+    """State as rings and bars: one second to see whether anything is stuck."""
 
     W = 660
     PAD_X, PAD_Y = 18, 16
@@ -297,7 +307,7 @@ class StatusCard(Card):
         x0, inner = self.PAD_X, self.W - 2 * self.PAD_X
         y = self.PAD_Y
 
-        # Kopf: Titel und Gesamturteil
+        # Head: title and overall verdict
         p.setPen(theme.BONE)
         p.setFont(theme.font(19, weight=QFont.Weight.DemiBold))
         p.drawText(QRectF(x0, y, 300, 34), Qt.AlignmentFlag.AlignVCenter, "Zustand")
@@ -416,9 +426,9 @@ class StatusCard(Card):
         return fm.elidedText(text, Qt.TextElideMode.ElideRight, width)
 
 
-# -- Einstelllicht ---------------------------------------------------------------------
+# -- modelling light -------------------------------------------------------------------
 class Slider(QWidget):
-    """Ein Schieberegler, der mit dem Finger gut zu treffen ist."""
+    """A slider a finger can actually hit."""
 
     moved = Signal(int)
 
@@ -473,14 +483,14 @@ class Slider(QWidget):
 
 
 class LightCard(Card):
-    """Das Einstelllicht zum Anfassen.
+    """The modelling light, under the guests' fingers.
 
-    Nur die Helligkeit. Die Lichtfarbe stand hier auch einmal und ist wieder
-    gegangen: Dieses Fenster ist fuer Gaeste erreichbar, und die Helligkeit
-    des Einstelllichts hat keinen Einfluss auf das Foto. Die Farbe hat einen -
-    der Weissabgleich ist darauf eingemessen. Wer im Vorbeigehen daran dreht,
-    faerbt jedes Bild des Abends ein, ohne dass es jemand merkt. Sie sitzt
-    deshalb in den Einstellungen, hinter der PIN.
+    Brightness only. Colour temperature stood here once and went away again:
+    this sheet is reachable by guests, and the brightness of the modelling
+    light has no effect on the picture. The colour does, because the white
+    balance is calibrated against it. Anyone turning it in passing would tint
+    every picture of the evening without a soul noticing. It therefore sits in
+    the settings, behind the PIN.
     """
 
     W = 420
@@ -520,9 +530,9 @@ class LightCard(Card):
         self.on_change(value)
 
 
-# -- Bild gross -----------------------------------------------------------------------
+# -- picture full size ----------------------------------------------------------------
 class PictureCard(Card):
-    """Ein Bild aus der Galerie gross, mit QR-Code und Drucken."""
+    """One gallery picture full size, with QR code and printing."""
 
     MAX_W, MAX_H = 1200, 780
 

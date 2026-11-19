@@ -1,0 +1,25 @@
+[Unit]
+Description=EventPics Photobooth shutdown screen
+Documentation=file://@DIR@/autostart/boot-splash.py
+# Ordered BEFORE the booth on the way up, which is what puts it AFTER the
+# booth on the way down: systemd stops units in the reverse of their start
+# order. By the time ExecStop runs, cage has let go of the screen and the
+# framebuffer is ours to write to again.
+Before=photobooth.service
+After=local-fs.target
+
+[Service]
+# Nothing to do while the booth runs. The whole unit exists for its ExecStop.
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/true
+ExecStop=-/bin/sh @DIR@/autostart/boot-splash.sh shutdown
+SyslogIdentifier=photobooth-shutdown
+# It draws one frame and returns. If it ever does not, the shutdown it is
+# announcing must not wait for it.
+TimeoutStopSec=8
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

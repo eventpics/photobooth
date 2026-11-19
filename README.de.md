@@ -8,7 +8,7 @@ Einstellungen liegen hinter einer PIN.
 
 Die Oberfläche ist ein eigenes Programm (Qt), kein Browser und kein Webserver.
 Das Livebild geht direkt von der Kamera auf die Grafikkarte. Bedienen lässt sich
-die Box nur an ihrem eigenen Bildschirm – niemand im Netz kann auslösen, löschen
+die Box nur an ihrem eigenen Bildschirm. Niemand im Netz kann auslösen, löschen
 oder drucken. Gebaut ist die Oberfläche für 1920 × 1200 und wird auf jedem
 Bildschirm als Ganzes skaliert.
 
@@ -81,7 +81,7 @@ beantwortest du die Frage, die sich sonst erst am Eventabend stellt: Wird die
 Box im geschlossenen Gehäuse zu heiß?
 
 Der Takt beim Prozessor steht immer zusammen mit dem Höchstwert da. Liegt er
-weit darunter, drosselt sich der Pi – wegen Hitze oder **Unterspannung**. Das ist
+weit darunter, drosselt sich der Pi, wegen Hitze oder **Unterspannung**. Das ist
 die mit Abstand häufigste Ursache dafür, dass sich ein Raspberry Pi ohne
 erkennbaren Grund seltsam verhält: meist ein zu schwaches Netzteil, ein
 schlechtes USB-C-Kabel oder ein Bildschirm, der über sein Touch-Kabel Strom aus
@@ -92,10 +92,79 @@ Der Pi drosselt ab etwa 80 °C. Bis 70 °C ist alles unauffällig.
 ### Wächter
 
 Stürzt die App ab, startet systemd sie drei Sekunden später neu. Für den
-schwierigeren Fall – sie läuft noch, tut aber nichts mehr, etwa weil die Kamera
-nicht antwortet – schreibt sie alle fünf Sekunden aus dem Takt ihrer Oberfläche
+schwierigeren Fall (sie läuft noch, tut aber nichts mehr, etwa weil die Kamera
+nicht antwortet) schreibt sie alle fünf Sekunden aus dem Takt ihrer Oberfläche
 einen Zeitstempel nach `/dev/shm/photobooth-alive`. Ist er älter als eine
 Minute, startet `photobooth-watchdog.service` sie neu.
+
+### Start- und Abschaltbildschirm
+
+Vom Einschalten bis zur fertigen Oberfläche vergehen auf einem Pi 4 rund
+dreißig Sekunden, und die Konsole ist absichtlich stumm (`quiet`,
+`logo.nologo`). Ohne Zutun bleibt der Schirm die ganze Zeit schwarz, was von
+außen aussieht wie eine Box, die gar nicht erst anläuft.
+
+`photobooth-splash.service` zeichnet deshalb schon in der ersten Sekunde der
+Benutzerebene direkt in den Framebuffer: weiß, schwarzes Zeichen, „EventPics
+Fotobox wird gestartet", darunter ein laufender Balken. Beim Herunterfahren
+übernimmt `photobooth-shutdown.service` denselben Bildschirm mit dem Satz
+**„Gleich kannst du den Strom trennen"**. Die Box hat keinen sauberen
+Ausschalter, und zu frühes Stromtrennen ist genau das, was ein Dateisystem
+beschädigt.
+
+Das Bild wird nicht beim Start gerechnet, sondern vorher. Die erste Fassung
+baute es mit Pillow, und auf der Box stand es nach zwanzig Sekunden eines
+dreiundzwanzig Sekunden langen Starts: vierzehn davon gingen allein für das
+Laden von numpy und Pillow drauf, während udev und das Journal dieselbe
+SD-Karte sättigten. Jetzt legt `boot-splash.py --render` fertige
+Framebuffer-Abzüge unter `/var/cache/photobooth` ab, und `boot-splash.sh`
+schiebt sie mit `dd` auf den Schirm, ohne Python. Beide Farbtiefen werden
+vorgerechnet, weil der Framebuffer früh im Start mit 32 Bit meldet und kurz
+darauf mit 16.
+
+### Auf die Box übertragen
+
+Mit `tools/deploy.sh`, nie mit einem von Hand getippten `rsync`. Auf der Box
+liegen Dateien, die es nirgends sonst gibt und die alle in `.gitignore`
+stehen: die Mesh-Schlüssel der Leuchte, die Konfiguration mit PIN und
+API-Schlüssel, die Journaldatenbank, die Aufnahmen. Ein schlichtes
+`rsync --delete` löscht sie wortlos. Genau das ist einmal passiert, und die
+Leuchte musste danach neu eingerichtet werden.
+
+Das Skript trägt die Ausschlussliste fest eingebaut, vergleicht vor und nach
+der Übertragung, ob die unersetzlichen Dateien noch da sind, rechnet die
+Startbilder vor und startet erst dann neu. `tools/deploy.sh --dry-run` zeigt
+vorher, was passieren würde.
+
+### WLAN
+
+Die Box verbindet sich vom eigenen Bildschirm aus: **Einstellungen, dann WLAN**,
+Netz antippen, Schlüssel auf der Bildschirmtastatur eingeben. Kein Kabel, keine
+Tastatur, kein SSH. Das zählt am Veranstaltungsort, wo nie das Netz von zu
+Hause steht.
+
+Dafür braucht es keine Sonderrechte, und das sieht man ihr nicht an. Die Box
+läuft über cage in einer echten lokalen Anmeldesitzung auf seat0, genau das
+bewirken `PAMName=login` und `TTYPath=/dev/tty1` in `photobooth.service`, und
+polkit gibt einer aktiven lokalen Sitzung `network-control` und
+`settings.modify.system` von sich aus. Mit `pkcheck` gegen den laufenden Prozess
+geprüft: erlaubt. Derselbe `nmcli`-Befehl über SSH wird dagegen mit „System
+policy prevents control of network connections" abgewiesen. Prüfen lässt sich
+das also nur an der Box selbst.
+
+Zwei Dinge sperren die Funkeinheit auf einem frischen Raspberry Pi OS, und
+beide fallen leicht durch, weil keines davon einen Fehler meldet:
+
+```bash
+sudo raspi-config nonint do_wifi_country AT     # dein Land, sonst bleibt die Funkeinheit gesperrt
+sudo rfkill unblock wifi
+sudo nmcli radio wifi on
+```
+
+Der Schlüssel steht nie in `argv`, wo ihn jeder lokale Prozess aus `ps` lesen
+könnte: `nmcli --ask` nimmt ihn über die Standardeingabe entgegen. Ein
+gescheiterter Versuch löscht das Profil, das sonst zurückbliebe, damit ein
+vertippter Schlüssel die Box nicht bei jedem Start verfolgt.
 
 ### Wenig Arbeitsspeicher (1 GB)
 
@@ -113,7 +182,7 @@ Danach neu starten.
 
 Eingestellt ist das **Raspberry Pi Camera Module 3 Standard** (Sensor IMX708,
 76° diagonal). Der Sensor liefert 4608×2592 im Format 16:9; für einen
-10×15-Ausdruck wird daraus auf 3:2 beschnitten – im Livebild genauso wie im
+10×15-Ausdruck wird daraus auf 3:2 beschnitten, im Livebild genauso wie im
 Foto, damit der Bildschirm zeigt, was gedruckt wird.
 
 ```bash
@@ -130,15 +199,15 @@ zuerst das **Aufnahmelicht** selbst: nicht das hellste, sondern das dunkelste,
 das Bewegung noch einfriert (Ziel 1/125 s). Darunter werden Belichtung,
 Weißabgleich und Fokus gemessen und bleiben fest. Weil eine Belichtung nur zu
 der Helligkeit passt, unter der sie gemessen wurde, wird beides zusammen
-übernommen – der Ergebnisbildschirm zeigt den gefundenen Wert und bietet
+übernommen. Der Ergebnisbildschirm zeigt den gefundenen Wert und bietet
 „Altes Licht behalten“ an, was den alten Wert zurücksetzt und neu misst.
 
 `LensPosition` ist in Dioptrien angegeben, also 1 geteilt durch die Entfernung
-in Metern – 2,0 m entsprechen 0,5, und 2,5 m entsprechen 0,4.
+in Metern: 2,0 m entsprechen 0,5, und 2,5 m entsprechen 0,4.
 
 ### Ton
 
-Die Box ist still. Es gab einmal Töne über den HDMI-Anschluss des Bildschirms –
+Die Box ist still. Es gab einmal Töne über den HDMI-Anschluss des Bildschirms:
 einen mitzählenden Countdown, ein Klacken beim Auslösen, einen Dreiklang zum
 fertigen Blatt. Sie sind im Oktober 2026 wieder herausgeflogen: auf einer Feier
 hört sie ohnehin niemand, und was man nicht hört, muss man auch nicht
@@ -170,7 +239,7 @@ Einstellungen unter „Erweitert“:
 
 Kann die Box die Helligkeit nicht ändern, verschwinden die Lichtknöpfe auf dem
 Gästebildschirm und die Licht-Karte in den Einstellungen. Kann sie die
-Farbtemperatur nicht ändern – alles außer `godox` –, verschwindet deren Feld.
+Farbtemperatur nicht ändern (alles außer `godox`), verschwindet deren Feld.
 Ein Regler, der nichts bewirkt, verwirrt mehr, als er nützt.
 
 **Die Farbtemperatur steht hinter der PIN**, nicht auf dem Gästebildschirm. Die
@@ -192,7 +261,7 @@ python3 -m godox_mesh_bt scan --timeout 10          # Adresse suchen
 python3 -m godox_mesh_bt provision --output ../../godox-mesh-state.json
 
 # Für die nächsten Befehle muss nebenher ein Suchlauf laufen, sonst scheitern
-# sie mit „device not found“ – siehe unten.
+# sie mit „device not found“, siehe unten.
 (timeout 30 bluetoothctl scan on >/dev/null &) ; sleep 6
 python3 -m godox_mesh_bt rebind --device <Adresse> --state ../../godox-mesh-state.json
 python3 -m godox_mesh_bt set --device <Adresse> --state ../../godox-mesh-state.json \
@@ -200,7 +269,7 @@ python3 -m godox_mesh_bt set --device <Adresse> --state ../../godox-mesh-state.j
 ```
 
 Danach `light.kind` auf `godox` und `light.address` auf die Adresse setzen. Das
-**ersetzt die Kopplung mit der Godox-App** – die App sieht die Leuchte erst
+**ersetzt die Kopplung mit der Godox-App**. Die App sieht die Leuchte erst
 wieder nach einem Zurücksetzen.
 
 Drei Dinge, die wir am Pi gelernt haben und die die Software erledigt:
@@ -210,13 +279,13 @@ Drei Dinge, die wir am Pi gelernt haben und die die Software erledigt:
   „Device not found“.
 - **Der Mesh-Zähler darf nie zurückfallen.** Jeder Befehl verbraucht eine
   laufende Nummer, und die Leuchte verwirft stillschweigend alles, was sie schon
-  gesehen hat – ohne Fehlermeldung, sie tut dann einfach nichts. Beim Start wird
+  gesehen hat, ohne Fehlermeldung, sie tut dann einfach nichts. Beim Start wird
   der Zähler deshalb um 2000 vorgezogen und sofort gesichert.
 - **Die Schlüsseldatei wird atomar geschrieben.** Sie enthält die Mesh-Schlüssel;
   geht sie verloren, muss die Leuchte neu eingerichtet werden. Ein Stromausfall
   mitten im Schreiben hatte sie am Pi schon einmal auf null Bytes gekürzt.
 
-Bluetooth muss dafür eingeschaltet bleiben – `optimize-boot.sh` schaltet es
+Bluetooth muss dafür eingeschaltet bleiben, `optimize-boot.sh` schaltet es
 deshalb **nicht** mehr ab.
 
 **DMX.** DMX512 ist der Standard der Veranstaltungstechnik, damit lässt sich
@@ -224,7 +293,7 @@ praktisch jeder Scheinwerfer ansteuern. Am Pi braucht es einen Wandler von TTL
 auf RS-485: entweder einen USB-Adapter mit FTDI-Chip, dann steht die
 Schnittstelle als `/dev/ttyUSB0` da und Bluetooth bleibt frei, oder einen MAX485
 an `/dev/serial0`. Der zweite Weg ist billiger, aber die kleine UART des Pi hängt
-am Kerntakt und trifft 250000 Baud nicht zuverlässig – dafür müsste die große
+am Kerntakt und trifft 250000 Baud nicht zuverlässig. Dafür müsste die große
 UART an den Stecker, und die ist ab Werk für Bluetooth reserviert. Einstellungen:
 `light.dmx_port`, `light.dmx_channel`, und für Scheinwerfer, die vor dem Dimmen
 einen Betriebsart-Kanal gesetzt haben wollen, `light.dmx_extra` als
@@ -244,16 +313,16 @@ Bild bei 30 % Dimmwert:
 | PWM | Streifen bei 30 % | Streifen bei 3 % | Dimmkurve |
 |---|---|---|---|
 | 200 Hz | 19 % | 65 % | nahezu linear |
-| 1 kHz | 7 % | – | leicht gestaucht |
+| 1 kHz | 7 % | - | leicht gestaucht |
 | **2 kHz** | **2,5 %** | **8,5 %** | 3 % Dimmwert ergeben 20 % Licht |
-| 5 kHz | 2,3 % | – | 30 % ergeben 68 % |
-| 10 kHz | 2,9 % | – | 30 % ergeben 94 %, kaum noch dimmbar |
+| 5 kHz | 2,3 % | - | 30 % ergeben 68 % |
+| 10 kHz | 2,9 % | - | 30 % ergeben 94 %, kaum noch dimmbar |
 
 **2 kHz ist die Vorgabe.** Darunter sieht man Streifen, darüber kippt das
 Dimmen: Das Gate des MOSFET wird über einen Widerstand entladen, und je kürzer
 die Periode, desto weniger schafft er es, ganz abzuschalten. Mit einem Modul
 mit echtem Gate-Treiber wären auch 10 kHz sauber und linear. Die Dimmkurve ist
-dadurch gestaucht – 5 % Dimmwert ergeben rund 22 % Licht, 30 % ergeben 51 %.
+dadurch gestaucht: 5 % Dimmwert ergeben rund 22 % Licht, 30 % ergeben 51 %.
 
 ### Hardware-PWM statt Software-PWM
 
@@ -275,8 +344,8 @@ dtoverlay=pwm,pin=18,func=2
 ```
 
 **Eine Falle dabei:** Der Overlay legt den Pin beim Hochfahren auf die
-PWM-Funktion. Belegt ihn danach irgendetwas als gewöhnlichen Ausgang – etwa der
-Software-Fallback, wenn der Start einmal schiefgeht –, dann läuft die
+PWM-Funktion. Belegt ihn danach irgendetwas als gewöhnlichen Ausgang (etwa der
+Software-Fallback, wenn der Start einmal schiefgeht), dann läuft die
 PWM-Einheit zwar weiter, ihr Signal kommt aber nicht mehr am Pin an: Register
 sauber gesetzt, Leuchte dunkel, kein Fehler im Log. `HardwarePwm` legt den Pin
 deshalb bei jedem Start selbst zurück (`pinctrl set 18 a5`) und prüft nach.
@@ -329,7 +398,7 @@ sudo lpadmin -d Selphy
 lpstat -p -d
 ```
 
-**Der CP1500 fehlt in Gutenprint 5.3.4** – der Treiber ist älter als der
+**Der CP1500 fehlt in Gutenprint 5.3.4**. Der Treiber ist älter als der
 Drucker. Nimm den **CP1300**: Dieselbe Protokollfamilie (`CMD:Raster3`), und der
 CP1500 druckt damit. `StpBorderless=True` ist für Fotos Pflicht, sonst bleibt ein
 weißer Rand; `StpImageType=Photo` schaltet die Rasterung um.
@@ -338,7 +407,7 @@ weißer Rand; `StpImageType=Photo` schaltet die Rasterung um.
 jeden USB-Drucker und sucht IPP und einen Scanner. Beim Selphy findet es beides
 nicht, setzt den Drucker zurück und lässt dabei gelegentlich eine Verbindung
 offen. Danach meldet `lpinfo -v` gar kein USB-Gerät mehr, der Drucker steht
-trotzdem in `lsusb`, und im Log steht nur `Failed to detach "usblp" module` –
+trotzdem in `lsusb`, und im Log steht nur `Failed to detach "usblp" module`,
 was in die falsche Richtung zeigt, denn `usblp` ist unschuldig. `install-pi.sh`
 legt deshalb `/etc/ipp-usb/quirks/photobooth.conf` an:
 
@@ -357,7 +426,7 @@ sudo lpadmin -d Selphy
 ```
 
 `Postcard.Fullbleed` in `config.json` (`printer.media`) ist der übliche Wert für
-10×15 cm randlos beim Selphy – falls der Ausdruck beschnitten wird, hier zuerst
+10×15 cm randlos beim Selphy. Falls der Ausdruck beschnitten wird, hier zuerst
 ansetzen. Zum Testen ein Foto machen und auf „Drucken" tippen.
 
 ## Gut zu wissen
@@ -406,7 +475,8 @@ booth/
   usb.py, journal.py        Sicherung auf dem Stick, Warteschlange
   admin.py                  PIN und die Felder der Einstellungen
   hardware/                 Kamera (picamera2), GPIO (gpiozero/lgpio), LED-Kette,
-                            Drucker (CUPS), Systemwerte - jeweils mit Simulation
+                            Drucker (CUPS), WLAN (NetworkManager), Systemwerte -
+                            jeweils mit Simulation
   ui/                       die Oberfläche: Gäste, Einstellungen, Tastatur, PIN
 autostart/                  Autostart, Wächter, Touch, USB, Startzeit
 tools/stress_test.py        Stresstest mit echter Kamera
@@ -414,7 +484,7 @@ docs/                       Entscheidungen und ihre Gründe
 captures/                   aufgenommene Bilder
 ```
 
-RPi.GPIO wird bewusst nicht verwendet – es funktioniert auf dem Pi 5 nicht.
+RPi.GPIO wird bewusst nicht verwendet, es funktioniert auf dem Pi 5 nicht.
 gpiozero greift dort auf lgpio zu.
 
 ## Sprache

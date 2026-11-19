@@ -124,7 +124,7 @@ def main(argv: list[str] | None = None) -> int:
 
 
 def heartbeat() -> None:
-    """Den Zeitstempel fuer den Waechter erneuern (nur auf Linux, wo es /dev/shm gibt)."""
+    """Renew the watchdog timestamp (Linux only, where /dev/shm exists)."""
     if not HEARTBEAT.parent.is_dir():
         return
     try:
@@ -145,15 +145,31 @@ def _stage_factor(app) -> float:
 
     screen = app.primaryScreen()
     if screen is None:
+        log.warning("No screen reported, stage left at 1:1")
         return 1.0
     size = screen.size()
     if size.width() <= 0 or size.height() <= 0:
+        log.warning("Screen reports %dx%d, stage left at 1:1",
+                    size.width(), size.height())
         return 1.0
+
+    # Always in the log, because a screen that identifies itself wrongly is
+    # not visible from the outside: the interface simply comes up at the
+    # wrong proportions, with white bands where the stage does not reach.
+    # Seen once on the booth after a loose display cable. Without this line
+    # there was nothing afterwards to say what the screen had claimed to be.
+    verhaeltnis = size.width() / size.height()
+    log.info("Screen reports %dx%d (%.2f:1)", size.width(), size.height(),
+             verhaeltnis)
+    if not 1.2 <= verhaeltnis <= 2.4 or size.width() < 800 or size.height() < 450:
+        log.warning("That is not a shape this booth is built for. If the "
+                    "picture looks wrong, check the display cable and "
+                    "restart.")
     return min(size.width() / STAGE_W, size.height() / STAGE_H)
 
 
 def _shutdown(backend) -> None:
-    """Licht aus, Kamera zu. Ein Fehler hier darf das Beenden nicht aufhalten."""
+    """Light off, camera closed. A failure here must not hold up the exit."""
     for step in (lambda: backend.session.cancel(),
                  lambda: backend.light.stop(),
                  lambda: backend.camera.stop(),

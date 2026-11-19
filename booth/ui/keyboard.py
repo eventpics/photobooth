@@ -33,6 +33,14 @@ ROWS_UPPER = ["!\"§$%&/()=?", "QWERTZUIOPÜ", "ASDFGHJKLÖÄ", "YXCVBNM;:_"]
 ROWS_SYMBOL = ["1234567890@", "#+*'&/()[]\\", "<>{}|~^°€£", "!?;:_\"…–"]
 NUMPAD = ["789", "456", "123"]
 
+#: The sheet everything is drawn on. The keys are placed against its lower
+#: edge rather than at a fixed height, so that a row cannot end up hanging
+#: over the bottom of it - which is exactly what happened when the two were
+#: written out as separate numbers.
+PANEL = QRectF(90, 40, theme.STAGE_W - 180, theme.STAGE_H - 80)
+#: Space kept clear between the lowest key and the sheet's lower edge.
+PANEL_PAD = 40
+
 
 class _Key:
     def __init__(self, rect: QRectF, label: str, action: str) -> None:
@@ -60,7 +68,7 @@ class KeyboardOverlay(QWidget):
         self.on_done: Callable[[str], None] | None = None
         self.hide()
 
-    # -- Oeffnen und Schliessen ----------------------------------------------------
+    # -- Opening and closing -------------------------------------------------------
     def ask_text(self, title: str, value: str, on_done: Callable[[str], None],
                  hint: str = "", secret: bool = False, max_len: int = 200) -> None:
         self.numeric, self.decimal, self.secret = False, False, secret
@@ -87,14 +95,15 @@ class KeyboardOverlay(QWidget):
         if accept and callback is not None:
             callback(self.text.replace(",", ".") if self.numeric else self.text)
 
-    # -- Tasten --------------------------------------------------------------------
+    # -- keys ----------------------------------------------------------------------
     def _layout(self) -> None:
         self.keys = []
         if self.numeric:
             size, gap = 120, 14
             width = 3 * size + 2 * gap + gap + 220
             left = (theme.STAGE_W - width) / 2
-            top = 470
+            # Four rows tall: three of digits and the one carrying zero.
+            top = PANEL.bottom() - PANEL_PAD - (4 * size + 3 * gap)
             for r, row in enumerate(NUMPAD):
                 for c, ch in enumerate(row):
                     self.keys.append(_Key(QRectF(left + c * (size + gap), top + r * (size + gap),
@@ -113,8 +122,9 @@ class KeyboardOverlay(QWidget):
             return
 
         rows = {"lower": ROWS_LOWER, "upper": ROWS_UPPER, "symbol": ROWS_SYMBOL}[self.mode]
-        size, gap = 116, 12
-        top = 430
+        size, gap = 110, 12
+        # Five rows: four of letters and the one with space and the buttons.
+        top = PANEL.bottom() - PANEL_PAD - (5 * size + 4 * gap)
         for r, row in enumerate(rows):
             width = len(row) * size + (len(row) - 1) * gap
             extra = 0
@@ -189,28 +199,28 @@ class KeyboardOverlay(QWidget):
             return
         self.update()
 
-    # -- Zeichnen ------------------------------------------------------------------
+    # -- drawing -------------------------------------------------------------------
     def paintEvent(self, _event) -> None:  # noqa: N802
         p = QPainter(self)
         p.setRenderHint(QPainter.RenderHint.Antialiasing)
         p.setRenderHint(QPainter.RenderHint.TextAntialiasing)
         p.fillRect(self.rect(), QColor(16, 24, 40, 150))
-        panel = QRectF(90, 80, theme.STAGE_W - 180, theme.STAGE_H - 140)
+        panel = PANEL
         p.setPen(QPen(LINE, 1))
         p.setBrush(BG)
         p.drawRoundedRect(panel, 18, 18)
 
         p.setPen(FG)
         p.setFont(theme.font(30, weight=QFont.Weight.DemiBold))
-        p.drawText(QRectF(panel.left() + 60, 130, panel.width() - 120, 44),
+        p.drawText(QRectF(panel.left() + 60, panel.top() + 50, panel.width() - 120, 44),
                    Qt.AlignmentFlag.AlignVCenter, self.title)
         if self.hint:
             p.setPen(MUTED)
             p.setFont(theme.font(20))
-            p.drawText(QRectF(panel.left() + 60, 178, panel.width() - 120, 34),
+            p.drawText(QRectF(panel.left() + 60, panel.top() + 98, panel.width() - 120, 34),
                        Qt.AlignmentFlag.AlignVCenter, self.hint)
 
-        field = QRectF(panel.left() + 60, 240, panel.width() - 120, 110)
+        field = QRectF(panel.left() + 60, panel.top() + 160, panel.width() - 120, 110)
         p.setPen(QPen(FOCUS, 3))
         p.setBrush(CARD)
         p.drawRoundedRect(field, 12, 12)

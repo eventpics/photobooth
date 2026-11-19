@@ -231,7 +231,7 @@ def _rounded_mask(size: tuple[int, int]):
     ImageDraw.Draw(mask).rounded_rectangle([0, 0, big[0] - 1, big[1] - 1],
                                            radius=radius, fill=255)
     smooth = mask.resize(size, Image.LANCZOS)
-    if len(_MASK_CACHE) > 16:          # ein Layoutwechsel darf nicht anwachsen
+    if len(_MASK_CACHE) > 16:          # a change of layout must not grow without bound
         _MASK_CACHE.clear()
     _MASK_CACHE[size] = smooth
     return smooth

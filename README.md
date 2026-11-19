@@ -97,6 +97,69 @@ answering, say — it writes a timestamp to `/dev/shm/photobooth-alive` every fi
 seconds, from its own interface tick. If that is more than a minute old,
 `photobooth-watchdog.service` restarts it.
 
+### Start and shutdown screen
+
+From power-on to a working interface takes about thirty seconds on a Pi 4, and
+the console is deliberately silent (`quiet`, `logo.nologo`). Left alone the
+screen stays black for all of it, which from the outside looks exactly like a
+box that is not starting at all.
+
+So `photobooth-splash.service` draws straight into the framebuffer within the
+first second of userspace: white, black mark, "EventPics Fotobox wird
+gestartet", a moving bar underneath. On the way down
+`photobooth-shutdown.service` puts up the same screen with the line **"Gleich
+kannst du den Strom trennen"**. The booth has no clean power switch, and
+cutting power too early is exactly what leaves a filesystem needing repair.
+
+The picture is rendered beforehand, not at boot. The first version built it
+with Pillow and reached the screen 20 seconds into a 23 second boot: fourteen
+of those went on importing numpy and Pillow while udev and the journal were
+saturating the same SD card. Now `boot-splash.py --render` writes raw
+framebuffer dumps to `/var/cache/photobooth` and `boot-splash.sh` pushes one
+out with `dd`, no Python involved. Both colour depths are rendered, because
+the framebuffer reports 32 bits early in the boot and 16 a moment later.
+
+### Copying to the booth
+
+With `tools/deploy.sh`, never with a hand-typed `rsync`. The booth holds files
+that exist nowhere else and are all in `.gitignore`: the lamp's mesh keys, the
+configuration with the PIN and the API key, the journal database, the
+captures. A plain `rsync --delete` wipes them without a word. That happened
+once, and the lamp had to be provisioned again afterwards.
+
+The script carries the exclude list, compares before and after that the
+irreplaceable files are still there, pre-renders the splash screens and only
+then restarts. `tools/deploy.sh --dry-run` shows what would happen first.
+
+### Wi-Fi
+
+The box joins a wireless network from its own screen: **Einstellungen → WLAN**,
+pick a network, type the key on the on-screen keyboard. No cable, no keyboard,
+no SSH. That matters at a venue, where the network is never the one from home.
+
+It works without any extra privilege, which is worth knowing because it looks
+like it should not. The booth runs under cage in a real local login session on
+seat0 — that is what `PAMName=login` and `TTYPath=/dev/tty1` in
+`photobooth.service` are for — and polkit grants an active local session
+`network-control` and `settings.modify.system` by default. Checked with
+`pkcheck` against the running process: allowed. The same `nmcli` command over
+SSH is refused with "System policy prevents control of network connections", so
+this cannot be tested remotely; it has to be tried on the box.
+
+Two things block the radio on a fresh Raspberry Pi OS, and both are easy to
+miss because neither reports an error:
+
+```bash
+sudo raspi-config nonint do_wifi_country AT     # your country, or the radio stays blocked
+sudo rfkill unblock wifi
+sudo nmcli radio wifi on
+```
+
+The key never travels in `argv`, where every local process could read it out of
+`ps`: `nmcli --ask` takes it on standard input instead. A failed attempt
+deletes the profile it would otherwise leave behind, so a mistyped key does not
+haunt the box on every boot.
+
 ### Little memory (1 GB)
 
 Raspberry Pi OS reserves a fixed 512 MB for camera and graphics on devices with
@@ -400,7 +463,8 @@ booth/
   admin.py                  the PIN and the settings fields
   palette.py                colour roles and the ready-made schemes
   hardware/                 camera (picamera2), GPIO (gpiozero/lgpio), LED strip,
-                            printer (CUPS), system values - each with a simulation
+                            printer (CUPS), Wi-Fi (NetworkManager), system values -
+                            each with a simulation
   ui/                       the interface: guests, settings, keyboard, PIN
 autostart/                  autostart, watchdog, touch, USB, boot time
 tools/stress_test.py        stress test with the real camera

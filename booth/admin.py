@@ -34,9 +34,17 @@ def _num(section, key, label, help_="", **kw):
 
 
 def _pct(section, key, label, help_="", **kw):
-    """A fraction stored as 0..1 but shown as a percentage - nobody thinks in 0,15."""
+    """A fraction stored as 0..1 but shown as a percentage - nobody thinks in 0,15.
+
+    `type` says what the value is and how it is stored; `widget` says what the
+    finger gets. They are separate because the percentage has to be converted
+    back to a fraction on the way into the configuration either way, and
+    hanging that conversion on the choice of control would tie the two
+    together for no reason.
+    """
     return {"section": section, "key": key, "label": label, "help": help_,
-            "type": "percent", "min": 0, "max": 100, "step": 5, **kw}
+            "type": "percent", "min": 0, "max": 100, "step": 5,
+            "unit": "%", **kw}
 
 
 def _slider(section, key, label, help_="", **kw):
@@ -130,20 +138,24 @@ SCHEMA: dict[str, list[dict[str, Any]]] = {
             ("godox", "Godox über Bluetooth"),
             ("dmx", "Scheinwerfer am DMX-Bus"),
             ("pwm", "Selbstgebaute 12-V-Fläche am MOSFET"),
-            ("none", "Keine Steuerung – die Leuchte brennt durch"),
+            ("none", "Keine Steuerung, die Leuchte brennt durch"),
         ], "Woran die Box die Helligkeit regelt. Die Einzelheiten zu DMX und "
            "Bluetooth stehen unter Erweitert."),
+        # Sliders, not number pads: brightness is judged by looking at the
+        # live picture beside it, never by reading a figure. Both sit on the
+        # same page as the camera preview for exactly that reason.
         _pct("gpio", "light_idle_duty", "Einstelllicht",
-             "Brennt dauerhaft. Auch auf der Gästeseite oben rechts verstellbar."),
+             "Brennt dauerhaft. Auch auf der Gästeseite oben rechts verstellbar.",
+             widget="slider"),
         _pct("gpio", "light_capture_duty", "Aufnahmelicht",
-             "Nur im Moment der Aufnahme"),
-        # Mit Tasten und Ziffernfeld, nicht als Schieber: Hier zaehlt ein
-        # bestimmter Wert - 4000 statt irgendwo zwischen 3900 und 4100 -, und
-        # auf einem Schieber trifft man den mit dem Finger nicht.
+             "Nur im Moment der Aufnahme", widget="slider"),
+        # Buttons and a number pad rather than a slider: here one exact value
+        # matters, 4000 and not somewhere between 3900 and 4100, and a finger
+        # does not hit that on a slider.
         _num("light", "cct", "Farbtemperatur",
              "Nur bei Leuchten, die sie können. Wärmer passt besser zu einem "
              "Saal am Abend; 5600 K ist Tageslicht und wirkt drinnen kalt. "
-             "Nach jeder Änderung neu einmessen – der Weißabgleich steht fest.",
+             "Nach jeder Änderung neu einmessen, der Weißabgleich steht fest.",
              min=2800, max=6500, step=100, unit="K"),
     ],
 }
@@ -318,7 +330,7 @@ def apply_settings(config, camera, payload: dict[str, Any]) -> dict[str, Any]:
                 from .eventpics import maskieren  # noqa: PLC0415
                 text = str(raw or "").strip()
                 alt_wert = str(config.section(field["section"]).get(field["key"], ""))
-                # Die Maske zurueckgeschickt heisst: nichts eingetippt.
+                # The mask handed back means nothing was typed.
                 if not text or text == maskieren(alt_wert):
                     continue
                 value: Any = text

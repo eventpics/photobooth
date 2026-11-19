@@ -26,9 +26,9 @@ log = logging.getLogger(__name__)
 # Bit meanings of vcgencmd get_throttled. The low bits are "right now",
 # the high bits are "has happened at some point since boot".
 _THROTTLE_BITS = {
-    0: ("under_voltage_now", "Unterspannung – Netzteil oder Kabel zu schwach"),
+    0: ("under_voltage_now", "Unterspannung: Netzteil oder Kabel zu schwach"),
     1: ("freq_capped_now", "Taktfrequenz begrenzt"),
-    2: ("throttled_now", "Drosselung aktiv – zu heiß oder zu wenig Spannung"),
+    2: ("throttled_now", "Drosselung aktiv: zu heiß oder zu wenig Spannung"),
     3: ("soft_temp_limit_now", "Temperaturgrenze erreicht, Takt wird gesenkt"),
     16: ("under_voltage_seen", "Unterspannung war seit dem Start schon einmal aufgetreten"),
     17: ("freq_capped_seen", "Taktbegrenzung war seit dem Start schon einmal aktiv"),
@@ -48,7 +48,7 @@ def _read(path: str) -> str | None:
 
 
 #: The name the bridge registers its virtual touchscreen under.
-#: Muss zu NAME in autostart/touch-bridge.py passen.
+#: Must match NAME in autostart/touch-bridge.py.
 BRIDGE_NAME = "Fotobox Touchscreen"
 
 _INPUT_DEVICES = Path("/proc/bus/input/devices")
@@ -105,7 +105,7 @@ def _standardroute() -> str | None:
 
 
 def _ssid(gerät: str) -> str:
-    """Der Name des WLANs, hoechstens alle 20 Sekunden neu erfragt."""
+    """The name of the Wi-Fi network, asked again at most every 20 seconds."""
     wert, stand = _NETZ_CACHE["ssid"]
     if time.monotonic() - stand < _SSID_GILT_S:
         return wert
@@ -131,7 +131,7 @@ def _erreichbar(host: str) -> bool | None:
     wert, stand = _NETZ_CACHE["draussen"]
     if time.monotonic() - stand < _PROBE_GILT_S:
         return wert
-    import socket  # noqa: PLC0415 - nur hier gebraucht
+    import socket  # noqa: PLC0415 - needed here and nowhere else
 
     try:
         with socket.create_connection((host, _PROBE_PORT), _PROBE_TIMEOUT_S):
@@ -340,16 +340,16 @@ class SystemMonitor:
         warnings: list[str] = []
         if temperature is not None:
             if temperature >= _TEMP_CRIT:
-                warnings.append(f"Temperatur {temperature} °C – der Pi drosselt gleich. Kühlung prüfen.")
+                warnings.append(f"Temperatur {temperature} °C, der Pi drosselt gleich. Kühlung prüfen.")
             elif temperature >= _TEMP_WARN:
-                warnings.append(f"Temperatur {temperature} °C – wird warm, Belüftung im Auge behalten.")
+                warnings.append(f"Temperatur {temperature} °C, wird warm, Belüftung im Auge behalten.")
         for bit, (name, text) in _THROTTLE_BITS.items():
             if throttled.get(name):
                 warnings.append(text)
         if memory.get("used_percent") is not None and memory["used_percent"] >= 85:
             warnings.append(f"Arbeitsspeicher zu {memory['used_percent']} % belegt.")
         if memory.get("swap_used_mb", 0) > 50:
-            warnings.append(f"Auslagerung aktiv ({memory['swap_used_mb']} MB) – der Speicher wird knapp.")
+            warnings.append(f"Auslagerung aktiv ({memory['swap_used_mb']} MB), der Speicher wird knapp.")
         if disk.get("available") and disk.get("free_gb", 99) < 1.0:
             warnings.append(f"Nur noch {disk['free_gb']} GB frei.")
 

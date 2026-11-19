@@ -55,12 +55,12 @@ CAPTION_COLOURS = [("#1E1B18", "Schwarz"), ("#3C3129", "Dunkelbraun"), ("#4A5568
 PAGES: list[tuple[str, str, str]] = [
     ("picture", "Bild und Druck",
      "Beschriftung, Aufteilung, Hintergrund und Drucken"),
-    ("camera", "Kamera",
-     "Einmessen, Testfoto, Belichtung und Fokus"),
-    ("light", "Licht",
-     "Art der Leuchte, Einstell- und Aufnahmelicht"),
+    ("capture", "Kamera und Licht",
+     "Einmessen, Testfoto, Belichtung, Fokus und die Leuchte"),
     ("eventpics", "EventPics-Galerie",
      "Zugang, Event und was hochgeladen wird"),
+    ("wlan", "WLAN",
+     "Netz suchen und verbinden, ohne Kabel und ohne Tastatur"),
     ("flow", "Ablauf",
      "Countdown und wie lange die Box auf etwas wartet"),
     ("colours", "Farben",
@@ -76,6 +76,7 @@ PAGE_TITLES = {key: title for key, title, _ in PAGES}
 
 class _Bridge(QObject):
     preview = Signal(object)
+    wlan = Signal(dict)
     swatch = Signal(str, object)
     eventpics = Signal(str, dict)
 
@@ -131,7 +132,7 @@ class Header(QFrame):
 
 
 class PreviewImage(QWidget):
-    """Das Blatt, so wie es gedruckt wuerde."""
+    """The sheet, exactly as it would print."""
 
     def __init__(self) -> None:
         super().__init__()
@@ -185,6 +186,7 @@ class SettingsScreen(QWidget):
         self.bridge.preview.connect(self._preview_ready)
         self.bridge.swatch.connect(self._swatch_ready)
         self.bridge.eventpics.connect(self._eventpics_result)
+        self.bridge.wlan.connect(self._wlan_ready)
         self.preview_timer = QTimer(self)
         self.preview_timer.setSingleShot(True)
         self.preview_timer.setInterval(300)
@@ -196,7 +198,7 @@ class SettingsScreen(QWidget):
         outer = QVBoxLayout(self)
         outer.setContentsMargins(0, 0, 0, 0)
         outer.setSpacing(0)
-        #: Welche Seite gerade offen ist. "" ist die Startseite mit der Liste.
+        #: Which page is open. "" is the start page with the list.
         self.page = ""
         self.log_page: Any = None
         self.header = Header(self._back, self._power_ask)
@@ -253,7 +255,7 @@ class SettingsScreen(QWidget):
         props.setScrollMetric(M.FrameRate, QScrollerProperties.FrameRates.Fps60)
         scroller.setScrollerProperties(props)
 
-    # -- Oeffnen ---------------------------------------------------------------------
+    # -- opening ---------------------------------------------------------------------
     def open(self) -> None:
         self.page = ""
         self.data = read_settings(self.backend.config)
@@ -263,7 +265,7 @@ class SettingsScreen(QWidget):
 
     def go(self, page: str) -> None:
         """Switch to a sub-page, or back to the list with an empty key."""
-        if self.capture_light and page != "camera":
+        if self.capture_light and page != "capture":
             self._toggle_capture_light()
         if self.log_page is not None:
             self.log_page.stop()
@@ -293,7 +295,7 @@ class SettingsScreen(QWidget):
         self.hide()
         self.on_close()
 
-    # -- Aufbau ----------------------------------------------------------------------
+    # -- building --------------------------------------------------------------------
     def _build(self) -> None:
         # The page is rebuilt every time it opens, so it shows what currently
         # applies. The live image goes home first: it may be sitting inside
@@ -328,13 +330,13 @@ class SettingsScreen(QWidget):
             column.addLayout(self._top_row())
             column.addWidget(self._group_card("Bilder und Druck",
                                               schema.get("Bilder und Druck", [])))
-        elif self.page == "camera":
-            column.addWidget(self._camera_card())
-        elif self.page == "light":
-            column.addWidget(self._light_card(schema.get("Licht", [])))
+        elif self.page == "capture":
+            column.addWidget(self._camera_card(schema.get("Licht", [])))
         elif self.page == "eventpics":
             self.ep_card = self._eventpics_card(schema.get("EventPics-Galerie", []))
             column.addWidget(self.ep_card)
+        elif self.page == "wlan":
+            column.addWidget(self._wlan_card())
         elif self.page == "flow":
             column.addWidget(self._group_card("Ablauf", schema.get("Ablauf", []),
                                               title=False))
@@ -354,7 +356,7 @@ class SettingsScreen(QWidget):
             self._show_eventpics_card()
         # Only the camera page gets the live image, and only once its slot
         # exists - which is the moment the page has been built.
-        if self.page == "camera" and self.camera_slot is not None \
+        if self.page == "capture" and self.camera_slot is not None \
                 and hasattr(fenster, "lend_preview"):
             fenster.lend_preview(self.camera_slot)
 
@@ -524,17 +526,41 @@ class SettingsScreen(QWidget):
             if tile.bg["id"] == style:
                 tile.set_pixmap(QPixmap(str(path)))
 
-    # -- Kamera ----------------------------------------------------------------------
-    def _camera_card(self) -> Card:
+    # -- camera ----------------------------------------------------------------------
+    def _camera_card(self, light_fields: list[dict[str, Any]]) -> Card:
+        """Camera and light together, because nobody sets one without the other.
+
+        The lamp sits directly under the live picture: its sliders change the
+        light at once, and the effect is in view while the finger is still on
+        the slider. The camera's own values go beside it, so that everything
+        fits on the screen without scrolling the picture out of sight.
+        """
         card = Card()
         row = QHBoxLayout()
         row.setSpacing(22)
+
+        left = QVBoxLayout()
+        left.setSpacing(0)
         self.camera_slot = QWidget()
         # Exactly 3:2, like the preview on the guest screen. Anything else and
         # the widget letterboxes the sensor's frame, which shows up as a bright
         # line along one edge.
-        self.camera_slot.setFixedSize(864, 576)
-        row.addWidget(self.camera_slot, 0, Qt.AlignmentFlag.AlignTop)
+        self.camera_slot.setFixedSize(576, 384)
+        left.addWidget(self.camera_slot, 0, Qt.AlignmentFlag.AlignTop)
+        left.addSpacing(22)
+        trenner = QFrame()
+        trenner.setFixedHeight(1)
+        trenner.setStyleSheet(f"background: {theme.LINE.name()};")
+        left.addWidget(trenner)
+        left.addSpacing(16)
+        self.light_fields = light_fields
+        self.light_body = QVBoxLayout()
+        self.light_body.setContentsMargins(0, 0, 0, 0)
+        self.light_body.setSpacing(18)
+        left.addLayout(self.light_body)
+        self._fill_light()
+        left.addStretch(1)
+        row.addLayout(left, 0)
 
         side = QVBoxLayout()
         side.setSpacing(0)
@@ -730,7 +756,7 @@ class SettingsScreen(QWidget):
             "" if result.get("qr_possible") else
             "QR-Erkennung fehlt. Mit „sudo apt install zbar-tools“ nachrüsten. "
             "Sonst den Schlüssel in die Datei fotobox-eventpics.txt auf einem USB-Stick schreiben"
-            + (" – Stick erkannt." if result.get("usb_present") else "."))
+            + (", Stick erkannt." if result.get("usb_present") else "."))
         if not result.get("configured"):
             status("Es fehlt noch der Schlüssel oder das Event.", True)
             return
@@ -766,7 +792,7 @@ class SettingsScreen(QWidget):
         self._save({"eventpics": {"link_id": ev["linkId"], "album_id": self.album_ctl.current,
                                   "event_title": ev.get("title", "")}})
 
-    # -- Gruppen ---------------------------------------------------------------------
+    # -- groups ----------------------------------------------------------------------
     def _colours_card(self) -> Card:
         """Scheme first, single colours after.
 
@@ -878,6 +904,148 @@ class SettingsScreen(QWidget):
         for kind in self.findChildren(QWidget):
             kind.update()
 
+    # -- WLAN --------------------------------------------------------------------
+    def _wlan_card(self) -> Card:
+        """Scan for networks and join one, right on the screen.
+
+        The booth may do this without any extra privilege: it runs in a real
+        local login session, and polkit grants such a session the network
+        rights by itself. The same command over SSH would be refused.
+        """
+        card = Card()
+        self.wlan_status = label("", "sub", wrap=True)
+        card.box.addWidget(self.wlan_status)
+        card.box.addSpacing(14)
+
+        reihe = QHBoxLayout()
+        reihe.setSpacing(12)
+        self.wlan_scan_btn = button("Netze suchen", "action", self._wlan_scan)
+        reihe.addWidget(self.wlan_scan_btn)
+        self.wlan_trennen_btn = button("Trennen", "quiet", self._wlan_trennen)
+        reihe.addWidget(self.wlan_trennen_btn)
+        reihe.addStretch(1)
+        card.box.addLayout(reihe)
+        card.box.addSpacing(18)
+
+        self.wlan_liste = QVBoxLayout()
+        self.wlan_liste.setContentsMargins(0, 0, 0, 0)
+        self.wlan_liste.setSpacing(0)
+        card.box.addLayout(self.wlan_liste)
+
+        self._wlan_zeigen()
+        self._wlan_scan()
+        return card
+
+    def _wlan_zeigen(self) -> None:
+        """Build the status line and the network list from the last scan."""
+        daten = getattr(self, "wlan_daten", None) or {}
+        zustand = daten.get("status") or {}
+        netze = daten.get("networks") or []
+        busy = bool(daten.get("busy"))
+
+        if not daten:
+            text = "Wird gesucht …"
+        elif not zustand.get("available"):
+            text = "Diese Box hat kein WLAN-Modul. Sie läuft am Netzwerkkabel."
+        elif zustand.get("connected") and zustand.get("ssid"):
+            ip = zustand.get("ip")
+            text = f"Verbunden mit {zustand['ssid']}" + (f", {ip}" if ip else "")
+        elif busy:
+            text = daten.get("note") or "Einen Moment …"
+        else:
+            text = "Nicht verbunden. Am Kabel läuft die Box trotzdem."
+        if daten.get("error"):
+            text = daten["error"]
+        self.wlan_status.setText(text)
+        self.wlan_status.setStyleSheet(
+            f"color: {theme.ERR_INK.name()};" if daten.get("error") else "")
+
+        self.wlan_scan_btn.setEnabled(not busy and zustand.get("available", True))
+        self.wlan_trennen_btn.setVisible(bool(zustand.get("connected")))
+
+        while self.wlan_liste.count():
+            item = self.wlan_liste.takeAt(0)
+            if item.widget():
+                item.widget().deleteLater()
+        for i, netz in enumerate(netze):
+            teile = [f"{netz['signal']} %"]
+            teile.append("gesichert" if netz["secure"] else "offen")
+            if netz["saved"]:
+                teile.append("gespeichert")
+            if netz["active"]:
+                teile.append("verbunden")
+            zeile = MenuRow(netz["ssid"], " · ".join(teile), last=(i == len(netze) - 1))
+            zeile.setEnabled(not busy)
+            zeile.clicked.connect(lambda _=False, n=netz: self._wlan_gewaehlt(n))
+            self.wlan_liste.addWidget(zeile)
+
+    # -- In the background, never on the paint thread ------------------------------
+    def _wlan_arbeit(self, auftrag, note: str) -> None:
+        """One Wi-Fi job on its own thread, the result delivered by signal.
+
+        A scan takes seconds, connecting takes longer because DHCP has to
+        answer as well. On the paint thread the screen would stand still.
+        """
+        self.wlan_daten = {**(getattr(self, "wlan_daten", None) or {}),
+                           "busy": True, "note": note, "error": ""}
+        self._wlan_zeigen()
+        brücke = self.bridge
+
+        def arbeit() -> None:
+            from booth.hardware import wifi  # noqa: PLC0415
+
+            ergebnis: dict[str, Any] = {"busy": False, "error": ""}
+            try:
+                fehler = auftrag(wifi)
+                if fehler:
+                    ergebnis["error"] = fehler
+                ergebnis["status"] = wifi.status()
+                ergebnis["networks"] = wifi.networks(rescan=False)
+            except Exception as exc:  # noqa: BLE001 - must not take the screen down
+                log.exception("WLAN task failed")
+                ergebnis["error"] = str(exc) or exc.__class__.__name__
+            brücke.wlan.emit(ergebnis)
+
+        threading.Thread(target=arbeit, name="ui-wlan", daemon=True).start()
+
+    def _wlan_ready(self, ergebnis: dict) -> None:
+        self.wlan_daten = ergebnis
+        if self.page == "wlan":
+            self._wlan_zeigen()
+
+    def _wlan_scan(self) -> None:
+        def auftrag(wifi) -> str:
+            if not wifi.device():
+                return ""
+            if not wifi.radio_on():
+                wifi.set_radio(True)
+            wifi.networks(rescan=True)
+            return ""
+        self._wlan_arbeit(auftrag, "Wird gesucht …")
+
+    def _wlan_gewaehlt(self, netz: dict) -> None:
+        """A network was tapped: join it, and only ask when that is needed."""
+        if netz["active"]:
+            return
+        if not netz["secure"] or netz["saved"]:
+            self._wlan_verbinden(netz["ssid"], None)
+            return
+        self.keyboard.ask_text(f"Passwort für {netz['ssid']}", "",
+                               lambda wert, s=netz["ssid"]: self._wlan_verbinden(s, wert),
+                               hint="Mindestens 8 Zeichen", secret=True)
+
+    def _wlan_verbinden(self, ssid: str, passwort: str | None) -> None:
+        def auftrag(wifi) -> str:
+            ergebnis = wifi.connect(ssid, passwort)
+            return "" if ergebnis.get("ok") else (ergebnis.get("error") or "Verbinden fehlgeschlagen")
+        self._wlan_arbeit(auftrag, f"Verbinde mit {ssid} …")
+
+    def _wlan_trennen(self) -> None:
+        def auftrag(wifi) -> str:
+            wifi.disconnect()
+            return ""
+        self._wlan_arbeit(auftrag, "Wird getrennt …")
+
     def _group_card(self, name: str, fields: list[dict[str, Any]], title: bool = True) -> QWidget:
         card = Card(name if title else "")
         widgets = [self._field(spec) for spec in fields]
@@ -885,47 +1053,36 @@ class SettingsScreen(QWidget):
         card.box.addWidget(grid(widgets, columns))
         return card
 
-    def _light_card(self, fields: list[dict[str, Any]]) -> Card:
-        """What the lamp hangs off - and, if it can be dimmed, how bright.
-
-        The choice is always there, even for a lamp with no remote control.
-        Otherwise the card would vanish the moment somebody picked "no
-        control", and with it the only way back.
-        """
-        card = Card()
-        self.light_fields = fields
-        self.light_body = QVBoxLayout()
-        self.light_body.setContentsMargins(0, 0, 0, 0)
-        self.light_body.setSpacing(18)
-        card.box.addLayout(self.light_body)
-        self._fill_light()
-        return card
-
     def _fill_light(self) -> None:
-        """Die Lichtkarte neu fuellen - nach dem Umschalten sieht sie anders aus."""
+        """Refill the light block: after a change of kind it looks different.
+
+        The choice of lamp is always there, even for one with no remote
+        control. Otherwise the block would vanish the moment somebody picked
+        "no control", and with it the only way back.
+        """
         while self.light_body.count():
             item = self.light_body.takeAt(0)
             if item.widget():
                 item.widget().deleteLater()
         art = [spec for spec in self.light_fields if spec["key"] == "kind"]
         regler = [spec for spec in self.light_fields if spec["key"] != "kind"]
-        # Eine selbstgebaute Fläche am MOSFET ist das Weiß, als das sie gekauft
-        # wurde. Ein Kelvin-Feld dafür wäre eine Einstellung ohne Wirkung.
+        # A home-built panel on a MOSFET is the white it was bought as. A
+        # kelvin field for it would be a setting without an effect.
         if not getattr(self.backend.light, "tunable", False):
             regler = [spec for spec in regler if spec["key"] != "cct"]
         if art:
-            self.light_body.addWidget(grid([self._field(art[0])], 2))
+            self.light_body.addWidget(grid([self._field(art[0])], 1))
         note = (getattr(self.backend.light, "note", "") or "").strip()
         if note:
             hinweis = label(note, "help", wrap=True)
             hinweis.setStyleSheet(f"font-size: 13px; color: {theme.ERR.name()};")
             self.light_body.addWidget(hinweis)
         if getattr(self.backend.light, "dimmable", True):
-            self.light_body.addWidget(grid([self._field(spec) for spec in regler], 2))
+            self.light_body.addWidget(grid([self._field(spec) for spec in regler], 1))
         else:
             self.light_body.addWidget(label(
                 "Diese Leuchte regelt die Box nicht. Sie brennt den ganzen Abend mit der "
-                "Helligkeit, die du an ihr eingestellt hast – auch die drei Lichtknöpfe "
+                "Helligkeit, die du an ihr eingestellt hast, auch die drei Lichtknöpfe "
                 "auf der Gästeseite sind dann weg.", "help", wrap=True))
 
     def _power_ask(self) -> None:
@@ -939,7 +1096,7 @@ class SettingsScreen(QWidget):
             "Box ausschalten",
             "Fährt das System sauber herunter. Warte, bis der Bildschirm dunkel ist, dann "
             "kannst du den Strom trennen. Zum Einschalten steckst du die Box einfach wieder "
-            "an – einen Einschaltknopf hat sie nicht.",
+            "an, einen Einschaltknopf hat sie nicht.",
             "Herunterfahren", self._power_now)
 
     def _power_now(self) -> None:
@@ -960,7 +1117,7 @@ class SettingsScreen(QWidget):
         gross = label("Die Box fährt herunter", "h1")
         gross.setStyleSheet(f"font-size: 64px; font-weight: 700; color: {theme.BONE.name()};")
         gross.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        klein = label("Warte, bis der Bildschirm dunkel ist – dann Strom trennen.\n"
+        klein = label("Warte, bis der Bildschirm dunkel ist, dann Strom trennen.\n"
                       "Zum Einschalten einfach wieder anstecken.", "sub", wrap=True)
         klein.setStyleSheet(f"font-size: 30px; color: {theme.DIM.name()};")
         klein.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -974,7 +1131,9 @@ class SettingsScreen(QWidget):
     def _field(self, spec: dict[str, Any]) -> QWidget:
         path = f"{spec['section']}.{spec['key']}"
         value = self.data["values"].get(path)
-        kind = spec["type"]
+        # `type` is what the value means, `widget` what it is operated with.
+        # A percentage can perfectly well be a slider.
+        kind = spec.get("widget") or spec["type"]
         if kind == "bool":
             ctl = Toggle(spec["label"], spec.get("help", ""), bool(value))
             ctl.toggled.connect(lambda on, p=path: self._value_changed(p, on))
@@ -986,7 +1145,7 @@ class SettingsScreen(QWidget):
         elif kind in ("number", "percent"):
             step = float(spec.get("step", 1))
             ctl = NumberControl(self.keyboard, spec["label"], value, spec.get("min"), spec.get("max"),
-                                step=step, unit="%" if kind == "percent" else "",
+                                step=step, unit=str(spec.get("unit", "")),
                                 decimals=0 if step >= 1 else 1)
             ctl.changed.connect(lambda v, p=path: self._value_changed(p, v))
         elif kind == "choice":
@@ -1004,7 +1163,7 @@ class SettingsScreen(QWidget):
         self.controls[path] = ctl
         return field(spec["label"], spec.get("help", ""), ctl)
 
-    # -- Speichern -------------------------------------------------------------------
+    # -- saving ----------------------------------------------------------------------
     def _value_changed(self, path: str, value: Any) -> None:
         self._save({"values": {path: value}})
         if path == "eventpics.enabled":
@@ -1013,13 +1172,18 @@ class SettingsScreen(QWidget):
                 self._eventpics_task("status")
         if path == "eventpics.api_key":
             self._eventpics_task("status")
+        if path in ("gpio.light_idle_duty", "gpio.light_capture_duty"):
+            # Camera and light share a page so that the lamp can be judged in
+            # the live picture beside the slider. For that it has to follow the
+            # slider at once, not on the next shot.
+            self.backend.set_light_preset("capture" if self.capture_light else "idle")
         if path == "light.cct":
             # The brightness has not moved, so the lamp's thread would see
             # nothing to do. Push the new colour temperature at it.
             stupsen = getattr(self.backend.light, "nudge", None)
             if stupsen is not None:
                 stupsen()
-            self.header.flash("Farbtemperatur gesetzt – bitte neu einmessen")
+            self.header.flash("Farbtemperatur gesetzt, bitte neu einmessen")
         if path == "light.kind":
             # Without this the change would only take effect on the next start.
             try:
@@ -1032,7 +1196,7 @@ class SettingsScreen(QWidget):
     def _save(self, payload: dict[str, Any], preview: bool = False) -> None:
         try:
             result = apply_settings(self.backend.config, self.backend.camera, payload)
-        except Exception as exc:  # noqa: BLE001 - ein Fehler darf den Bildschirm nicht beenden
+        except Exception as exc:  # noqa: BLE001 - a failure must not take the screen down
             log.exception("Saving settings failed")
             self.header.flash(f"Nicht gespeichert: {exc}", bad=True)
             return
@@ -1043,7 +1207,7 @@ class SettingsScreen(QWidget):
         if preview:
             self._compose_soon()
 
-    # -- Vorschau --------------------------------------------------------------------
+    # -- preview ---------------------------------------------------------------------
     def _compose_soon(self, delay: int = 300) -> None:
         self.preview_timer.start(delay)
 
