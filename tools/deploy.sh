@@ -68,20 +68,20 @@ bestand() {
 
 vorher=$(bestand)
 
-echo "Uebertrage $HIER -> $HOST:$ZIEL"
+echo "Übertrage $HIER -> $HOST:$ZIEL"
 # The `+` form keeps `set -u` quiet when the array is empty, which bash 3.2
 # on macOS otherwise treats as an unbound variable.
 rsync -a --delete ${trocken[@]+"${trocken[@]}"} "${NUR_AUF_DER_BOX[@]}" \
       "$HIER/" "$HOST:$ZIEL/"
 
 if [[ ${#trocken[@]:-0} -gt 0 ]]; then
-    echo "Probelauf, es wurde nichts geaendert."
+    echo "Probelauf, es wurde nichts geändert."
     exit 0
 fi
 
 verloren=$(comm -23 <(echo "$vorher") <(bestand))
 if [[ -n "$verloren" ]]; then
-    echo "Die Uebertragung hat Dateien geloescht, die es nur auf der Box gab:" >&2
+    echo "Die Übertragung hat Dateien gelöscht, die es nur auf der Box gab:" >&2
     echo "$verloren" | sed "s/^/  /" >&2
     echo "Nicht neu starten, erst wiederherstellen." >&2
     exit 1

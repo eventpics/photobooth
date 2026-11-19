@@ -22,6 +22,19 @@ from typing import Any
 
 log = logging.getLogger(__name__)
 
+#: How far the capture may be amplified to reach the brightness of the
+#: preview. The capture reads the sensor at full resolution and is therefore
+#: less sensitive than the binned preview mode, so it needs more gain for the
+#: same picture; beyond this much the grain starts to show on paper, and more
+#: light is the honest answer. See PiCamera.match_capture_to_preview.
+CAPTURE_GAIN_MAX = 8.0
+
+#: Mean brightness of an output image grows roughly with this power of the
+#: light that reached the sensor - the gamma curve of the ISP. Measured on the
+#: booth: twice the exposure time made the mean 1.55 times larger. Only used
+#: as the first guess of the correction loop, which then measures.
+_GAMMA = 0.63
+
 
 class FrameBuffer:
     """The newest frame of the mock camera, for the preview on a computer."""
@@ -75,6 +88,9 @@ class CameraBase:
         raise NotImplementedError
 
     def measure_exposure(self, timeout: float = 14.0) -> dict[str, Any]:
+        raise NotImplementedError
+
+    def match_capture_to_preview(self, timeout: float = 20.0) -> dict[str, Any]:
         raise NotImplementedError
 
     def set_capture_size(self, width: int, height: int) -> None:
@@ -216,6 +232,7 @@ class PiCamera(CameraBase):
         self.picam2 = None
         self._video_config = None
         self._still_config = None
+        self._crop: tuple[int, int, int, int] | None = None
         self._writes: list[threading.Thread] = []
         self._write_errors: list[str] = []
 
@@ -254,7 +271,7 @@ class PiCamera(CameraBase):
             # guests a wider picture than they get, and cut people off at the
             # edges without warning. ScalerCrop applies to preview and still
             # alike, so the screen shows exactly what the printer receives.
-            crop = self._frame_crop(float(cam.get("frame_aspect", 1.5)))
+            crop = self._crop = self._frame_crop(float(cam.get("frame_aspect", 1.5)))
             # The sensor mode matters here, not just the output size: the small
             # IMX708 modes read only the centre of the sensor (1536x864 uses a
             # 3072x1728 crop), so a preview left to pick its own mode shows a
@@ -551,7 +568,7 @@ class PiCamera(CameraBase):
                 # Without the crop the capture falls back to 16:9 while the
                 # preview shows 3:2 - exactly the difference nobody notices
                 # until somebody comes out of the printer cut in half.
-                controls={"ScalerCrop": self._frame_crop(
+                controls={"ScalerCrop": self._crop or self._frame_crop(
                     float(cam.get("frame_aspect", 1.5)))},
                 transform=Transform(
                     hflip=bool(cam.get("hflip", False)),
@@ -559,6 +576,136 @@ class PiCamera(CameraBase):
                 ),
             )
         log.info("Still resolution set to %sx%s", width, height)
+
+    def _still_controls(self) -> dict[str, Any]:
+        """The controls the capture itself runs at.
+
+        They have to travel inside the still configuration rather than being
+        set on the running camera: measured on the booth, a control set just
+        before the mode switch does not reach the capture at all. Three
+        different exposure times set that way produced three identical
+        pictures, all of them taken with the old value.
+
+        The one difference to the preview is the gain. See
+        match_capture_to_preview for where the factor comes from.
+        """
+        cam = self.config.section("camera")
+        settings = cam.get("controls", {})
+        controls = build_libcamera_controls(settings, include_af=self.has_autofocus)
+        controls["ScalerCrop"] = self._crop or self._frame_crop(
+            float(cam.get("frame_aspect", 1.5)))
+        faktor = float(settings.get("capture_gain_factor", 1.0) or 1.0)
+        if faktor != 1.0 and "AnalogueGain" in controls:
+            controls["AnalogueGain"] = round(
+                min(CAPTURE_GAIN_MAX, max(1.0, controls["AnalogueGain"] * faktor)), 2)
+        return controls
+
+    @staticmethod
+    def _frame_mean(pixels) -> float:
+        """Mean brightness of a frame, over a sample of its pixels.
+
+        Every eighth pixel in each direction is enough - 300 by 500 of them
+        even for a full resolution capture - and keeps a comparison well under
+        a tenth of a second. The preview arrives with four channels and the
+        capture with three; the fourth carries no picture, so it is dropped.
+        """
+        import numpy as np  # noqa: PLC0415 - only needed while calibrating
+        sample = pixels[::8, ::8]
+        if sample.ndim == 3 and sample.shape[2] == 4:
+            sample = sample[:, :, :3]
+        return float(np.mean(sample.astype(np.float32)))
+
+    def _shoot_array(self, gain: float | None = None):
+        """One real capture, straight into memory: no file, no background write."""
+        controls = self._still_controls()
+        if gain is not None:
+            controls["AnalogueGain"] = round(float(gain), 2)
+        with self.lock:
+            if self.picam2 is None:
+                raise RuntimeError("Kamera ist nicht gestartet")
+            self._still_config["controls"].update(controls)
+            try:
+                return self.picam2.switch_mode_and_capture_array(self._still_config, "main")
+            finally:
+                self.apply_controls(self.config.section("camera").get("controls", {}))
+
+    def match_capture_to_preview(self, timeout: float = 20.0) -> dict[str, Any]:
+        """Make the photograph as bright as the preview the guests were shown.
+
+        The two sensor modes are not equally sensitive. The preview reads
+        2304x1296 with four photodiodes combined into one pixel, the capture
+        reads all 4608x2592 separately, so at the same exposure and the same
+        gain the capture collects about half the light. Measured on the booth,
+        its mean brightness came to 0.70 of the preview's - which is what "the
+        photo is much darker than the preview" looks like from the outside.
+
+        There is no factor to compute this from: the gamma curve of the ISP
+        sits between the light and the number, and the sensor tuning differs
+        per mode. So it is photographed instead. The capture keeps the
+        preview's exposure time, so it is never blurrier than what was on
+        screen, and the difference is made up with analogue gain: shoot,
+        compare, correct, shoot again. Three captures, about three seconds.
+
+        Noise is the price, and it has a limit. Once CAPTURE_GAIN_MAX is
+        reached the result says so instead of quietly amplifying grain: at
+        that point only more light helps.
+        """
+        cam = self.config.section("camera")
+        settings = cam.setdefault("controls", {})
+        if settings.get("ae_enable"):
+            return {"note": ("Die Belichtung steht auf automatisch. Dann gibt es "
+                             "keinen festen Wert, der sich angleichen ließe.")}
+        with self.lock:
+            if self.picam2 is None:
+                raise RuntimeError("Kamera ist nicht gestartet")
+        self._let_controls_land(6)
+        with self.lock:
+            ziel = self._frame_mean(self.picam2.capture_array("main"))
+        if ziel <= 1.0:
+            raise RuntimeError("Die Vorschau ist schwarz, da ist nichts zu vergleichen")
+
+        basis = float(settings.get("analogue_gain", 1.0))
+        faktor = float(settings.get("capture_gain_factor", 1.0) or 1.0)
+        ende = time.monotonic() + timeout
+        schritte: list[dict[str, Any]] = []
+        beste: dict[str, Any] | None = None
+
+        for _ in range(3):
+            gain = min(CAPTURE_GAIN_MAX, max(1.0, basis * faktor))
+            mittel = self._frame_mean(self._shoot_array(gain))
+            quote = mittel / ziel
+            schritte.append({"gain": round(gain, 2), "mean": round(mittel, 1),
+                             "ratio": round(quote, 3)})
+            if beste is None or abs(quote - 1.0) < abs(beste["ratio"] - 1.0):
+                beste = {"gain": gain, "ratio": quote, "factor": gain / basis}
+            if abs(quote - 1.0) <= 0.03 or time.monotonic() > ende:
+                break
+            if gain >= CAPTURE_GAIN_MAX and quote < 1.0:
+                break
+            faktor = (gain / basis) * (1.0 / quote) ** (1.0 / _GAMMA)
+
+        assert beste is not None
+        settings["capture_gain_factor"] = round(beste["factor"], 3)
+        self.config.save()
+        log.info("Capture matched to preview: gain %.2f (x%.2f), %.0f%% of the preview, %s",
+                 beste["gain"], beste["factor"], beste["ratio"] * 100, schritte)
+
+        hinweis = ""
+        if beste["ratio"] < 0.95 and beste["gain"] >= CAPTURE_GAIN_MAX - 0.01:
+            hinweis = ("Das Foto bleibt dunkler als die Vorschau. Mehr Verstärkung "
+                       "würde nur Bildrauschen bringen, hier hilft wirklich nur mehr "
+                       "Licht: Aufnahmelicht höher stellen oder die Leuchte näher "
+                       "an die Gäste.")
+        return {
+            "gain_factor": round(beste["factor"], 2),
+            "capture_gain": round(beste["gain"], 2),
+            "preview_gain": round(basis, 2),
+            "ratio": round(beste["ratio"], 3),
+            "preview_mean": round(ziel, 1),
+            "steps": schritte,
+            "matched": abs(beste["ratio"] - 1.0) <= 0.05,
+            "note": hinweis,
+        }
 
     def capture_still(self) -> dict[str, Any]:
         cam = self.config.section("camera")
@@ -580,6 +727,10 @@ class PiCamera(CameraBase):
             # stalled with it, and a shot took up to 3.5 seconds in the stress
             # test instead of 0.3.
             try:
+                # The controls go into the configuration, not onto the running
+                # camera: set there they never reach the capture. _still_controls
+                # explains it, match_capture_to_preview measured it.
+                self._still_config["controls"].update(self._still_controls())
                 pixels = self.picam2.switch_mode_and_capture_array(self._still_config, "main")
             finally:
                 self.apply_controls(cam.get("controls", {}))
@@ -762,6 +913,21 @@ class MockCamera(CameraBase):
             "lux": None,
             "settled": True,
             "samples": 0,
+            "note": "Mock: kein echter Sensor",
+        }
+
+    def match_capture_to_preview(self, timeout: float = 20.0) -> dict[str, Any]:
+        """Nothing to match: the mock renders preview and capture from the same picture."""
+        time.sleep(0.4)
+        controls = self.config.section("camera").setdefault("controls", {})
+        controls["capture_gain_factor"] = 1.0
+        return {
+            "gain_factor": 1.0,
+            "capture_gain": controls.get("analogue_gain"),
+            "preview_gain": controls.get("analogue_gain"),
+            "ratio": 1.0,
+            "matched": True,
+            "steps": [],
             "note": "Mock: kein echter Sensor",
         }
 

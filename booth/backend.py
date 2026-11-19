@@ -230,9 +230,14 @@ class Backend:
         time.sleep(max(ramp_s, 0.3))
         camera = self.camera
         try:
+            # Order matters: the capture is matched against a preview whose
+            # exposure and white balance are already fixed, otherwise the
+            # comparison measures the auto modes rather than the two sensor
+            # modes.
             for name, func in (("exposure", camera.measure_exposure),
                                ("white_balance", camera.measure_white_balance),
-                               ("focus", camera.autofocus)):
+                               ("focus", camera.autofocus),
+                               ("capture", camera.match_capture_to_preview)):
                 try:
                     result[name] = func()
                 except Exception as exc:  # noqa: BLE001 - report per step
@@ -241,7 +246,7 @@ class Backend:
         finally:
             self.session._set_light(self.idle_light())
         for name, label in (("exposure", "Belichtung"), ("white_balance", "Weißabgleich"),
-                            ("focus", "Fokus")):
+                            ("focus", "Fokus"), ("capture", "Aufnahme")):
             step = result.get(name) or {}
             if step.get("error"):
                 self.events.add(f"Einmessen: {label} fehlgeschlagen: {step['error']}", "error")
@@ -253,6 +258,16 @@ class Backend:
             self.events.add("Eingemessen: {} µs, Verstärkung {}, {} lx".format(
                 exposure.get("exposure_time_us"), exposure.get("analogue_gain"),
                 exposure.get("lux")), "good")
+        aufnahme = result.get("capture") or {}
+        if aufnahme.get("gain_factor"):
+            self.events.add(
+                "Aufnahme an die Vorschau angeglichen: Verstärkung {} statt {}, "
+                "Foto liegt bei {} % der Vorschau".format(
+                    aufnahme.get("capture_gain"), aufnahme.get("preview_gain"),
+                    round(float(aufnahme.get("ratio", 0)) * 100)),
+                "good" if aufnahme.get("matched") else "warn")
+        if aufnahme.get("note") and not aufnahme.get("error"):
+            self.events.add("Einmessen: " + str(aufnahme["note"]), "warn")
         licht = result.get("light")
         if licht and abs(licht["after"] - licht["before"]) > 0.005:
             gpio_cfg["light_capture_duty"] = licht["after"]

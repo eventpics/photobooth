@@ -16,6 +16,7 @@
       "ae_enable": false,
       "exposure_time_us": 8000,
       "analogue_gain": 2.0,
+      "capture_gain_factor": 1.0,
       "awb_enable": false,
       "colour_gain_red": 1.8,
       "colour_gain_blue": 1.6,

@@ -23,6 +23,9 @@ from .widgets import Picture
 COUNTDOWN_S = 3
 #: Calibration normally takes about five seconds. If nothing settles it can be
 #: up to forty - with no running display that would look like a crash.
+#: Measured on the booth at 11.7 seconds without the light search, matching
+#: the capture to the preview included. The limit is for the case where a step
+#: never settles.
 CALIBRATE_LIMIT_S = 75
 
 STYLE = """
@@ -319,8 +322,10 @@ class ShotScreen(QWidget):
         e = result.get("exposure") or {}
         w = result.get("white_balance") or {}
         f = result.get("focus") or {}
+        c = result.get("capture") or {}
         problems = []
-        for name, part in (("Belichtung", e), ("Weißabgleich", w), ("Fokus", f)):
+        for name, part in (("Belichtung", e), ("Weißabgleich", w), ("Fokus", f),
+                           ("Aufnahme", c)):
             if part.get("error"):
                 problems.append(f"{name}: {part['error']}")
             elif part.get("note"):
@@ -352,6 +357,12 @@ class ShotScreen(QWidget):
             values.append(f"Weißabgleich R {w['colour_gain_red']} / B {w.get('colour_gain_blue')}")
         if f.get("distance_m") is not None:
             values.append(f"Scharf auf {f['distance_m']} m")
+        if c.get("gain_factor"):
+            # The one line that answers "why is the photo darker than the
+            # preview". Close to 100 percent is right; far below it means the
+            # light was not enough even at full amplification.
+            values.append("Foto wie Vorschau ({} %)".format(
+                round(float(c.get("ratio", 0)) * 100)))
         licht = result.get("light") or {}
         if licht and abs(licht.get("after", 0) - licht.get("before", 0)) > 0.005:
             values.append("Aufnahmelicht {} → {} %".format(
