@@ -222,44 +222,55 @@ class EventPicsTarget:
         import shutil  # noqa: PLC0415
         return shutil.which("zbarimg") is not None
 
-    def vom_qr(self, camera) -> dict[str, Any]:
-        """Read credentials off a QR code held up to the camera.
+    def dekodieren(self, pixels) -> str:
+        """Read a code off one camera frame. Empty text if there is none.
 
-        The most convenient route, and therefore the first: the box has a
-        camera, the key is on the phone. Hold the QR up, done. A key of
-        thirty-two random characters is otherwise not enterable on a
-        touchscreen with no keyboard.
+        Written out as a grey PGM rather than encoded as a JPEG: zbar wants a
+        file, a code has no colour, and a header plus the raw bytes is the
+        cheapest file there is.
         """
         import subprocess  # noqa: PLC0415
+        import tempfile  # noqa: PLC0415
 
-        if not self.qr_moeglich():
-            return {"ok": False, "error": "zbar-tools ist nicht installiert"}
+        if pixels is None or not self.qr_moeglich():
+            return ""
+        feld = pixels
+        if getattr(feld, "ndim", 2) == 3:
+            # The live image arrives with four channels, the fourth carries no
+            # picture. Grey is the mean of the other three.
+            feld = feld[:, :, :3].mean(axis=2)
+        grau = feld.astype("uint8")
+        hoehe, breite = grau.shape[0], grau.shape[1]
+        with tempfile.NamedTemporaryFile(suffix=".pgm", delete=False) as fh:
+            fh.write(b"P5\n%d %d\n255\n" % (breite, hoehe))
+            fh.write(grau.tobytes())
+            pfad = Path(fh.name)
         try:
-            info = camera.capture_still()
-            camera.wait_for_writes()
-        except Exception as exc:  # noqa: BLE001
-            return {"ok": False, "error": f"Aufnahme fehlgeschlagen: {exc}"}
-        pfad = Path(camera.capture_dir) / info["file"]
-        try:
-            ergebnis = subprocess.run(["zbarimg", "--quiet", "--raw", str(pfad)],
-                                      capture_output=True, text=True, timeout=20)
+            ergebnis = subprocess.run(["zbarimg", "--quiet", "--raw", "-1", str(pfad)],
+                                      capture_output=True, text=True, timeout=10)
+            return (ergebnis.stdout or "").strip()
         except (OSError, subprocess.TimeoutExpired) as exc:
-            return {"ok": False, "error": f"Erkennung fehlgeschlagen: {exc}"}
+            log.warning("zbarimg failed: %s", exc)
+            return ""
         finally:
             try:
-                pfad.unlink(missing_ok=True)     # the picture is not needed
+                pfad.unlink(missing_ok=True)
             except OSError:
                 pass
-        text = (ergebnis.stdout or "").strip()
+
+    def vom_bild(self, pixels) -> dict[str, Any]:
+        """Take the credentials from one frame of the live image."""
+        text = self.dekodieren(pixels)
         if not text:
-            return {"ok": False, "error": "Kein QR-Code im Bild erkannt"}
+            return {"ok": False, "gefunden": False}
         gefunden = zugang_lesen(text)
         if not gefunden.get("api_key"):
-            return {"ok": False, "error": "Im QR-Code steht kein Schlüssel"}
+            return {"ok": False, "gefunden": True,
+                    "error": "In dem Code steht kein Schlüssel."}
         geaendert = self.uebernehmen(gefunden)
         if self.events is not None:
             self.events.add("EventPics-Zugang vom QR-Code übernommen", "good")
-        return {"ok": True, "uebernommen": geaendert, "quelle": "QR-Code"}
+        return {"ok": True, "gefunden": True, "uebernommen": geaendert, "quelle": "QR-Code"}
 
     # -- API ---------------------------------------------------------------
     def _anfrage(self, url: str, *, method: str = "GET", daten: bytes | None = None,

@@ -400,11 +400,34 @@ class Backend:
             })
         return {"ok": True, "events": events}
 
-    def eventpics_setup(self, source: str) -> dict[str, Any]:
-        """Take the key from a QR code at the camera, or from the USB stick."""
-        if source == "qr":
-            return self.eventpics.vom_qr(self.camera)
+    def eventpics_setup(self, source: str = "usb") -> dict[str, Any]:
+        """Take the key off the USB stick.
+
+        Reading it off a code used to be in here too, as one photograph taken
+        the moment the button was pressed, with the focus and the exposure the
+        booth stands calibrated at. A code held up to the lens is a bright
+        blur in such a picture, and the screen only ever said that nothing had
+        been found. That way is gone; the scanning screen looks at the live
+        image instead, with the camera focusing for itself.
+        """
+        if source != "usb":
+            raise ValueError(f"Unbekannte Quelle: {source}")
         return self.eventpics.vom_stick(self.usb)
+
+    def eventpics_scan_begin(self) -> None:
+        """Camera ready for something held up close. Always paired with the end."""
+        self.camera.begin_close_up()
+
+    def eventpics_scan_end(self) -> None:
+        self.camera.end_close_up()
+
+    def eventpics_scan_tick(self) -> dict[str, Any]:
+        """One look at the live image. Scanning is trying, not photographing."""
+        try:
+            pixels = self.camera.preview_array()
+        except Exception as exc:  # noqa: BLE001 - reported on the screen
+            return {"ok": False, "gefunden": False, "error": f"Kein Kamerabild: {exc}"}
+        return self.eventpics.vom_bild(pixels)
 
     def eventpics_status(self) -> dict[str, Any]:
         data = self.eventpics.status()

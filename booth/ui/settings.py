@@ -30,6 +30,7 @@ from .controls import (Card, ChoiceControl, ChooserOverlay, ColourDot,
                        TextControl, Toggle,
                        button, field, grid, label, set_on, style)
 from .keyboard import KeyboardOverlay
+from .scan import ScanScreen
 from .shot import ShotScreen
 
 log = logging.getLogger(__name__)
@@ -216,6 +217,11 @@ class SettingsScreen(QWidget):
         self.confirm = ConfirmOverlay(self)
         self.shot = ShotScreen(self, backend, on_close=self._shot_closed,
                                on_calibrated=self._calibrated)
+        self.scan = ScanScreen(self, backend, on_close=self._scan_closed,
+                               on_found=self._scan_found)
+        #: Did the scan bring a key? Then the page is rebuilt on the way out,
+        #: so the masked key and the connection notice are the new ones.
+        self._scan_hit = False
         self.camera_slot: QWidget | None = None
         self.hide()
 
@@ -665,7 +671,7 @@ class SettingsScreen(QWidget):
         way_box.addWidget(label("API-Schlüssel", "label"))
         buttons = QHBoxLayout()
         buttons.setSpacing(12)
-        self.qr_btn = button("QR-Code scannen", "action", lambda: self._eventpics_task("qr"))
+        self.qr_btn = button("QR-Code scannen", "action", self._open_scan)
         buttons.addWidget(self.qr_btn)
         buttons.addWidget(button("Vom USB-Stick lesen", "quiet", lambda: self._eventpics_task("usb")))
         buttons.addWidget(button("Eintippen", "quiet", self._type_key))
@@ -711,9 +717,24 @@ class SettingsScreen(QWidget):
             self._save({"values": {"eventpics.api_key": text}})
             self._eventpics_task("status")
 
+    def _open_scan(self) -> None:
+        self._scan_hit = False
+        self.scan.open()
+
+    def _scan_found(self, _result: dict) -> None:
+        self._scan_hit = True
+
+    def _scan_closed(self) -> None:
+        if self._scan_hit:
+            self._scan_hit = False
+            # Rebuilt rather than patched: the key is shown masked, the
+            # connection notice and the event list all hang off it.
+            self.go("eventpics")
+        else:
+            self._eventpics_task("status")
+
     def _eventpics_task(self, what: str) -> None:
-        texts = {"qr": "QR-Code wird gesucht … Schlüssel vom Telefon in die Kamera halten.",
-                 "usb": "Stick wird gelesen …", "events": "Events werden geladen …",
+        texts = {"usb": "Stick wird gelesen …", "events": "Events werden geladen …",
                  "status": "Verbindung wird geprüft …"}
         self.ep_status.setText(texts[what])
         self.ep_status.setStyleSheet("")
@@ -721,7 +742,7 @@ class SettingsScreen(QWidget):
 
         def work() -> None:
             try:
-                if what in ("qr", "usb"):
+                if what == "usb":
                     result = backend.eventpics_setup(what)
                 elif what == "events":
                     result = backend.eventpics_events()
@@ -741,7 +762,7 @@ class SettingsScreen(QWidget):
         if not result.get("ok"):
             status(result.get("error") or "Fehlgeschlagen", True)
             return
-        if what in ("qr", "usb"):
+        if what == "usb":
             status(f"Übernommen vom {result.get('quelle', what)}: "
                    f"{', '.join(result.get('uebernommen') or [])}")
             self.epevents = []

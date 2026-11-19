@@ -93,6 +93,23 @@ class CameraBase:
     def match_capture_to_preview(self, timeout: float = 20.0) -> dict[str, Any]:
         raise NotImplementedError
 
+    def preview_array(self):
+        """One frame of the live image, as pixels. No file, no mode switch."""
+        raise NotImplementedError
+
+    def begin_close_up(self) -> None:
+        """Let the camera see something held right in front of it.
+
+        The booth is focused on the spot where the guests stand, two or three
+        metres away, with an exposure measured for exactly that. A phone held
+        up to the lens is then a bright blur, which is why reading a code off
+        one did not work. For as long as this is on, the camera focuses and
+        exposes by itself; end_close_up puts the measured values back.
+        """
+
+    def end_close_up(self) -> None:
+        """Back to the values the booth was calibrated to."""
+
     def set_capture_size(self, width: int, height: int) -> None:
         """Change the still resolution without restarting the camera.
 
@@ -612,6 +629,30 @@ class PiCamera(CameraBase):
             )
         log.info("Still resolution set to %sx%s", width, height)
 
+    def preview_array(self):
+        with self.lock:
+            if self.picam2 is None:
+                raise RuntimeError("Kamera ist nicht gestartet")
+            return self.picam2.capture_array("main")
+
+    def begin_close_up(self) -> None:
+        with self.lock:
+            if self.picam2 is None:
+                return
+            controls: dict[str, Any] = {"AeEnable": True, "AwbEnable": True}
+            if self.has_autofocus:
+                # Continuous over the whole range, and quickly: whoever holds
+                # a code up moves it, and the sensor focuses from three
+                # centimetres to infinity.
+                controls.update({"AfMode": 2, "AfRange": 2, "AfSpeed": 1})
+            try:
+                self.picam2.set_controls(controls)
+            except Exception as exc:  # noqa: BLE001 - reading a code is not worth a crash
+                log.warning("Close-up mode failed: %s", exc)
+
+    def end_close_up(self) -> None:
+        self.apply_controls(self.config.section("camera").get("controls", {}))
+
     def _still_controls(self) -> dict[str, Any]:
         """The controls the capture itself runs at.
 
@@ -954,6 +995,10 @@ class MockCamera(CameraBase):
             "samples": 0,
             "note": "Mock: kein echter Sensor",
         }
+
+    def preview_array(self):
+        """The stand-in camera draws a test pattern; there is no code in it."""
+        raise RuntimeError("Die Ersatzkamera liefert kein Bild zum Scannen")
 
     def match_capture_to_preview(self, timeout: float = 20.0) -> dict[str, Any]:
         """Nothing to match: the mock renders preview and capture from the same picture."""
