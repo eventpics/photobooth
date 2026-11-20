@@ -13,7 +13,7 @@ oder drucken. Gebaut ist die Oberfläche für 1920 × 1200 und wird auf jedem
 Bildschirm als Ganzes skaliert.
 
 *This file in English: [README.md](README.md).*
-**Die ganze Bauanleitung mit Bildern, Zeichnungen und Stückliste:**
+**Die ganze Bauanleitung mit Bildern, Zeichnungen und Stückliste** (Entwurf):
 [docs/build-guide.de.md](docs/build-guide.de.md), im Netz unter
 <https://event.pics/de/fotobox-selber-bauen.html>.
 

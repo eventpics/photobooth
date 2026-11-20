@@ -8,6 +8,11 @@ EventPics-Galerie. Bedient wird sie nur an ihrem eigenen Bildschirm.
 Alle Teile heißen hier so, wie sie auch in der Software und in den Zeichnungen
 heißen, also englisch: `front`, `door`, `shelf`, `pi mount`, `iec inlet`.
 
+> **Entwurf, Stand 20. November 2026.** Diese Anleitung ist noch nicht fertig.
+> Ein Teil der Maße ist von Fotos abgenommen und nicht am Holz nachgemessen,
+> und die Bilder werden durch neue vor neutralem Hintergrund ersetzt. Miss an
+> deinem eigenen Material nach, bevor du sägst oder bestellst.
+
 ![Die fertige Box auf dem Ständer](images/booth-on-stand.jpg)
 
 ## Was dabei herauskommt
@@ -58,7 +63,7 @@ nicht von Amazon, der Rest schon.
 
 | Teil | Was ich verbaut habe | Preis |
 |---|---|---|
-| `printer` | Canon Selphy CP1500, Thermosublimation, 10 × 15 cm | ca. 150 € |
+| `printer` | Canon Selphy CP1500, Thermosublimation, 10 × 15 cm | ca. 119 € |
 | Papier | Canon KP-108IN, 108 Blatt mit Farbband | ca. 35 € |
 | `usb cable` | SUNGUY USB 3.0 A auf A, 0,3 m, vom Pi zur Einbaubuchse | 6,41 € |
 
@@ -92,8 +97,9 @@ nicht von Amazon, der Rest schon.
 | `vent` | Lüftungsgitter 60 × 60 mm aus Metall | ca. 5 € |
 | `pi mount` | 3D-Druckteil, Datei in dieser Anleitung | Filament |
 
-Zusammen liegt das bei etwa **650 bis 700 Euro ohne Holz und ohne Papier**. Der
-größte Posten ist der Bildschirm, der zweitgrößte der Drucker.
+Zusammen sind das **rund 818 Euro** für alles, mit Hintergrund und Requisiten,
+oder **rund 753 Euro** ohne die beiden. Der größte Posten ist der Bildschirm, der
+zweitgrößte der Drucker.
 
 ## Werkzeug
 
@@ -393,7 +399,7 @@ transportieren, und die Box nie am Bildschirm anheben.
 
 ## Mitmachen
 
-Die Software steht unter der MIT-Lizenz im Repository
+Die Software steht unter der GPL-3.0-or-later im Repository
 <https://github.com/eventpics/photobooth>. Zeichnungen, Druckteil und diese
 Anleitung liegen im selben Repository unter `docs/`.
 

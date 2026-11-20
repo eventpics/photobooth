@@ -13,7 +13,7 @@ it or print from it. The interface is built for 1920 × 1200 and scaled as a
 whole on any other screen.
 
 *Diese Datei auf Deutsch: [README.de.md](README.de.md).*
-**The full build guide, with photographs, drawings and a bill of materials**
+**The full build guide, with photographs, drawings and a bill of materials** (a draft)
 (German): [docs/build-guide.de.md](docs/build-guide.de.md), on the web at
 <https://event.pics/de/fotobox-selber-bauen.html>.
 
