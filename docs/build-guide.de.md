@@ -8,11 +8,6 @@ EventPics-Galerie. Bedient wird sie nur an ihrem eigenen Bildschirm.
 Alle Teile heißen hier so, wie sie auch in der Software und in den Zeichnungen
 heißen, also englisch: `front`, `door`, `shelf`, `pi mount`, `iec inlet`.
 
-> **Entwurf, Stand 20. November 2026.** Diese Anleitung ist noch nicht fertig.
-> Ein Teil der Maße ist von Fotos abgenommen und nicht am Holz nachgemessen,
-> und die Bilder werden durch neue vor neutralem Hintergrund ersetzt. Miss an
-> deinem eigenen Material nach, bevor du sägst oder bestellst.
-
 ![Die fertige Box auf dem Ständer](images/booth-on-stand.jpg)
 
 ## Was dabei herauskommt
@@ -65,15 +60,15 @@ nicht von Amazon, der Rest schon.
 |---|---|---|
 | `printer` | Canon Selphy CP1500, Thermosublimation, 10 × 15 cm | ca. 119 € |
 | Papier | Canon KP-108IN, 108 Blatt mit Farbband | ca. 35 € |
-| `usb cable` | SUNGUY USB 3.0 A auf A, 0,3 m, vom Pi zur Einbaubuchse | 6,41 € |
+| `usb cable` | SUNGUY USB 3.0 A auf A, 0,3 m, **2 Stück**, vom Pi zu den beiden Einbaubuchsen | 12,82 € |
 
 ### Ständer und Ablage
 
 | Teil | Was ich verbaut habe | Preis |
 |---|---|---|
-| `stand` | GZGDLJQ Boxenständer, 89 bis 180 cm, Rohr 35 mm, bis 30 kg | 25,99 € |
+| `stand` | GZGDLJQ Boxenständer, 89 bis 180 cm, Rohr 35 bis 37 mm, bis 30 kg | 25,99 € |
 | `pole flange` | Drall AD8BA Boxenflansch zum Anschrauben, für 35 mm | 13,20 € |
-| `shelf screw` | Schraube M8 × 90 mit Flügelmutter und zwei Scheiben | ca. 2 € |
+| `shelf screw` | Schraube M8 × 90 mit Flügelmutter, sichert die Ablage | ca. 2 € |
 
 ### Elektrik
 
@@ -97,8 +92,8 @@ nicht von Amazon, der Rest schon.
 | `vent` | Lüftungsgitter 60 × 60 mm aus Metall | ca. 5 € |
 | `pi mount` | 3D-Druckteil, Datei in dieser Anleitung | Filament |
 
-Zusammen sind das **rund 818 Euro** für alles, mit Hintergrund und Requisiten,
-oder **rund 753 Euro** ohne die beiden. Der größte Posten ist der Bildschirm, der
+Zusammen sind das **rund 824 Euro** für alles, mit Hintergrund und Requisiten,
+oder **rund 759 Euro** ohne die beiden. Der größte Posten ist der Bildschirm, der
 zweitgrößte der Drucker.
 
 ## Werkzeug
@@ -130,10 +125,14 @@ vorn ist es leicht angesenkt, damit das Objektiv frei schaut und die Kante
 nicht ins Bild spiegelt. Bohre erst, wenn die Kamera da ist, und halte sie
 vorher von innen an.
 
-Die Tür geht über die ganze Rückseite und hängt an zwei Aufschraubscharnieren.
-Innen halten zwei Querleisten das Brett gerade, oben sitzt ein Lüftungsgitter
-60 × 60 mm, und ein Möbelschloss Ø 19 hält sie zu. Hinter der Tür liegt alles,
-was niemand im Betrieb anfassen soll.
+Die Tür geht über die ganze Rückseite und hängt an zwei Scharnieren. Oben sitzt
+ein Lüftungsgitter 60 × 60 mm, und ein Möbelschloss Ø 19 hält sie zu. Hinter der
+Tür liegt alles, was niemand im Betrieb anfassen soll.
+
+**Nimm einstellbare Scharniere.** In unserer Box sitzen einfache
+Aufschraubscharniere, und die lassen sich nicht nachjustieren: Steht die Tür
+schief, muss man sie abschrauben und die Löcher neu setzen. Scharniere mit
+Verstellung in Höhe, Tiefe und Seite sparen genau diese Arbeit.
 
 ![Die Tür von innen](images/door-inside.jpg)
 ![Die Rückseite mit Gravur](images/back-panel.jpg)
@@ -166,14 +165,16 @@ Buchse ist der Hauptschalter der ganzen Box, die Sicherung sitzt gleich daneben.
 
 ![Zeichnung der Ablage](drawing-shelf.svg)
 
-Die Ablage ist ein Brett 400 × 210 mm mit zwei Leisten darunter, die eine Gabel
-bilden. Hinten schließt ein Klotz die Gabel, vorn geht eine Schraube M8 × 90
-durch beide Leisten, mit einer Flügelmutter darauf.
+Die Ablage ist ein Brett 400 × 210 mm mit zwei Leisten darunter. Sie laufen quer
+zur hinteren Kante und stehen etwa 80 mm darüber hinaus, und genau dort steckt
+das Rohr: Die Ablage hängt am Rohr und kragt nach vorn aus. Zwischen den Leisten
+sitzt ein Klotz, bündig mit der hinteren Kante, der die Gabel schließt.
 
-Das Rohr des Ständers misst 35 mm, die Gabel 37 mm. Die Ablage wird einfach auf
-das Rohr geschoben, auf die gewünschte Höhe gebracht und mit der Flügelmutter
-festgezogen. Kein Werkzeug, und die Höhe lässt sich am Veranstaltungsort noch
-ändern.
+Auf der Höhe der Ablage misst das Rohr des Ständers etwa 37 mm, genau wie die
+Gabel. **Sie klemmt damit von selbst**, aufschieben genügt, und die Höhe lässt
+sich am Veranstaltungsort noch ändern. Eine Schraube M8 × 90 mit Flügelmutter
+quer durch beide Leisten sichert sie zusätzlich gegen Verrutschen. Nötig ist sie
+nicht, beruhigend schon.
 
 ![Die Ablage von oben](images/shelf-top.jpg)
 ![Die Ablage von unten mit Klemme](images/shelf-underside.jpg)

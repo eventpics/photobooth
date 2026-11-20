@@ -70,15 +70,11 @@ cx, cy = 80, 620
 d.text(cx, cy - 14, "Tür von innen", size=13, weight="600")
 d.rect(cx, cy, 410, 290, fill=WOODF, sw=2)
 d.rect(cx + 175, cy + 22, 60, 60, fill="#D1D5DB")
-for y in (cy + 118, cy + 205):
-    d.rect(cx + 60, y, 320, 35, fill=WOOD, sw=1.2)
 for y in (cy + 55, cy + 195):
     d.rect(cx + 395, y, 15, 45, fill="#9CA3AF", sw=1.2)
 d.circle(cx + 22, cy + 145, 9.5, fill="#FFFFFF")
 d.text(cx + 205, cy + 100, "Lüftungsgitter 60 × 60", size=10, anchor="middle")
-d.text(cx + 220, cy + 140, "Querleisten gegen das Werfen", size=10, anchor="middle")
-d.text(cx + 220, cy + 227, "Querleisten gegen das Werfen", size=10, anchor="middle")
-d.text(cx + 388, cy + 45, "2 × surface hinge", size=10, anchor="end")
+d.text(cx + 388, cy + 45, "2 × Scharnier, einstellbar nehmen", size=10, anchor="end")
 d.text(cx + 40, cy + 149, "cam lock Ø 19", size=10)
 d.dim_h(cx, cx + 410, cy + 320, "410")
 d.dim_v(cy, cy + 290, cx - 28, "290")

@@ -52,9 +52,6 @@ header.top .wrap{display:flex;flex-direction:column;gap:18px}
 h1{font-family:var(--font-display);font-size:clamp(34px,6vw,52px);line-height:1.05;
    margin:0;font-weight:700;letter-spacing:-.02em;text-wrap:balance}
 .lede{font-size:19px;color:var(--muted);margin:0;max-width:62ch}
-.draft{align-self:flex-start;font-family:var(--font-mono);font-size:13px;
-       letter-spacing:.04em;border:2px solid var(--accent);border-radius:999px;
-       padding:5px 14px;color:var(--ink);background:var(--accent-soft)}
 .facts{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
 .fact{font-family:var(--font-mono);font-size:12.5px;border:1px solid var(--line);
       border-radius:999px;padding:5px 12px;color:var(--muted);background:var(--card)}
@@ -261,7 +258,6 @@ page = f"""<!doctype html>
 <body>
 <header class="top"><div class="wrap">
   <div class="eyebrow">EventPics Fotobox</div>
-  <div class="draft">Entwurf, Stand 20. November 2026</div>
   <h1>{html.escape(title)}</h1>
   <p class="lede">{inline(lede)}</p>
   <div class="facts">{"".join(f'<span class="fact">{f}</span>' for f in facts)}</div>
