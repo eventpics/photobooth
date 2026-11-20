@@ -213,13 +213,32 @@ Ausrichtung nicht. Am Pi 3 und Pi 4 passt das 15-Pin-Kabel, am Pi 5 das Kabel vo
 15 auf 22 Pin. Der Kamera liegen meist beide bei.
 
 **Einmessen.** Stell jemanden auf den echten Standabstand, dunkle den Raum ab
-und tippe in den Einstellungen auf „Automatisch einmessen“. Die Box sucht sich
-zuerst das **Aufnahmelicht** selbst: nicht das hellste, sondern das dunkelste,
-das Bewegung noch einfriert (Ziel 1/125 s). Darunter werden Belichtung,
-Weißabgleich und Fokus gemessen und bleiben fest. Weil eine Belichtung nur zu
-der Helligkeit passt, unter der sie gemessen wurde, wird beides zusammen
-übernommen. Der Ergebnisbildschirm zeigt den gefundenen Wert und bietet
-„Altes Licht behalten“ an, was den alten Wert zurücksetzt und neu misst.
+und tippe in den Einstellungen auf „Automatisch einmessen“. Es läuft in vier
+Schritten und dauert zusammen etwa zwölf Sekunden. Die Box sucht sich zuerst
+das **Aufnahmelicht** selbst: nicht das hellste, sondern das dunkelste, das
+Bewegung noch einfriert (Ziel 1/125 s). Darunter werden Belichtung,
+Weißabgleich und Fokus gemessen und bleiben fest. Zuletzt gleicht sie die
+**Aufnahme an die Vorschau** an: Das Livebild liest den Sensor gebündelt aus,
+vier Fotodioden je Bildpunkt, das Foto liest den ganzen Sensor. Das Foto
+sammelt damit nur etwa halb so viel Licht und wäre ohne Korrektur sichtbar
+dunkler als die Vorschau. Die Box macht dafür echte Aufnahmen, vergleicht sie
+mit dem Livebild und speichert den gefundenen Faktor in `capture_gain_factor`.
+
+Weil eine Belichtung nur zu der Helligkeit passt, unter der sie gemessen wurde,
+werden Licht und Belichtung zusammen übernommen. Der Ergebnisbildschirm zeigt
+die gefundenen Werte und bietet „Altes Licht behalten“ an, was den alten Wert
+zurücksetzt und neu misst. „Foto wie Vorschau“ in derselben Zeile ist der
+Angleich von oben: nahe 100 % ist richtig, deutlich darunter heißt, dass selbst
+die volle Verstärkung nicht reichte.
+
+Wohin das Einmessen zielt, bestimmen zwei Felder. **Bildhelligkeit**
+(`exposure_bias_ev`) verschiebt das Ziel in Viertelstufen: minus macht die
+Fotos dunkler, plus heller, eine ganze Stufe ist doppelt oder halb so viel
+Licht. Wie hell die Bilder sein sollen, ist Geschmack und kein Messwert, und
+dieses Feld ist die Stelle dafür. **Aufnahmelicht selbst suchen**
+(`light_auto_search`) lässt sich abschalten, wenn die eingestellte Helligkeit
+stehen bleiben soll. Dann wird nur unter deinem Wert gemessen, und das Ergebnis
+schlägt höchstens vor, mehr Licht zu geben.
 
 `LensPosition` ist in Dioptrien angegeben, also 1 geteilt durch die Entfernung
 in Metern: 2,0 m entsprechen 0,5, und 2,5 m entsprechen 0,4.
@@ -448,6 +467,29 @@ sudo lpadmin -d Selphy
 10×15 cm randlos beim Selphy. Falls der Ausdruck beschnitten wird, hier zuerst
 ansetzen. Zum Testen ein Foto machen und auf „Drucken" tippen.
 
+### EventPics-Galerie
+
+Soll die Box hochladen, braucht sie den API-Schlüssel des Events. Der ist über
+dreißig zufällige Zeichen lang, die niemand auf einem Touchscreen tippt. Unter
+Einstellungen → EventPics gibt es darum zwei Wege hinein:
+
+- **Vom USB-Stick.** Eine Datei `fotobox-eventpics.txt` im Hauptverzeichnis des
+  Sticks, mit dem Schlüssel darin. Die Box liest sie und löscht sie danach: Ein
+  Zugangsschlüssel hat auf einem Stick nichts zu suchen, der später unter
+  Gästen herumliegt.
+- **QR-Code scannen.** Ein eigener Bildschirm zeigt das Livebild groß, die
+  Kamera stellt dabei selbst scharf und belichtet selbst, und jedes Bild wird
+  angeschaut, bis ein Code gefunden ist. Halte ihn eine Handbreit bis einen Arm
+  weit vor die Kamera. Dafür muss `zbar-tools` installiert sein, `install-pi.sh`
+  holt es mit; fehlt es, sagt die Seite das und bleibt beim Stick.
+
+Auf dem Code und in der Datei darf der Schlüssel allein stehen. Erkannt werden
+außerdem `apikey=…`, JSON mit `apiKey` und `eventpics://setup?apiKey=…`.
+Danach holt die Box mit dem Schlüssel die Liste der Events und Alben, und du
+wählst auf derselben Seite aus, wohin die Bilder gehen. Der Schlüssel landet in
+`config.json`, die in `.gitignore` steht und die `tools/deploy.sh` nicht
+anfasst.
+
 ## Gut zu wissen
 
 - **PWM-Licht und kurze Belichtung schlagen gegeneinander.** Ein gedimmter
@@ -499,6 +541,7 @@ booth/
   ui/                       die Oberfläche: Gäste, Einstellungen, Tastatur, PIN
 autostart/                  Autostart, Wächter, Touch, USB, Startzeit
 tools/stress_test.py        Stresstest mit echter Kamera
+tools/deploy.sh             auf die Box übertragen und neu starten
 docs/                       Entscheidungen und ihre Gründe
 captures/                   aufgenommene Bilder
 ```

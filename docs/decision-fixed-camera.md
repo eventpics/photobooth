@@ -36,6 +36,57 @@ Steht die Box mittags am Fenster, während eingemessen wurde, als es dunkel
 war, ist die Vorschau überstrahlt. Das ist die ehrliche Anzeige dessen, was
 die Kamera gerade täte — und damit der Hinweis, dass neu eingemessen gehört.
 
+## Nachtrag 20.11.2026: Das Foto war dunkler als die Vorschau
+
+Mit gleich eingestelltem Einstell- und Aufnahmelicht kam das Foto sichtbar
+dunkler heraus als das Livebild davor. Die erste Vermutung, die Aufnahme
+missachte die eingemessenen Werte und regle selbst, war falsch. Gemessen am Pi:
+
+```
+Vorschau (2304x1296, gebündelt)   Mittelwert 146,4
+Foto     (4608x2592, ganzer Chip) Mittelwert 100,4   also 0,686 davon
+```
+
+Die Ursache ist der Sensormodus. Das Livebild fasst vier Fotodioden zu einem
+Bildpunkt zusammen, die Aufnahme liest jede einzeln. Bei gleicher Zeit und
+gleicher Verstärkung sammelt ein Bildpunkt der Aufnahme also etwa die Hälfte
+des Lichts. Dazu kommt die Gammakurve der Bildverarbeitung, nach der der
+Ausgabewert etwa mit Licht hoch 0,63 wächst.
+
+**Entschieden: messen statt rechnen.** Der Zusammenhang hängt an Sensor,
+Treiber und Firmware, und eine Formel, die auf einem Chip stimmt, stimmt auf
+dem nächsten nicht. Das Einmessen macht darum am Ende echte Aufnahmen,
+vergleicht sie mit dem Livebild und legt das Ergebnis als
+`capture_gain_factor` in der Konfiguration ab. Auf der Testbox sind es 1,91,
+und das Foto liegt danach bei 97,7 % der Vorschau, gemessen durch die fertige
+JPEG-Datei hindurch.
+
+Unterwegs kam ein echter Fehler mit heraus: Werte, die kurz vor dem
+Moduswechsel an die laufende Kamera geschickt werden, erreichen die Aufnahme
+nicht. Sie müssen in der Konfiguration des Aufnahmemodus stehen, sonst
+verwirft der Wechsel sie.
+
+## Nachtrag 20.11.2026: Wie hell ein Bild sein soll, ist Geschmack
+
+Das Einmessen hat eine Zielhelligkeit, und es behandelte sie als Messwert:
+Was darunter lag, galt als zu dunkel, und die Lichtsuche drehte die Leuchte
+hoch. Bei einem Aufnahmelicht von 17 % hätte sie auf etwa 98 % gestellt. Das
+sind zwei Blendenstufen mehr als gewollt: An der Testbox sind 30 bis 40 %
+gewünscht, und die Bilder dürfen eher dunkler sein.
+
+Daraus zwei Felder statt einer Automatik:
+
+- **Bildhelligkeit** (`exposure_bias_ev`), in Viertelstufen von -2 bis +1.
+  Verschiebt das Ziel, nicht das Ergebnis. Minus macht die Fotos dunkler.
+- **Aufnahmelicht selbst suchen** (`light_auto_search`). Aus heißt: Der
+  eingestellte Wert bleibt stehen, es wird nur darunter gemessen.
+
+Dazu neue Worte auf dem Ergebnisbildschirm. Eine lange Belichtungszeit heißt
+nicht mehr „zu dunkel“, sondern „Bewegung wird verwischen“, denn das ist, was
+sie wirklich kostet. Der Ratschlag zum Licht steht jetzt als Angebot da
+(„Wenn du das willst: …“) und nennt den eingestellten Wert, statt eine hellere
+Leuchte zu verlangen.
+
 ## Für die Anleitung
 
 Der Ablauf vor jeder Veranstaltung, in dieser Reihenfolge:

@@ -205,13 +205,30 @@ The 15-pin cable fits a Pi 3 and Pi 4, the 15-to-22-pin cable a Pi 5. Cameras
 usually ship with both.
 
 **Calibrating.** Put somebody at the real standing distance, darken the room and
-tap **Automatisch einmessen** in the settings. The box first finds the **capture
-light** by itself: not the brightest, but the dimmest that still freezes
-movement (target 1/125 s). Exposure, white balance and focus are then measured
-under it and pinned down. Because an exposure only fits the brightness it was
-measured under, the two are taken together — the result screen shows the value
-it found and offers to keep the old light, which puts the previous value back
-and measures again.
+tap **Automatisch einmessen** in the settings. It runs in four steps and takes
+about twelve seconds. The box first finds the **capture light** by itself: not
+the brightest, but the dimmest that still freezes movement (target 1/125 s).
+Exposure, white balance and focus are then measured under it and pinned down.
+Last it matches the **capture to the preview**: the live image reads the sensor
+binned, four photodiodes per pixel, while the photograph reads the whole sensor.
+The photograph therefore collects only about half the light and would be
+visibly darker than the preview without a correction. So the box takes real
+captures, compares them with the live image and stores the factor it finds in
+`capture_gain_factor`.
+
+Because an exposure only fits the brightness it was measured under, light and
+exposure are taken together — the result screen shows what it found and offers
+to keep the old light, which puts the previous value back and measures again.
+"Foto wie Vorschau" on the same line is that match: close to 100 % is right,
+well below it means even full amplification was not enough.
+
+Two fields decide where the measurement aims. **Bildhelligkeit**
+(`exposure_bias_ev`) shifts the target in quarter stops: minus makes the
+pictures darker, plus brighter, a whole stop is twice or half the light. How
+bright the pictures should be is taste, not a measurement, and this is the
+place for it. **Aufnahmelicht selbst suchen** (`light_auto_search`) can be
+switched off when the configured brightness is to stay. The measurement then
+happens under your value, and the result at most suggests giving more light.
 
 `LensPosition` is in dioptres, that is 1 divided by the distance in metres —
 2.0 m is 0.5, and 2.5 m is 0.4.
@@ -433,6 +450,27 @@ sudo lpadmin -d Selphy
 10×15 cm borderless on a Selphy — if the print comes out cropped, start here.
 To test it, take a photograph and tap "Drucken".
 
+### The EventPics gallery
+
+For the box to upload, it needs the event's API key. That is thirty-odd random
+characters, which nobody types on a touchscreen, so there are two ways in under
+Einstellungen → EventPics:
+
+- **From the USB stick.** A file `fotobox-eventpics.txt` in the root of the
+  stick with the key in it. The box reads it and deletes it afterwards — an
+  access key has no business on a stick that later ends up among guests.
+- **Scanning a code.** A screen of its own shows the live image large, with the
+  camera focusing and exposing for itself, and every frame is looked at until a
+  code is found. Hold it a hand's breadth to an arm's length in front of the
+  camera. This needs `zbar-tools`, which `install-pi.sh` fetches; without it
+  the page says so and sticks to the USB route.
+
+On the code and in the file the key may stand on its own. Also recognised are
+`apikey=…`, JSON with `apiKey` and `eventpics://setup?apiKey=…`. The box then
+fetches the list of events and albums with the key, and you pick on the same
+page where the pictures go. The key lands in `config.json`, which is in
+`.gitignore` and which `tools/deploy.sh` leaves alone.
+
 ## Worth knowing
 
 - **PWM light and short exposures work against each other.** A dimmed LED strip
@@ -485,6 +523,7 @@ booth/
   ui/                       the interface: guests, settings, keyboard, PIN
 autostart/                  autostart, watchdog, touch, USB, boot time
 tools/stress_test.py        stress test with the real camera
+tools/deploy.sh             copy to the booth and restart it
 docs/                       decisions and the reasons for them
 ```
 
