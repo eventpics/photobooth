@@ -23,7 +23,7 @@
 <circle cx="228.0" cy="394.0" r="10.0" fill="#9CA3AF" stroke="#1F2937" stroke-width="1.2"/>
 <text x="228.0" y="416.0" font-size="9" text-anchor="middle" fill="#1F2937" font-weight="normal">M20</text>
 <rect x="280.0" y="380.0" width="110.0" height="28.0" rx="0" fill="#374151" stroke="#1F2937" stroke-width="1.2"/>
-<text x="335.0" y="399.0" font-size="9" text-anchor="middle" fill="#F9FAFB" font-weight="normal">psu screen</text>
+<text x="335.0" y="399.0" font-size="9" text-anchor="middle" fill="#F9FAFB" font-weight="normal">12 V · screen</text>
 <rect x="410.0" y="380.0" width="95.0" height="28.0" rx="0" fill="#E5E7EB" stroke="#1F2937" stroke-width="1.2"/>
 <text x="457.0" y="399.0" font-size="9" text-anchor="middle" fill="#1F2937" font-weight="normal">zum Boden</text>
 <text x="600.0" y="150.0" font-size="13" text-anchor="start" fill="#1F2937" font-weight="600">Was wo sitzt</text>
@@ -37,8 +37,8 @@
 <text x="600.0" y="295.0" font-size="11" text-anchor="start" fill="#4B5563" font-weight="normal">originales Raspberry-Pi-Netzteil, USB-C zum Pi</text>
 <text x="600.0" y="314.0" font-size="12" text-anchor="start" fill="#1F2937" font-weight="600">20 V · light</text>
 <text x="600.0" y="329.0" font-size="11" text-anchor="start" fill="#4B5563" font-weight="normal">Netzteil der Leuchte, Gleichstrom nach oben durch die M20</text>
-<text x="600.0" y="348.0" font-size="12" text-anchor="start" fill="#1F2937" font-weight="600">psu screen</text>
-<text x="600.0" y="363.0" font-size="11" text-anchor="start" fill="#4B5563" font-weight="normal">drittes Netzteil, Hohlstecker zur Treiberplatine</text>
+<text x="600.0" y="348.0" font-size="12" text-anchor="start" fill="#1F2937" font-weight="600">12 V · screen</text>
+<text x="600.0" y="363.0" font-size="11" text-anchor="start" fill="#4B5563" font-weight="normal">Netzteil des Displays, Hohlstecker zur Treiberplatine</text>
 <text x="600.0" y="382.0" font-size="12" text-anchor="start" fill="#1F2937" font-weight="600">Verteiler</text>
 <text x="600.0" y="397.0" font-size="11" text-anchor="start" fill="#4B5563" font-weight="normal">Dose mit Steckklemme, von hier geht alles 230 V ab</text>
 <text x="600.0" y="416.0" font-size="12" text-anchor="start" fill="#1F2937" font-weight="600">zum Boden</text>

@@ -44,7 +44,7 @@ nicht von Amazon, der Rest schon.
 | `screen` | Waveshare 15,6″ Einbau-Display mit HDMI und kapazitivem Touch, BerryBase Art. 18207 | 159,58 € netto |
 | Speicher | microSD 32 GB, schnelle Karte. Eine lahme Karte kostet beim Start Sekunden | ca. 12 € |
 | `psu 5 V` | originales Raspberry-Pi-Netzteil USB-C, 5 V / 3 A | ca. 10 € |
-| `psu screen` | Netzteil des Displays, liegt dem Panel bei | im Preis |
+| `psu 12 V` | Netzteil des Displays, liegt dem Panel bei | im Preis |
 
 ### Licht
 
@@ -52,7 +52,7 @@ nicht von Amazon, der Rest schon.
 |---|---|---|
 | `light` | Godox LP400Bi, 36 W, 2800 bis 6500 K, CRI ≥ 96, dimmbar, App-Steuerung | 89,00 € |
 | `light mount` | NEEWER Wand- und Deckenhalterung mit 5/8″-Zapfen und 1/4″-Gewinde | 22,31 € |
-| `psu 20 V` | Netzteil der Leuchte, 20 V, liegt ihr bei und bleibt in der Box | im Preis |
+| `psu 20 V` | Netzteil der Leuchte, liegt ihr bei und bleibt in der Box | im Preis |
 
 ### Druck
 
@@ -190,9 +190,10 @@ Innenraum mitkommt.
 
 ![Blick in die offene Box](images/inside-overview.jpg)
 
-In der Box stecken drei Netzteile, jedes mit seiner eigenen Spannung. Oben
-links das des Pi, oben rechts das der Leuchte mit 20 V, unten in der Mitte das
-des Bildschirms. Dazwischen auf der Querleiste die Kamera auf ihrer Scheibe und
+In der Box stecken drei Netzteile, jedes mit seiner eigenen Spannung: oben
+links 5 V für den Pi, oben rechts 20 V für die Leuchte, unten in der Mitte
+12 V für den Bildschirm. Zwei davon muss niemand kaufen, sie liegen dem Panel
+und der Leuchte bei. Dazwischen auf der Querleiste die Kamera auf ihrer Scheibe und
 der Pi auf dem Druckteil. Unten links die Verteilerdose, daneben die
 Durchführung für das Kabel zur Leuchte.
 

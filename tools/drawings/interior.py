@@ -40,7 +40,7 @@ d.text(ax + 52, ay + 266, "Verteiler", size=9, anchor="middle", fill="#111827")
 d.circle(ax + 118, ay + 264, 10, fill="#9CA3AF", sw=1.2)
 d.text(ax + 118, ay + 286, "M20", size=9, anchor="middle")
 d.rect(ax + 170, ay + 250, 110, 28, fill="#374151", sw=1.2)
-d.text(ax + 225, ay + 269, "psu screen", size=9, anchor="middle", fill="#F9FAFB")
+d.text(ax + 225, ay + 269, "12 V \u00b7 screen", size=9, anchor="middle", fill="#F9FAFB")
 d.rect(ax + 300, ay + 250, 95, 28, fill="#E5E7EB", sw=1.2)
 d.text(ax + 347, ay + 269, "zum Boden", size=9, anchor="middle")
 
@@ -52,7 +52,7 @@ items = [
     ("camera", "Camera Module 3 auf einer Scheibe, schaut durch die Front"),
     ("5 V \u00b7 pi", "originales Raspberry-Pi-Netzteil, USB-C zum Pi"),
     ("20 V \u00b7 light", "Netzteil der Leuchte, Gleichstrom nach oben durch die M20"),
-    ("psu screen", "drittes Netzteil, Hohlstecker zur Treiberplatine"),
+    ("12 V \u00b7 screen", "Netzteil des Displays, Hohlstecker zur Treiberplatine"),
     ("Verteiler", "Dose mit Steckklemme, von hier geht alles 230 V ab"),
     ("zum Boden", "Kaltger\u00e4tebuchse, Steckdose, USB-Buchse"),
 ]
@@ -102,7 +102,7 @@ w.line(915, 77, 940, 77, stroke=GREEN, sw=2.4)
 w.line(915, 197, 940, 197, stroke=GREEN, sw=2.4)
 # --- low voltage
 box(280, 250, 170, 54, "psu 5 V", "f\u00fcr den Pi")
-box(500, 250, 170, 54, "psu screen", "f\u00fcr das Display")
+box(500, 250, 170, 54, "psu 12 V", "f\u00fcr das Display")
 box(720, 250, 170, 54, "psu 20 V", "f\u00fcr die Leuchte")
 box(940, 250, 150, 54, "light", "Godox LP400Bi")
 wire(365, 250, 365, 164, BLUE, "5 V", lx=350)
