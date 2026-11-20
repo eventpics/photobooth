@@ -26,19 +26,19 @@ def leader(x1, y1, x2, y2, text, size=10, anchor="start", dx=5):
 ax, ay = 80, 130
 d.text(ax, ay - 14, "Vorderseite", size=13, weight="600")
 d.rect(ax, ay, 410, 290, fill=WOODF, sw=2)
-ox, oy, ow, oh = ax + 40, ay + 57, 330, 196
+ox, oy, ow, oh = ax + 34, ay + 60, 342, 190
 d.rect(ox, oy, ow, oh, fill="#374151", sw=1.6)
 d.text(ox + ow / 2, oy + oh / 2 + 4, "Bildschirmausschnitt", size=12, anchor="middle", fill="#E5E7EB")
-d.circle(ax + 205, ay + 39, 4, fill="#111827")
-leader(ax + 205, ay + 39, ax + 150, ay + 28, "Kamera Ø 8, mittig", anchor="end")
-d.dim_h(ax, ox, ay + 320, "40")
-d.dim_h(ox, ox + ow, ay + 320, "330")
+d.circle(ax + 205, ay + 43, 4, fill="#111827")
+leader(ax + 205, ay + 43, ax + 150, ay + 30, "Kamera Ø 8, mittig", anchor="end")
+d.dim_h(ax, ox, ay + 320, "34")
+d.dim_h(ox, ox + ow, ay + 320, "342")
 d.dim_h(ax, ax + 410, ay + 352, "410")
 d.dim_v(ay, ay + 290, ax - 28, "290")
-d.dim_v(oy, oy + oh, ox - 18, "196")
-d.dim_v(ay, oy, ax + 432, "57")
-d.dim_v(oy + oh, ay + 290, ax + 432, "37")
-d.dim_v(ay, ay + 39, ax + 205 + 14, "39")
+d.dim_v(oy, oy + oh, ox - 18, "190")
+d.dim_v(ay, oy, ax + 432, "60")
+d.dim_v(oy + oh, ay + 290, ax + 432, "40")
+d.dim_v(ay, ay + 43, ax + 205 + 14, "43")
 d.note(ax, ay + 386, [
     "Der Ausschnitt gehört zum eigenen Panel, hier ein Waveshare 15,6″",
     "Einbau-Display. Von hinten liegt es in einer 9 mm tiefen Tasche,",
@@ -51,11 +51,11 @@ d.rect(bx, by, 180, 15, fill=WOOD)                     # top
 d.rect(bx, by + 275, 180, 15, fill=WOOD)               # bottom
 d.rect(bx, by + 15, 15, 260, fill=WOOD)                # front
 d.rect(bx + 165, by + 15, 15, 260, fill=WOOD)          # door
-d.rect(bx + 15, by + 57, 22, 196, fill="#9CA3AF", sw=1.2)   # screen
+d.rect(bx + 15, by + 60, 22, 190, fill="#9CA3AF", sw=1.2)   # screen
 d.rect(bx + 45, by + 34, 70, 12, fill="#D1D5DB", sw=1.2)    # rail
 d.rect(bx + 60, by + 22, 34, 12, fill="#6B7280", sw=1.2)    # pi mount
-d.circle(bx + 7.5, by + 39, 3.5, fill="#111827")
-leader(bx + 7.5, by + 39, bx + 215, by + 18, "Kameraloch in der Front")
+d.circle(bx + 7.5, by + 43, 3.5, fill="#111827")
+leader(bx + 7.5, by + 43, bx + 215, by + 18, "Kameraloch in der Front")
 leader(bx + 26, by + 140, bx + 215, by + 110, "screen in der Tasche")
 leader(bx + 77, by + 28, bx + 215, by + 48, "pi mount auf der Leiste")
 leader(bx + 110, by + 230, bx + 215, by + 200, "Netzteile, Verteiler, Kabel")

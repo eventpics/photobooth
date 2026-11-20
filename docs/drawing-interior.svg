@@ -1,29 +1,31 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 560" width="1120" height="560" font-family="DejaVu Sans, Verdana, sans-serif">
-<rect width="1120" height="560" fill="#FFFFFF"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 580" width="1120" height="580" font-family="DejaVu Sans, Verdana, sans-serif">
+<rect width="1120" height="580" fill="#FFFFFF"/>
 <text x="60.0" y="44.0" font-size="16" text-anchor="start" fill="#1F2937" font-weight="600">EventPics Fotobox: Innenausbau</text>
 <text x="60.0" y="66.0" font-size="11" text-anchor="start" fill="#4B5563" font-weight="normal">Blick in die offene Box von hinten. Die Tür ist abgenommen, links und rechts die Seitenwände.</text>
 <rect x="95.0" y="115.0" width="440.0" height="320.0" rx="0" fill="#E9D8A6" stroke="#1F2937" stroke-width="2"/>
 <rect x="110.0" y="130.0" width="410.0" height="290.0" rx="0" fill="#FBF7EE" stroke="#1F2937" stroke-width="1.4"/>
-<rect x="150.0" y="187.0" width="330.0" height="196.0" rx="0" fill="#D1D5DB" stroke="#1F2937" stroke-width="1.4"/>
-<text x="315.0" y="280.0" font-size="11" text-anchor="middle" fill="#374151" font-weight="normal">Rückseite des Bildschirms</text>
-<rect x="170.0" y="335.0" width="290.0" height="40.0" rx="0" fill="#93A3BC" stroke="#1F2937" stroke-width="1.2"/>
-<text x="315.0" y="359.0" font-size="10" text-anchor="middle" fill="#1F2937" font-weight="normal">Treiberplatine mit HDMI, USB, 12 V</text>
-<rect x="125.0" y="145.0" width="380.0" height="36.0" rx="0" fill="#E9D8A6" stroke="#1F2937" stroke-width="1.2"/>
-<text x="130.0" y="141.0" font-size="10" text-anchor="start" fill="#1F2937" font-weight="normal">Leiste quer, trägt alles Schwere</text>
-<rect x="260.0" y="148.0" width="70.0" height="30.0" rx="0" fill="#4B5563" stroke="#1F2937" stroke-width="1.2"/>
-<text x="295.0" y="167.0" font-size="9" text-anchor="middle" fill="#F9FAFB" font-weight="normal">pi mount</text>
-<circle cx="230.0" cy="163.0" r="15.0" fill="#9CA3AF" stroke="#1F2937" stroke-width="1.2"/>
-<text x="230.0" y="166.0" font-size="9" text-anchor="middle" fill="#1F2937" font-weight="normal">cam</text>
-<rect x="135.0" y="148.0" width="70.0" height="30.0" rx="0" fill="#374151" stroke="#1F2937" stroke-width="1.2"/>
-<text x="170.0" y="167.0" font-size="9" text-anchor="middle" fill="#F9FAFB" font-weight="normal">5 V · Pi</text>
-<rect x="410.0" y="148.0" width="85.0" height="30.0" rx="0" fill="#374151" stroke="#1F2937" stroke-width="1.2"/>
-<text x="452.0" y="167.0" font-size="9" text-anchor="middle" fill="#F9FAFB" font-weight="normal">12 V · screen</text>
-<circle cx="170.0" cy="385.0" r="22.0" fill="#F97316" stroke="#1F2937" stroke-width="1.4"/>
-<text x="170.0" y="389.0" font-size="9" text-anchor="middle" fill="#111827" font-weight="normal">Verteiler</text>
-<circle cx="240.0" cy="388.0" r="10.0" fill="#9CA3AF" stroke="#1F2937" stroke-width="1.2"/>
-<text x="240.0" y="415.0" font-size="9" text-anchor="middle" fill="#1F2937" font-weight="normal">M20 zur Leuchte</text>
-<rect x="360.0" y="388.0" width="120.0" height="24.0" rx="0" fill="#E5E7EB" stroke="#1F2937" stroke-width="1.2"/>
-<text x="420.0" y="404.0" font-size="9" text-anchor="middle" fill="#1F2937" font-weight="normal">Kabel zum Boden</text>
+<rect x="144.0" y="190.0" width="342.0" height="190.0" rx="0" fill="#D1D5DB" stroke="#1F2937" stroke-width="1.4"/>
+<text x="315.0" y="270.0" font-size="11" text-anchor="middle" fill="#374151" font-weight="normal">Rückseite des Bildschirms</text>
+<rect x="170.0" y="326.0" width="290.0" height="36.0" rx="0" fill="#93A3BC" stroke="#1F2937" stroke-width="1.2"/>
+<text x="315.0" y="349.0" font-size="10" text-anchor="middle" fill="#1F2937" font-weight="normal">Treiberplatine mit HDMI, USB, Strom</text>
+<rect x="125.0" y="142.0" width="380.0" height="36.0" rx="0" fill="#E9D8A6" stroke="#1F2937" stroke-width="1.2"/>
+<text x="130.0" y="138.0" font-size="10" text-anchor="start" fill="#1F2937" font-weight="normal">Leiste quer, trägt alles Schwere</text>
+<rect x="260.0" y="145.0" width="70.0" height="30.0" rx="0" fill="#4B5563" stroke="#1F2937" stroke-width="1.2"/>
+<text x="295.0" y="164.0" font-size="9" text-anchor="middle" fill="#F9FAFB" font-weight="normal">pi mount</text>
+<circle cx="230.0" cy="160.0" r="15.0" fill="#9CA3AF" stroke="#1F2937" stroke-width="1.2"/>
+<text x="230.0" y="163.0" font-size="9" text-anchor="middle" fill="#1F2937" font-weight="normal">cam</text>
+<rect x="135.0" y="145.0" width="70.0" height="30.0" rx="0" fill="#374151" stroke="#1F2937" stroke-width="1.2"/>
+<text x="170.0" y="164.0" font-size="9" text-anchor="middle" fill="#F9FAFB" font-weight="normal">5 V · pi</text>
+<rect x="405.0" y="145.0" width="90.0" height="30.0" rx="0" fill="#374151" stroke="#1F2937" stroke-width="1.2"/>
+<text x="450.0" y="164.0" font-size="9" text-anchor="middle" fill="#F9FAFB" font-weight="normal">20 V · light</text>
+<circle cx="162.0" cy="392.0" r="22.0" fill="#F97316" stroke="#1F2937" stroke-width="1.4"/>
+<text x="162.0" y="396.0" font-size="9" text-anchor="middle" fill="#111827" font-weight="normal">Verteiler</text>
+<circle cx="228.0" cy="394.0" r="10.0" fill="#9CA3AF" stroke="#1F2937" stroke-width="1.2"/>
+<text x="228.0" y="416.0" font-size="9" text-anchor="middle" fill="#1F2937" font-weight="normal">M20</text>
+<rect x="280.0" y="380.0" width="110.0" height="28.0" rx="0" fill="#374151" stroke="#1F2937" stroke-width="1.2"/>
+<text x="335.0" y="399.0" font-size="9" text-anchor="middle" fill="#F9FAFB" font-weight="normal">psu screen</text>
+<rect x="410.0" y="380.0" width="95.0" height="28.0" rx="0" fill="#E5E7EB" stroke="#1F2937" stroke-width="1.2"/>
+<text x="457.0" y="399.0" font-size="9" text-anchor="middle" fill="#1F2937" font-weight="normal">zum Boden</text>
 <text x="600.0" y="150.0" font-size="13" text-anchor="start" fill="#1F2937" font-weight="600">Was wo sitzt</text>
 <text x="600.0" y="178.0" font-size="12" text-anchor="start" fill="#1F2937" font-weight="600">screen</text>
 <text x="600.0" y="193.0" font-size="11" text-anchor="start" fill="#4B5563" font-weight="normal">liegt von vorn in der Tasche, von hinten verschraubt</text>
@@ -31,14 +33,14 @@
 <text x="600.0" y="227.0" font-size="11" text-anchor="start" fill="#4B5563" font-weight="normal">3D-Druckteil auf der Querleiste, Pi liegt waagrecht</text>
 <text x="600.0" y="246.0" font-size="12" text-anchor="start" fill="#1F2937" font-weight="600">camera</text>
 <text x="600.0" y="261.0" font-size="11" text-anchor="start" fill="#4B5563" font-weight="normal">Camera Module 3 auf einer Scheibe, schaut durch die Front</text>
-<text x="600.0" y="280.0" font-size="12" text-anchor="start" fill="#1F2937" font-weight="600">5 V · Pi</text>
+<text x="600.0" y="280.0" font-size="12" text-anchor="start" fill="#1F2937" font-weight="600">5 V · pi</text>
 <text x="600.0" y="295.0" font-size="11" text-anchor="start" fill="#4B5563" font-weight="normal">originales Raspberry-Pi-Netzteil, USB-C zum Pi</text>
-<text x="600.0" y="314.0" font-size="12" text-anchor="start" fill="#1F2937" font-weight="600">12 V · screen</text>
-<text x="600.0" y="329.0" font-size="11" text-anchor="start" fill="#4B5563" font-weight="normal">Netzteil des Displays, Hohlstecker zur Treiberplatine</text>
-<text x="600.0" y="348.0" font-size="12" text-anchor="start" fill="#1F2937" font-weight="600">Verteiler</text>
-<text x="600.0" y="363.0" font-size="11" text-anchor="start" fill="#4B5563" font-weight="normal">Dose mit Steckklemme, von hier geht alles 230 V ab</text>
-<text x="600.0" y="382.0" font-size="12" text-anchor="start" fill="#1F2937" font-weight="600">M20</text>
-<text x="600.0" y="397.0" font-size="11" text-anchor="start" fill="#4B5563" font-weight="normal">Durchführung im Deckel, Kabel zur Leuchte</text>
-<text x="600.0" y="416.0" font-size="12" text-anchor="start" fill="#1F2937" font-weight="600">Boden</text>
+<text x="600.0" y="314.0" font-size="12" text-anchor="start" fill="#1F2937" font-weight="600">20 V · light</text>
+<text x="600.0" y="329.0" font-size="11" text-anchor="start" fill="#4B5563" font-weight="normal">Netzteil der Leuchte, Gleichstrom nach oben durch die M20</text>
+<text x="600.0" y="348.0" font-size="12" text-anchor="start" fill="#1F2937" font-weight="600">psu screen</text>
+<text x="600.0" y="363.0" font-size="11" text-anchor="start" fill="#4B5563" font-weight="normal">drittes Netzteil, Hohlstecker zur Treiberplatine</text>
+<text x="600.0" y="382.0" font-size="12" text-anchor="start" fill="#1F2937" font-weight="600">Verteiler</text>
+<text x="600.0" y="397.0" font-size="11" text-anchor="start" fill="#4B5563" font-weight="normal">Dose mit Steckklemme, von hier geht alles 230 V ab</text>
+<text x="600.0" y="416.0" font-size="12" text-anchor="start" fill="#1F2937" font-weight="600">zum Boden</text>
 <text x="600.0" y="431.0" font-size="11" text-anchor="start" fill="#4B5563" font-weight="normal">Kaltgerätebuchse, Steckdose, USB-Buchse</text>
 </svg>

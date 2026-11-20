@@ -44,7 +44,7 @@ nicht von Amazon, der Rest schon.
 | `screen` | Waveshare 15,6″ Einbau-Display mit HDMI und kapazitivem Touch, BerryBase Art. 18207 | 159,58 € netto |
 | Speicher | microSD 32 GB, schnelle Karte. Eine lahme Karte kostet beim Start Sekunden | ca. 12 € |
 | `psu 5 V` | originales Raspberry-Pi-Netzteil USB-C, 5 V / 3 A | ca. 10 € |
-| `psu 12 V` | Netzteil des Displays, liegt dem Panel bei | im Preis |
+| `psu screen` | Netzteil des Displays, liegt dem Panel bei | im Preis |
 
 ### Licht
 
@@ -52,6 +52,7 @@ nicht von Amazon, der Rest schon.
 |---|---|---|
 | `light` | Godox LP400Bi, 36 W, 2800 bis 6500 K, CRI ≥ 96, dimmbar, App-Steuerung | 89,00 € |
 | `light mount` | NEEWER Wand- und Deckenhalterung mit 5/8″-Zapfen und 1/4″-Gewinde | 22,31 € |
+| `psu 20 V` | Netzteil der Leuchte, 20 V, liegt ihr bei und bleibt in der Box | im Preis |
 
 ### Druck
 
@@ -110,15 +111,15 @@ Außen 410 × 290 × 180 mm, Holz überall 15 mm. Die Tiefe von 180 mm ist mit d
 Tür gerechnet: Rahmen 150, Front 15, Tür 15.
 
 **Der Ausschnitt für den Bildschirm gehört zu deinem Panel, nicht zu meinem.**
-Miss das eigene Display aus, bevor du sägst. Bei mir sind es 330 × 196 mm, mit
-40 mm Rand links und rechts, 57 mm oben und 37 mm unten. Von hinten ist die
+Miss das eigene Display aus, bevor du sägst. Bei mir sind es 342 × 190 mm, mit
+34 mm Rand links und rechts, 60 mm oben und 40 mm unten. Von hinten ist die
 Tasche 9 mm tief ausgefräst, damit das Glas bündig in der Front steht und kein
 Rand übersteht, an dem Gäste hängen bleiben.
 
 ![Breite der Front, 410 mm](images/front-width.jpg)
 ![Höhe der Front, 290 mm](images/front-height.jpg)
 
-Das Kameraloch sitzt mittig, 39 mm unter der Oberkante, und hat Ø 8 mm. Von
+Das Kameraloch sitzt mittig, 43 mm unter der Oberkante, und hat Ø 8 mm. Von
 vorn ist es leicht angesenkt, damit das Objektiv frei schaut und die Kante
 nicht ins Bild spiegelt. Bohre erst, wenn die Kamera da ist, und halte sie
 vorher von innen an.
@@ -189,9 +190,11 @@ Innenraum mitkommt.
 
 ![Blick in die offene Box](images/inside-overview.jpg)
 
-Von links nach rechts: das Netzteil des Pi, die Kamera auf ihrer Scheibe, der
-Pi auf dem Druckteil, das Netzteil des Displays. Unten links die Verteilerdose,
-daneben die Durchführung für das Kabel zur Leuchte.
+In der Box stecken drei Netzteile, jedes mit seiner eigenen Spannung. Oben
+links das des Pi, oben rechts das der Leuchte mit 20 V, unten in der Mitte das
+des Bildschirms. Dazwischen auf der Querleiste die Kamera auf ihrer Scheibe und
+der Pi auf dem Druckteil. Unten links die Verteilerdose, daneben die
+Durchführung für das Kabel zur Leuchte.
 
 ![Der Innenraum von hinten](images/inside-from-back.jpg)
 
@@ -228,9 +231,9 @@ Halterung im Bild.
 
 ![Die Netzteile](images/power-supplies.jpg)
 
-Beide Netzteile liegen auf der Querleiste und sind mit einem Kabelbinder
-gesichert. Für die Kabel sind kleine Kerben in die Leisten gefeilt, damit nichts
-gequetscht wird, wenn die Tür zugeht.
+Die Netzteile liegen auf den Leisten und sind mit Kabelbindern gesichert, keines
+hängt am eigenen Kabel. Für die Kabel sind kleine Kerben in die Leisten gefeilt,
+damit nichts gequetscht wird, wenn die Tür zugeht.
 
 ![Kerbe für das Kabel](images/cable-groove.jpg)
 
@@ -248,8 +251,9 @@ gequetscht wird, wenn die Tür zugeht.
 
 Der Weg ist kurz: Kaltgerätebuchse mit Schalter und Sicherung, von dort in die
 Verteilerdose mit der Steckklemme, und von der Dose aus an die Schuko-Steckdose
-im Boden, an die beiden Netzteile und durch die M20-Verschraubung im Deckel zur
-Leuchte.
+im Boden und an die drei Netzteile. Nach draußen geht nur Niederspannung: die
+20 V der Leuchte laufen als Gleichstrom durch die M20-Verschraubung im Deckel
+nach oben.
 
 Die Daten laufen getrennt davon: HDMI vom Pi zum Display, ein USB-Kabel zurück
 für den Touch, das Flachband zur Kamera, und ein kurzes USB-Kabel vom Pi zur
@@ -262,6 +266,10 @@ USB-Stick für die Sicherung.
 
 Auf dem Deckel sitzt die Halterung mit 5/8-Zoll-Zapfen, darauf die Leuchte. Das
 Panel lässt sich kippen, der Winkel bleibt stehen.
+
+Ihr Netzteil liegt **in** der Box, oben rechts, und schickt 20 V durch die
+M20-Verschraubung nach oben. Auf dem Deckel liegt damit kein Netzteil und kein
+230-V-Kabel, nur das Gleichstromkabel der Leuchte.
 
 Die Leuchte ist bewusst nicht an der Box angeschraubt, sondern nur aufgesteckt.
 Für den Transport kommt sie ab, und beim Aufbau wird sie zuletzt aufgesetzt.
