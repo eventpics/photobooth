@@ -13,8 +13,9 @@ it or print from it. The interface is built for 1920 × 1200 and scaled as a
 whole on any other screen.
 
 *Diese Datei auf Deutsch: [README.de.md](README.de.md).*
-Build guide and bill of materials (German):
-<https://event.pics/de/fotobox-selber-bauen.html>
+**The full build guide, with photographs, drawings and a bill of materials**
+(German): [docs/build-guide.de.md](docs/build-guide.de.md), on the web at
+<https://event.pics/de/fotobox-selber-bauen.html>.
 
 ## On the Raspberry Pi
 
@@ -524,7 +525,10 @@ booth/
 autostart/                  autostart, watchdog, touch, USB, boot time
 tools/stress_test.py        stress test with the real camera
 tools/deploy.sh             copy to the booth and restart it
-docs/                       decisions and the reasons for them
+docs/build-guide.de.md     the build guide, with photographs
+docs/drawing-*.svg         workshop drawings
+docs/pi-mount.stl          holder for the Pi, ready to print
+docs/                      decisions and the reasons for them
 ```
 
 RPi.GPIO is deliberately not used — it does not work on the Pi 5. gpiozero

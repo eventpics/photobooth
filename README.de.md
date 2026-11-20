@@ -13,7 +13,9 @@ oder drucken. Gebaut ist die Oberfläche für 1920 × 1200 und wird auf jedem
 Bildschirm als Ganzes skaliert.
 
 *This file in English: [README.md](README.md).*
-Anleitung und Stückliste: <https://event.pics/de/fotobox-selber-bauen.html>
+**Die ganze Bauanleitung mit Bildern, Zeichnungen und Stückliste:**
+[docs/build-guide.de.md](docs/build-guide.de.md), im Netz unter
+<https://event.pics/de/fotobox-selber-bauen.html>.
 
 ## Auf dem Raspberry Pi
 
@@ -542,7 +544,10 @@ booth/
 autostart/                  Autostart, Wächter, Touch, USB, Startzeit
 tools/stress_test.py        Stresstest mit echter Kamera
 tools/deploy.sh             auf die Box übertragen und neu starten
-docs/                       Entscheidungen und ihre Gründe
+docs/build-guide.de.md     die Bauanleitung mit Bildern
+docs/drawing-*.svg         Konstruktionszeichnungen
+docs/pi-mount.stl          Halter für den Pi, zum Drucken
+docs/                      Entscheidungen und ihre Gründe
 captures/                   aufgenommene Bilder
 ```
 

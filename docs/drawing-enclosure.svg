@@ -1,0 +1,154 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 1000" width="1180" height="1000" font-family="DejaVu Sans, Verdana, sans-serif">
+<rect width="1180" height="1000" fill="#FFFFFF"/>
+<text x="60.0" y="44.0" font-size="16" text-anchor="start" fill="#1F2937" font-weight="600">EventPics Fotobox: Gehäuse</text>
+<text x="60.0" y="66.0" font-size="11" text-anchor="start" fill="#4B5563" font-weight="normal">Alle Maße in Millimetern. Holz 15 mm, bei mir Eiche massiv. Außenmaß 410 × 290 × 180, Tiefe mit Tür.</text>
+<text x="80.0" y="116.0" font-size="13" text-anchor="start" fill="#1F2937" font-weight="600">Vorderseite</text>
+<rect x="80.0" y="130.0" width="410.0" height="290.0" rx="0" fill="#FBF7EE" stroke="#1F2937" stroke-width="2"/>
+<rect x="120.0" y="187.0" width="330.0" height="196.0" rx="0" fill="#374151" stroke="#1F2937" stroke-width="1.6"/>
+<text x="285.0" y="289.0" font-size="12" text-anchor="middle" fill="#E5E7EB" font-weight="normal">Bildschirmausschnitt</text>
+<circle cx="285.0" cy="169.0" r="4.0" fill="#111827" stroke="#1F2937" stroke-width="1.4"/>
+<line x1="285.0" y1="169.0" x2="230.0" y2="158.0" stroke="#9CA3AF" stroke-width="1"/>
+<circle cx="285.0" cy="169.0" r="1.6" fill="#9CA3AF" stroke="#9CA3AF" stroke-width="0.6"/>
+<text x="225.0" y="161.5" font-size="10" text-anchor="end" fill="#1F2937" font-weight="normal">Kamera Ø 8, mittig</text>
+<line x1="80.0" y1="450.0" x2="120.0" y2="450.0" stroke="#9CA3AF" stroke-width="1"/>
+<line x1="80.0" y1="446.0" x2="80.0" y2="454.0" stroke="#9CA3AF" stroke-width="1"/>
+<line x1="120.0" y1="446.0" x2="120.0" y2="454.0" stroke="#9CA3AF" stroke-width="1"/>
+<text x="100.0" y="445.0" font-size="11" text-anchor="middle" fill="#4B5563" font-weight="normal">40</text>
+<line x1="120.0" y1="450.0" x2="450.0" y2="450.0" stroke="#9CA3AF" stroke-width="1"/>
+<line x1="120.0" y1="446.0" x2="120.0" y2="454.0" stroke="#9CA3AF" stroke-width="1"/>
+<line x1="450.0" y1="446.0" x2="450.0" y2="454.0" stroke="#9CA3AF" stroke-width="1"/>
+<text x="285.0" y="445.0" font-size="11" text-anchor="middle" fill="#4B5563" font-weight="normal">330</text>
+<line x1="80.0" y1="482.0" x2="490.0" y2="482.0" stroke="#9CA3AF" stroke-width="1"/>
+<line x1="80.0" y1="478.0" x2="80.0" y2="486.0" stroke="#9CA3AF" stroke-width="1"/>
+<line x1="490.0" y1="478.0" x2="490.0" y2="486.0" stroke="#9CA3AF" stroke-width="1"/>
+<text x="285.0" y="477.0" font-size="11" text-anchor="middle" fill="#4B5563" font-weight="normal">410</text>
+<line x1="52.0" y1="130.0" x2="52.0" y2="420.0" stroke="#9CA3AF" stroke-width="1"/>
+<line x1="48.0" y1="130.0" x2="56.0" y2="130.0" stroke="#9CA3AF" stroke-width="1"/>
+<line x1="48.0" y1="420.0" x2="56.0" y2="420.0" stroke="#9CA3AF" stroke-width="1"/>
+<text x="46.0" y="275.0" font-size="11" text-anchor="middle" fill="#4B5563" transform="rotate(-90 46.0 275.0)">290</text>
+<line x1="102.0" y1="187.0" x2="102.0" y2="383.0" stroke="#9CA3AF" stroke-width="1"/>
+<line x1="98.0" y1="187.0" x2="106.0" y2="187.0" stroke="#9CA3AF" stroke-width="1"/>
+<line x1="98.0" y1="383.0" x2="106.0" y2="383.0" stroke="#9CA3AF" stroke-width="1"/>
+<text x="96.0" y="285.0" font-size="11" text-anchor="middle" fill="#4B5563" transform="rotate(-90 96.0 285.0)">196</text>
+<line x1="512.0" y1="130.0" x2="512.0" y2="187.0" stroke="#9CA3AF" stroke-width="1"/>
+<line x1="508.0" y1="130.0" x2="516.0" y2="130.0" stroke="#9CA3AF" stroke-width="1"/>
+<line x1="508.0" y1="187.0" x2="516.0" y2="187.0" stroke="#9CA3AF" stroke-width="1"/>
+<text x="506.0" y="158.5" font-size="11" text-anchor="middle" fill="#4B5563" transform="rotate(-90 506.0 158.5)">57</text>
+<line x1="512.0" y1="383.0" x2="512.0" y2="420.0" stroke="#9CA3AF" stroke-width="1"/>
+<line x1="508.0" y1="383.0" x2="516.0" y2="383.0" stroke="#9CA3AF" stroke-width="1"/>
+<line x1="508.0" y1="420.0" x2="516.0" y2="420.0" stroke="#9CA3AF" stroke-width="1"/>
+<text x="506.0" y="401.5" font-size="11" text-anchor="middle" fill="#4B5563" transform="rotate(-90 506.0 401.5)">37</text>
+<line x1="299.0" y1="130.0" x2="299.0" y2="169.0" stroke="#9CA3AF" stroke-width="1"/>
+<line x1="295.0" y1="130.0" x2="303.0" y2="130.0" stroke="#9CA3AF" stroke-width="1"/>
+<line x1="295.0" y1="169.0" x2="303.0" y2="169.0" stroke="#9CA3AF" stroke-width="1"/>
+<text x="293.0" y="149.5" font-size="11" text-anchor="middle" fill="#4B5563" transform="rotate(-90 293.0 149.5)">39</text>
+<text x="80.0" y="516.0" font-size="11" text-anchor="start" fill="#4B5563" font-weight="normal">Der Ausschnitt gehört zum eigenen Panel, hier ein Waveshare 15,6″</text>
+<text x="80.0" y="531.0" font-size="11" text-anchor="start" fill="#4B5563" font-weight="normal">Einbau-Display. Von hinten liegt es in einer 9 mm tiefen Tasche,</text>
+<text x="80.0" y="546.0" font-size="11" text-anchor="start" fill="#4B5563" font-weight="normal">damit das Glas bündig in der Front steht.</text>
+<text x="650.0" y="116.0" font-size="13" text-anchor="start" fill="#1F2937" font-weight="600">Schnitt von rechts</text>
+<rect x="650.0" y="130.0" width="180.0" height="15.0" rx="0" fill="#E9D8A6" stroke="#1F2937" stroke-width="1.6"/>
+<rect x="650.0" y="405.0" width="180.0" height="15.0" rx="0" fill="#E9D8A6" stroke="#1F2937" stroke-width="1.6"/>
+<rect x="650.0" y="145.0" width="15.0" height="260.0" rx="0" fill="#E9D8A6" stroke="#1F2937" stroke-width="1.6"/>
+<rect x="815.0" y="145.0" width="15.0" height="260.0" rx="0" fill="#E9D8A6" stroke="#1F2937" stroke-width="1.6"/>
+<rect x="665.0" y="187.0" width="22.0" height="196.0" rx="0" fill="#9CA3AF" stroke="#1F2937" stroke-width="1.2"/>
+<rect x="695.0" y="164.0" width="70.0" height="12.0" rx="0" fill="#D1D5DB" stroke="#1F2937" stroke-width="1.2"/>
+<rect x="710.0" y="152.0" width="34.0" height="12.0" rx="0" fill="#6B7280" stroke="#1F2937" stroke-width="1.2"/>
+<circle cx="657.5" cy="169.0" r="3.5" fill="#111827" stroke="#1F2937" stroke-width="1.4"/>
+<line x1="657.5" y1="169.0" x2="865.0" y2="148.0" stroke="#9CA3AF" stroke-width="1"/>
+<circle cx="657.5" cy="169.0" r="1.6" fill="#9CA3AF" stroke="#9CA3AF" stroke-width="0.6"/>
+<text x="870.0" y="151.5" font-size="10" text-anchor="start" fill="#1F2937" font-weight="normal">Kameraloch in der Front</text>
+<line x1="676.0" y1="270.0" x2="865.0" y2="240.0" stroke="#9CA3AF" stroke-width="1"/>
+<circle cx="676.0" cy="270.0" r="1.6" fill="#9CA3AF" stroke="#9CA3AF" stroke-width="0.6"/>
+<text x="870.0" y="243.5" font-size="10" text-anchor="start" fill="#1F2937" font-weight="normal">screen in der Tasche</text>
+<line x1="727.0" y1="158.0" x2="865.0" y2="178.0" stroke="#9CA3AF" stroke-width="1"/>
+<circle cx="727.0" cy="158.0" r="1.6" fill="#9CA3AF" stroke="#9CA3AF" stroke-width="0.6"/>
+<text x="870.0" y="181.5" font-size="10" text-anchor="start" fill="#1F2937" font-weight="normal">pi mount auf der Leiste</text>
+<line x1="760.0" y1="360.0" x2="865.0" y2="330.0" stroke="#9CA3AF" stroke-width="1"/>
+<circle cx="760.0" cy="360.0" r="1.6" fill="#9CA3AF" stroke="#9CA3AF" stroke-width="0.6"/>
+<text x="870.0" y="333.5" font-size="10" text-anchor="start" fill="#1F2937" font-weight="normal">Netzteile, Verteiler, Kabel</text>
+<line x1="822.0" y1="370.0" x2="865.0" y2="380.0" stroke="#9CA3AF" stroke-width="1"/>
+<circle cx="822.0" cy="370.0" r="1.6" fill="#9CA3AF" stroke="#9CA3AF" stroke-width="0.6"/>
+<text x="870.0" y="383.5" font-size="10" text-anchor="start" fill="#1F2937" font-weight="normal">door, 2 Scharniere</text>
+<line x1="650.0" y1="104.0" x2="665.0" y2="104.0" stroke="#9CA3AF" stroke-width="1"/>
+<line x1="650.0" y1="100.0" x2="650.0" y2="108.0" stroke="#9CA3AF" stroke-width="1"/>
+<line x1="665.0" y1="100.0" x2="665.0" y2="108.0" stroke="#9CA3AF" stroke-width="1"/>
+<text x="657.5" y="99.0" font-size="11" text-anchor="middle" fill="#4B5563" font-weight="normal">15</text>
+<line x1="815.0" y1="104.0" x2="830.0" y2="104.0" stroke="#9CA3AF" stroke-width="1"/>
+<line x1="815.0" y1="100.0" x2="815.0" y2="108.0" stroke="#9CA3AF" stroke-width="1"/>
+<line x1="830.0" y1="100.0" x2="830.0" y2="108.0" stroke="#9CA3AF" stroke-width="1"/>
+<text x="822.5" y="99.0" font-size="11" text-anchor="middle" fill="#4B5563" font-weight="normal">15</text>
+<line x1="650.0" y1="482.0" x2="830.0" y2="482.0" stroke="#9CA3AF" stroke-width="1"/>
+<line x1="650.0" y1="478.0" x2="650.0" y2="486.0" stroke="#9CA3AF" stroke-width="1"/>
+<line x1="830.0" y1="478.0" x2="830.0" y2="486.0" stroke="#9CA3AF" stroke-width="1"/>
+<text x="740.0" y="477.0" font-size="11" text-anchor="middle" fill="#4B5563" font-weight="normal">180</text>
+<line x1="622.0" y1="130.0" x2="622.0" y2="420.0" stroke="#9CA3AF" stroke-width="1"/>
+<line x1="618.0" y1="130.0" x2="626.0" y2="130.0" stroke="#9CA3AF" stroke-width="1"/>
+<line x1="618.0" y1="420.0" x2="626.0" y2="420.0" stroke="#9CA3AF" stroke-width="1"/>
+<text x="616.0" y="275.0" font-size="11" text-anchor="middle" fill="#4B5563" transform="rotate(-90 616.0 275.0)">290</text>
+<text x="80.0" y="606.0" font-size="13" text-anchor="start" fill="#1F2937" font-weight="600">Tür von innen</text>
+<rect x="80.0" y="620.0" width="410.0" height="290.0" rx="0" fill="#FBF7EE" stroke="#1F2937" stroke-width="2"/>
+<rect x="255.0" y="642.0" width="60.0" height="60.0" rx="0" fill="#D1D5DB" stroke="#1F2937" stroke-width="1.6"/>
+<rect x="140.0" y="738.0" width="320.0" height="35.0" rx="0" fill="#E9D8A6" stroke="#1F2937" stroke-width="1.2"/>
+<rect x="140.0" y="825.0" width="320.0" height="35.0" rx="0" fill="#E9D8A6" stroke="#1F2937" stroke-width="1.2"/>
+<rect x="475.0" y="675.0" width="15.0" height="45.0" rx="0" fill="#9CA3AF" stroke="#1F2937" stroke-width="1.2"/>
+<rect x="475.0" y="815.0" width="15.0" height="45.0" rx="0" fill="#9CA3AF" stroke="#1F2937" stroke-width="1.2"/>
+<circle cx="102.0" cy="765.0" r="9.5" fill="#FFFFFF" stroke="#1F2937" stroke-width="1.4"/>
+<text x="285.0" y="720.0" font-size="10" text-anchor="middle" fill="#1F2937" font-weight="normal">Lüftungsgitter 60 × 60</text>
+<text x="300.0" y="760.0" font-size="10" text-anchor="middle" fill="#1F2937" font-weight="normal">Querleisten gegen das Werfen</text>
+<text x="300.0" y="847.0" font-size="10" text-anchor="middle" fill="#1F2937" font-weight="normal">Querleisten gegen das Werfen</text>
+<text x="468.0" y="665.0" font-size="10" text-anchor="end" fill="#1F2937" font-weight="normal">2 × surface hinge</text>
+<text x="120.0" y="769.0" font-size="10" text-anchor="start" fill="#1F2937" font-weight="normal">cam lock Ø 19</text>
+<line x1="80.0" y1="940.0" x2="490.0" y2="940.0" stroke="#9CA3AF" stroke-width="1"/>
+<line x1="80.0" y1="936.0" x2="80.0" y2="944.0" stroke="#9CA3AF" stroke-width="1"/>
+<line x1="490.0" y1="936.0" x2="490.0" y2="944.0" stroke="#9CA3AF" stroke-width="1"/>
+<text x="285.0" y="935.0" font-size="11" text-anchor="middle" fill="#4B5563" font-weight="normal">410</text>
+<line x1="52.0" y1="620.0" x2="52.0" y2="910.0" stroke="#9CA3AF" stroke-width="1"/>
+<line x1="48.0" y1="620.0" x2="56.0" y2="620.0" stroke="#9CA3AF" stroke-width="1"/>
+<line x1="48.0" y1="910.0" x2="56.0" y2="910.0" stroke="#9CA3AF" stroke-width="1"/>
+<text x="46.0" y="765.0" font-size="11" text-anchor="middle" fill="#4B5563" transform="rotate(-90 46.0 765.0)">290</text>
+<text x="650.0" y="606.0" font-size="13" text-anchor="start" fill="#1F2937" font-weight="600">Zuschnitt, 15 mm Holz</text>
+<line x1="650.0" y1="626.0" x2="1110.0" y2="626.0" stroke="#9CA3AF" stroke-width="1"/>
+<text x="650.0" y="646.0" font-size="12" text-anchor="start" fill="#1F2937" font-weight="600">front</text>
+<text x="770.0" y="646.0" font-size="12" text-anchor="start" fill="#1F2937" font-weight="normal">410 × 290</text>
+<text x="855.0" y="646.0" font-size="12" text-anchor="start" fill="#1F2937" font-weight="normal">1×</text>
+<text x="885.0" y="646.0" font-size="11" text-anchor="start" fill="#4B5563" font-weight="normal">Ausschnitt und Tasche für das Panel</text>
+<line x1="650.0" y1="653.0" x2="1110.0" y2="653.0" stroke="#E5E7EB" stroke-width="1"/>
+<text x="650.0" y="671.0" font-size="12" text-anchor="start" fill="#1F2937" font-weight="600">door</text>
+<text x="770.0" y="671.0" font-size="12" text-anchor="start" fill="#1F2937" font-weight="normal">410 × 290</text>
+<text x="855.0" y="671.0" font-size="12" text-anchor="start" fill="#1F2937" font-weight="normal">1×</text>
+<text x="885.0" y="671.0" font-size="11" text-anchor="start" fill="#4B5563" font-weight="normal">Gitter, Schloss, Scharniere</text>
+<line x1="650.0" y1="678.0" x2="1110.0" y2="678.0" stroke="#E5E7EB" stroke-width="1"/>
+<text x="650.0" y="696.0" font-size="12" text-anchor="start" fill="#1F2937" font-weight="600">top / bottom</text>
+<text x="770.0" y="696.0" font-size="12" text-anchor="start" fill="#1F2937" font-weight="normal">410 × 150</text>
+<text x="855.0" y="696.0" font-size="12" text-anchor="start" fill="#1F2937" font-weight="normal">2×</text>
+<text x="885.0" y="696.0" font-size="11" text-anchor="start" fill="#4B5563" font-weight="normal">Deckel mit Bohrung für die Leuchte</text>
+<line x1="650.0" y1="703.0" x2="1110.0" y2="703.0" stroke="#E5E7EB" stroke-width="1"/>
+<text x="650.0" y="721.0" font-size="12" text-anchor="start" fill="#1F2937" font-weight="600">side</text>
+<text x="770.0" y="721.0" font-size="12" text-anchor="start" fill="#1F2937" font-weight="normal">260 × 150</text>
+<text x="855.0" y="721.0" font-size="12" text-anchor="start" fill="#1F2937" font-weight="normal">2×</text>
+<text x="885.0" y="721.0" font-size="11" text-anchor="start" fill="#4B5563" font-weight="normal">zwischen Deckel und Boden</text>
+<line x1="650.0" y1="728.0" x2="1110.0" y2="728.0" stroke="#E5E7EB" stroke-width="1"/>
+<text x="650.0" y="746.0" font-size="12" text-anchor="start" fill="#1F2937" font-weight="600">rails</text>
+<text x="770.0" y="746.0" font-size="12" text-anchor="start" fill="#1F2937" font-weight="normal">ca. 350 × 40</text>
+<text x="855.0" y="746.0" font-size="12" text-anchor="start" fill="#1F2937" font-weight="normal">2×</text>
+<text x="885.0" y="746.0" font-size="11" text-anchor="start" fill="#4B5563" font-weight="normal">innen, tragen pi mount und Netzteile</text>
+<line x1="650.0" y1="753.0" x2="1110.0" y2="753.0" stroke="#E5E7EB" stroke-width="1"/>
+<text x="650.0" y="771.0" font-size="12" text-anchor="start" fill="#1F2937" font-weight="600">shelf</text>
+<text x="770.0" y="771.0" font-size="12" text-anchor="start" fill="#1F2937" font-weight="normal">400 × 210</text>
+<text x="855.0" y="771.0" font-size="12" text-anchor="start" fill="#1F2937" font-weight="normal">1×</text>
+<text x="885.0" y="771.0" font-size="11" text-anchor="start" fill="#4B5563" font-weight="normal">Ablage für den Drucker</text>
+<line x1="650.0" y1="778.0" x2="1110.0" y2="778.0" stroke="#E5E7EB" stroke-width="1"/>
+<text x="650.0" y="796.0" font-size="12" text-anchor="start" fill="#1F2937" font-weight="600">shelf rails</text>
+<text x="770.0" y="796.0" font-size="12" text-anchor="start" fill="#1F2937" font-weight="normal">210 × 40</text>
+<text x="855.0" y="796.0" font-size="12" text-anchor="start" fill="#1F2937" font-weight="normal">2×</text>
+<text x="885.0" y="796.0" font-size="11" text-anchor="start" fill="#4B5563" font-weight="normal">bilden die Klemme, Abstand 37</text>
+<line x1="650.0" y1="803.0" x2="1110.0" y2="803.0" stroke="#E5E7EB" stroke-width="1"/>
+<text x="650.0" y="821.0" font-size="12" text-anchor="start" fill="#1F2937" font-weight="600">shelf block</text>
+<text x="770.0" y="821.0" font-size="12" text-anchor="start" fill="#1F2937" font-weight="normal">60 × 37</text>
+<text x="855.0" y="821.0" font-size="12" text-anchor="start" fill="#1F2937" font-weight="normal">1×</text>
+<text x="885.0" y="821.0" font-size="11" text-anchor="start" fill="#4B5563" font-weight="normal">schließt die Klemme hinten</text>
+<line x1="650.0" y1="828.0" x2="1110.0" y2="828.0" stroke="#E5E7EB" stroke-width="1"/>
+<text x="650.0" y="866.0" font-size="11" text-anchor="start" fill="#4B5563" font-weight="normal">Vorder- und Rückseite liegen stumpf auf dem Rahmen aus Deckel,</text>
+<text x="650.0" y="881.0" font-size="11" text-anchor="start" fill="#4B5563" font-weight="normal">Boden und Seiten. Wer die Stöße anders macht, ändert nur die</text>
+<text x="650.0" y="896.0" font-size="11" text-anchor="start" fill="#4B5563" font-weight="normal">Teile des Rahmens, nicht das Außenmaß.</text>
+</svg>

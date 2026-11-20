@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Fotobox selber bauen</title>
+<meta name="description" content="Bauanleitung für die EventPics Fotobox: Gehäuse, Einbau, Elektrik und die Software auf dem Raspberry Pi.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: one reading column, drawings and photo strips break out of it. */
+:root{
+  --paper:#FBFAF7; --ink:#15213A; --muted:#5A6678; --line:#DCD9D0;
+  --accent:#C98A00; --accent-soft:#FBF0D5; --card:#FFFFFF; --warn:#B4341F;
+  --font-display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --font-body:"IBM Plex Sans","Helvetica Neue",Arial,sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#11161F; --ink:#E8EAEE; --muted:#9BA6B6; --line:#2A3342;
+    --accent:#F0B429; --accent-soft:#2A2314; --card:#171E29; --warn:#F08A77;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#11161F; --ink:#E8EAEE; --muted:#9BA6B6; --line:#2A3342;
+  --accent:#F0B429; --accent-soft:#2A2314; --card:#171E29; --warn:#F08A77;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--font-body);
+     font-size:17px;line-height:1.62;margin:0}
+.wrap{max-width:780px;margin:0 auto;
+      padding-left:max(16px,env(safe-area-inset-left,0px));
+      padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0}
+header.top{border-bottom:1px solid var(--line);padding-block:56px 40px}
+header.top .wrap{display:flex;flex-direction:column;gap:18px}
+.eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:.14em;
+         text-transform:uppercase;color:var(--accent)}
+h1{font-family:var(--font-display);font-size:clamp(34px,6vw,52px);line-height:1.05;
+   margin:0;font-weight:700;letter-spacing:-.02em;text-wrap:balance}
+.lede{font-size:19px;color:var(--muted);margin:0;max-width:62ch}
+.facts{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
+.fact{font-family:var(--font-mono);font-size:12.5px;border:1px solid var(--line);
+      border-radius:999px;padding:5px 12px;color:var(--muted);background:var(--card)}
+main{padding-block:8px 64px}
+h2{font-family:var(--font-display);font-size:clamp(24px,3.6vw,32px);line-height:1.15;
+   margin:56px 0 4px;letter-spacing:-.01em;text-wrap:balance;
+   padding-top:18px;border-top:2px solid var(--ink)}
+h3{font-family:var(--font-display);font-size:21px;margin:36px 0 2px;letter-spacing:-.01em}
+h4{font-family:var(--font-mono);font-size:13px;letter-spacing:.1em;text-transform:uppercase;
+   color:var(--muted);margin:28px 0 0}
+p{margin:14px 0}
+a{color:var(--ink);text-decoration-color:var(--accent);text-decoration-thickness:2px;
+  text-underline-offset:3px}
+a:hover{color:var(--accent)}
+code{font-family:var(--font-mono);font-size:.88em;background:var(--accent-soft);
+     padding:1px 5px;border-radius:4px}
+pre{background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:16px;overflow-x:auto;margin:20px 0}
+pre code{background:none;padding:0;font-size:13.5px;line-height:1.6}
+ul,ol{margin:14px 0;padding-left:22px}
+li{margin:7px 0}
+blockquote{margin:28px 0;padding:18px 20px;border-left:4px solid var(--warn);
+           background:var(--card);border-radius:0 10px 10px 0}
+blockquote p{margin:8px 0}
+blockquote strong{color:var(--warn)}
+.tablewrap{overflow-x:auto;margin:22px 0;border:1px solid var(--line);border-radius:10px;
+           background:var(--card)}
+table{border-collapse:collapse;width:100%;font-size:15px;min-width:0}
+th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--font-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;
+   color:var(--muted);font-weight:500}
+tr:last-child td{border-bottom:none}
+td:last-child{font-variant-numeric:tabular-nums;white-space:nowrap}
+figure{margin:26px 0}
+figure img{display:block;width:auto;max-width:100%;max-height:620px;height:auto;
+           margin:0 auto;border-radius:10px;border:1px solid var(--line);background:#fff}
+figure.plan img{width:100%;max-height:none}
+figure.plan img{border-radius:6px;padding:10px}
+figure.plan a{display:block}
+.strip figure img{width:100%;max-height:420px;object-fit:contain}
+figcaption{font-size:14px;color:var(--muted);margin-top:8px}
+.strip{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));margin:26px 0}
+.strip figure{margin:0}
+.download{display:flex;flex-wrap:wrap;align-items:center;gap:16px;margin:26px 0;
+          padding:18px 20px;border:2px solid var(--accent);border-radius:12px;
+          background:var(--accent-soft)}
+.download .label{font-family:var(--font-mono);font-size:13px;color:var(--muted)}
+.download a{font-family:var(--font-display);font-size:18px;font-weight:600}
+footer{border-top:1px solid var(--line);padding-block:32px 60px;color:var(--muted);font-size:15px}
+@media (max-width:520px){ body{font-size:16px} header.top{padding-block:36px 28px} }
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <div class="eyebrow">EventPics Fotobox</div>
+  <h1>Fotobox selber bauen</h1>
+  <p class="lede">Diese Anleitung beschreibt genau die Box auf den Bildern: eine Holzkiste mit Touchscreen, Kamera, Leuchte und Drucker, auf einem Lautsprecherständer. Sie nimmt auf, zeigt das Ergebnis, druckt es und lädt es auf Wunsch in eine EventPics-Galerie. Bedient wird sie nur an ihrem eigenen Bildschirm.</p>
+  <div class="facts"><span class="fact">410 × 290 × 180 mm</span><span class="fact">Eiche 15 mm</span><span class="fact">Raspberry Pi 4B</span><span class="fact">15,6″ Touch</span><span class="fact">Selphy CP1500</span><span class="fact">rund 700 Euro</span></div>
+</div></header>
+<main><div class="wrap">
+<figure><img src="images/booth-on-stand.jpg" alt="Die fertige Box auf dem Ständer"></figure>
+<p>Diese Anleitung beschreibt genau die Box auf den Bildern: eine Holzkiste mit Touchscreen, Kamera, Leuchte und Drucker, auf einem Lautsprecherständer. Sie nimmt auf, zeigt das Ergebnis, druckt es und lädt es auf Wunsch in eine EventPics-Galerie. Bedient wird sie nur an ihrem eigenen Bildschirm.</p>
+<p>Alle Teile heißen hier so, wie sie auch in der Software und in den Zeichnungen heißen, also englisch: <code>front</code>, <code>door</code>, <code>shelf</code>, <code>pi mount</code>, <code>iec inlet</code>.</p>
+<h2>Was dabei herauskommt</h2>
+<div class="tablewrap"><table><tbody><tr><td>Gehäuse</td><td>410 × 290 × 180 mm, Eiche massiv 15 mm</td></tr><tr><td>Bildschirm</td><td>15,6 Zoll, Touch, bündig in der Front</td></tr><tr><td>Kamera</td><td>Raspberry Pi Camera Module 3, schaut durch ein Loch Ø 8 mm</td></tr><tr><td>Rechner</td><td>Raspberry Pi 4B, liegt auf einem 3D-Druckteil</td></tr><tr><td>Licht</td><td>Godox LP400Bi auf dem Deckel</td></tr><tr><td>Druck</td><td>Canon Selphy CP1500 auf einer Ablage am Ständer</td></tr><tr><td>Strom</td><td>ein einziges Kaltgerätekabel in die Box</td></tr><tr><td>Aufbauzeit</td><td>etwa zehn Minuten</td></tr></tbody></table></div>
+<div class="strip"><figure><img src="images/booth-front.jpg" alt="Die Box von vorn" loading="lazy"><figcaption>Die Box von vorn</figcaption></figure><figure><img src="images/booth-side.jpg" alt="Die Box von der Seite" loading="lazy"><figcaption>Die Box von der Seite</figcaption></figure></div>
+<p>Die Box ist absichtlich schmal und hoch gebaut. Sie steht auf einem Ständer, nicht auf einem Tisch, und muss zwischen zwei Veranstaltungen in ein Auto passen.</p>
+<h2>Stückliste</h2>
+<p>Preise vom November 2026, ohne Versand. Bildschirm, Pi, Kamera und Drucker sind nicht von Amazon, der Rest schon.</p>
+<h3>Rechner, Kamera, Bildschirm</h3>
+<div class="tablewrap"><table><thead><tr><th>Teil</th><th>Was ich verbaut habe</th><th>Preis</th></tr></thead><tbody><tr><td><code>raspberry pi</code></td><td>Raspberry Pi 4B, bei mir mit 1 GB. <strong>Nimm 2 GB oder mehr</strong>, mit 1 GB läuft es, aber ohne Luft nach oben</td><td>ca. 45 €</td></tr><tr><td><code>camera</code></td><td>Raspberry Pi Camera Module 3 Standard (75°), mit langem Flachbandkabel</td><td>ca. 30 €</td></tr><tr><td><code>screen</code></td><td>Waveshare 15,6″ Einbau-Display mit HDMI und kapazitivem Touch, BerryBase Art. 18207</td><td>159,58 € netto</td></tr><tr><td>Speicher</td><td>microSD 32 GB, schnelle Karte. Eine lahme Karte kostet beim Start Sekunden</td><td>ca. 12 €</td></tr><tr><td><code>psu 5 V</code></td><td>originales Raspberry-Pi-Netzteil USB-C, 5 V / 3 A</td><td>ca. 10 €</td></tr><tr><td><code>psu 12 V</code></td><td>Netzteil des Displays, liegt dem Panel bei</td><td>im Preis</td></tr></tbody></table></div>
+<h3>Licht</h3>
+<div class="tablewrap"><table><thead><tr><th>Teil</th><th>Was ich verbaut habe</th><th>Preis</th></tr></thead><tbody><tr><td><code>light</code></td><td>Godox LP400Bi, 36 W, 2800 bis 6500 K, CRI ≥ 96, dimmbar, App-Steuerung</td><td>89,00 €</td></tr><tr><td><code>light mount</code></td><td>NEEWER Wand- und Deckenhalterung mit 5/8″-Zapfen und 1/4″-Gewinde</td><td>22,31 €</td></tr></tbody></table></div>
+<h3>Druck</h3>
+<div class="tablewrap"><table><thead><tr><th>Teil</th><th>Was ich verbaut habe</th><th>Preis</th></tr></thead><tbody><tr><td><code>printer</code></td><td>Canon Selphy CP1500, Thermosublimation, 10 × 15 cm</td><td>ca. 150 €</td></tr><tr><td>Papier</td><td>Canon KP-108IN, 108 Blatt mit Farbband</td><td>ca. 35 €</td></tr><tr><td><code>usb cable</code></td><td>SUNGUY USB 3.0 A auf A, 0,3 m, vom Pi zur Einbaubuchse</td><td>6,41 €</td></tr></tbody></table></div>
+<h3>Ständer und Ablage</h3>
+<div class="tablewrap"><table><thead><tr><th>Teil</th><th>Was ich verbaut habe</th><th>Preis</th></tr></thead><tbody><tr><td><code>stand</code></td><td>GZGDLJQ Boxenständer, 89 bis 180 cm, Rohr 35 mm, bis 30 kg</td><td>25,99 €</td></tr><tr><td><code>pole flange</code></td><td>Drall AD8BA Boxenflansch zum Anschrauben, für 35 mm</td><td>13,20 €</td></tr><tr><td><code>shelf screw</code></td><td>Schraube M8 × 90 mit Flügelmutter und zwei Scheiben</td><td>ca. 2 €</td></tr></tbody></table></div>
+<h3>Elektrik</h3>
+<div class="tablewrap"><table><thead><tr><th>Teil</th><th>Was ich verbaut habe</th><th>Preis</th></tr></thead><tbody><tr><td><code>iec inlet</code></td><td>Powice IEC-C14-Einbaubuchse 10 A mit Schalter und Sicherung, 2 Stück</td><td>11,48 €</td></tr><tr><td><code>power cord</code></td><td>deleyCON Kaltgerätekabel C13 auf Schuko, 3 m</td><td>9,78 €</td></tr><tr><td><code>socket</code></td><td>Schuko-Einbausteckdose, weiß, für den Drucker</td><td>ca. 6 €</td></tr><tr><td><code>junction box</code></td><td>Hohlwanddose Ø 68 mit Steckklemme, 5-polig</td><td>ca. 4 €</td></tr><tr><td><code>usb coupler</code></td><td>Duttek USB-Einbaukupplung, 2-fach, IP67</td><td>9,59 €</td></tr><tr><td><code>power pigtail</code></td><td>Leloco Eurokupplung flach mit 20 cm Kabel, 2 Stück</td><td>6,99 €</td></tr><tr><td><code>cable gland</code></td><td>Verschraubung M20 für das Kabel zur Leuchte</td><td>ca. 3 €</td></tr></tbody></table></div>
+<h3>Holz und Beschläge</h3>
+<div class="tablewrap"><table><thead><tr><th>Teil</th><th>Was ich verbaut habe</th><th>Preis</th></tr></thead><tbody><tr><td>Holz</td><td>Eiche massiv, 15 mm, etwa 0,6 m²</td><td>je nach Quelle</td></tr><tr><td><code>hinge</code></td><td>Wandefol Aufschraubscharnier mit Feder, 90°, 8 Stück im Satz</td><td>13,99 €</td></tr><tr><td><code>cam lock</code></td><td>MUXHEL Möbelschloss Ø 19 mm zum Aufschrauben, Satz</td><td>ca. 10 €</td></tr><tr><td><code>vent</code></td><td>Lüftungsgitter 60 × 60 mm aus Metall</td><td>ca. 5 €</td></tr><tr><td><code>pi mount</code></td><td>3D-Druckteil, Datei in dieser Anleitung</td><td>Filament</td></tr></tbody></table></div>
+<p>Zusammen liegt das bei etwa <strong>650 bis 700 Euro ohne Holz und ohne Papier</strong>. Der größte Posten ist der Bildschirm, der zweitgrößte der Drucker.</p>
+<h2>Werkzeug</h2>
+<p>Tischkreissäge oder eine saubere Handkreissäge mit Schiene, Oberfräse für die Tasche hinter dem Bildschirm, Bohrmaschine, Forstnerbohrer Ø 19 für das Schloss und Ø 68 für die Dose, Stichsäge für den Bildschirmausschnitt, Schrauben 4 × 30, Leim, Schleifpapier, Hartwachsöl. Für die Elektrik eine Abisolierzange und ein Spannungsprüfer.</p>
+<h2>Das Gehäuse</h2>
+<figure class="plan"><a href="drawing-enclosure.svg" target="_blank" rel="noopener"><img src="drawing-enclosure.svg" alt="Zeichnung des Gehäuses" loading="lazy"></a><figcaption>Zeichnung des Gehäuses (anklicken für groß)</figcaption></figure>
+<p>Außen 410 × 290 × 180 mm, Holz überall 15 mm. Die Tiefe von 180 mm ist mit der Tür gerechnet: Rahmen 150, Front 15, Tür 15.</p>
+<p><strong>Der Ausschnitt für den Bildschirm gehört zu deinem Panel, nicht zu meinem.</strong> Miss das eigene Display aus, bevor du sägst. Bei mir sind es 330 × 196 mm, mit 40 mm Rand links und rechts, 57 mm oben und 37 mm unten. Von hinten ist die Tasche 9 mm tief ausgefräst, damit das Glas bündig in der Front steht und kein Rand übersteht, an dem Gäste hängen bleiben.</p>
+<div class="strip"><figure><img src="images/front-width.jpg" alt="Breite der Front, 410 mm" loading="lazy"><figcaption>Breite der Front, 410 mm</figcaption></figure><figure><img src="images/front-height.jpg" alt="Höhe der Front, 290 mm" loading="lazy"><figcaption>Höhe der Front, 290 mm</figcaption></figure></div>
+<p>Das Kameraloch sitzt mittig, 39 mm unter der Oberkante, und hat Ø 8 mm. Von vorn ist es leicht angesenkt, damit das Objektiv frei schaut und die Kante nicht ins Bild spiegelt. Bohre erst, wenn die Kamera da ist, und halte sie vorher von innen an.</p>
+<p>Die Tür geht über die ganze Rückseite und hängt an zwei Aufschraubscharnieren. Innen halten zwei Querleisten das Brett gerade, oben sitzt ein Lüftungsgitter 60 × 60 mm, und ein Möbelschloss Ø 19 hält sie zu. Hinter der Tür liegt alles, was niemand im Betrieb anfassen soll.</p>
+<div class="strip"><figure><img src="images/door-inside.jpg" alt="Die Tür von innen" loading="lazy"><figcaption>Die Tür von innen</figcaption></figure><figure><img src="images/back-panel.jpg" alt="Die Rückseite mit Gravur" loading="lazy"><figcaption>Die Rückseite mit Gravur</figcaption></figure></div>
+<p>Die Gravur auf der Tür ist Zierde und kein Muss. Wer eine Fräse hat, nimmt die Vorlagen aus dem Repository, wer keine hat, lässt sie weg.</p>
+<h2>Boden, Flansch und Ständer</h2>
+<p>In den Boden kommen vier Dinge: der Flansch für das Rohr, die Kaltgerätebuchse mit Schalter, die Schuko-Steckdose für den Drucker und die doppelte USB-Einbaubuchse.</p>
+<figure><img src="images/bottom-panel.jpg" alt="Der Boden der Box" loading="lazy"><figcaption>Der Boden der Box</figcaption></figure>
+<p>Der Flansch wird mit vier Schrauben von außen verschraubt. Er trägt die ganze Box, also schraube ihn in die volle Materialstärke und nicht in eine dünne Platte. Das Rohr des Ständers steckt von unten hinein und wird mit der Flügelschraube am Flansch geklemmt.</p>
+<div class="strip"><figure><img src="images/pole-flange.jpg" alt="Flansch für das Rohr" loading="lazy"><figcaption>Flansch für das Rohr</figcaption></figure><figure><img src="images/bottom-connectors.jpg" alt="Buchsen im Boden" loading="lazy"><figcaption>Buchsen im Boden</figcaption></figure></div>
+<p>Ein einziges Kabel geht in die Box, das Kaltgerätekabel. Der Schalter an der Buchse ist der Hauptschalter der ganzen Box, die Sicherung sitzt gleich daneben.</p>
+<figure><img src="images/inlet-plugged.jpg" alt="Stecker am Boden" loading="lazy"><figcaption>Stecker am Boden</figcaption></figure>
+<h2>Die Ablage für den Drucker</h2>
+<figure class="plan"><a href="drawing-shelf.svg" target="_blank" rel="noopener"><img src="drawing-shelf.svg" alt="Zeichnung der Ablage" loading="lazy"></a><figcaption>Zeichnung der Ablage (anklicken für groß)</figcaption></figure>
+<p>Die Ablage ist ein Brett 400 × 210 mm mit zwei Leisten darunter, die eine Gabel bilden. Hinten schließt ein Klotz die Gabel, vorn geht eine Schraube M8 × 90 durch beide Leisten, mit einer Flügelmutter darauf.</p>
+<p>Das Rohr des Ständers misst 35 mm, die Gabel 37 mm. Die Ablage wird einfach auf das Rohr geschoben, auf die gewünschte Höhe gebracht und mit der Flügelmutter festgezogen. Kein Werkzeug, und die Höhe lässt sich am Veranstaltungsort noch ändern.</p>
+<div class="strip"><figure><img src="images/shelf-top.jpg" alt="Die Ablage von oben" loading="lazy"><figcaption>Die Ablage von oben</figcaption></figure><figure><img src="images/shelf-underside.jpg" alt="Die Ablage von unten mit Klemme" loading="lazy"><figcaption>Die Ablage von unten mit Klemme</figcaption></figure><figure><img src="images/shelf-width.jpg" alt="Die Breite der Ablage, 210 mm" loading="lazy"><figcaption>Die Breite der Ablage, 210 mm</figcaption></figure><figure><img src="images/shelf-clamp.jpg" alt="Klotz und Gabel von unten" loading="lazy"><figcaption>Klotz und Gabel von unten</figcaption></figure><figure><img src="images/shelf-on-pole.jpg" alt="Die Klemme am Rohr" loading="lazy"><figcaption>Die Klemme am Rohr</figcaption></figure></div>
+<p>Der Drucker steht lose darauf. Für den Transport nimmt man ihn herunter, die Ablage bleibt am Rohr.</p>
+<figure><img src="images/printer-on-shelf.jpg" alt="Der Drucker auf der Ablage" loading="lazy"><figcaption>Der Drucker auf der Ablage</figcaption></figure>
+<h2>Der Einbau</h2>
+<figure class="plan"><a href="drawing-interior.svg" target="_blank" rel="noopener"><img src="drawing-interior.svg" alt="Zeichnung des Innenausbaus" loading="lazy"></a><figcaption>Zeichnung des Innenausbaus (anklicken für groß)</figcaption></figure>
+<p>Alles Schwere hängt an einer Querleiste oben, nichts an der Rückwand des Bildschirms. So lässt sich das Display später ausbauen, ohne dass der halbe Innenraum mitkommt.</p>
+<figure><img src="images/inside-overview.jpg" alt="Blick in die offene Box" loading="lazy"><figcaption>Blick in die offene Box</figcaption></figure>
+<p>Von links nach rechts: das Netzteil des Pi, die Kamera auf ihrer Scheibe, der Pi auf dem Druckteil, das Netzteil des Displays. Unten links die Verteilerdose, daneben die Durchführung für das Kabel zur Leuchte.</p>
+<figure><img src="images/inside-from-back.jpg" alt="Der Innenraum von hinten" loading="lazy"><figcaption>Der Innenraum von hinten</figcaption></figure>
+<h3>Das Druckteil für den Pi</h3>
+<figure class="plan"><img src="images/pi-mount.png" alt="Das Druckteil" loading="lazy"><figcaption>Das Druckteil</figcaption></figure>
+<div class="download"><span class="label">3D-Druckteil</span><a href="https://github.com/eventpics/photobooth/raw/main/docs/pi-mount.stl" target="_blank" rel="noopener">pi-mount.stl herunterladen</a><span class="label">ASCII-STL, 108 × 66 × 11,6 mm</span></div>
+<p>Eine Platte 108 × 66 × 3 mm mit vier Pfosten im Lochbild des Raspberry Pi (58 × 49 mm), zwei Durchgangslöchern Ø 4,5 mm für die Holzschrauben und einem Fenster in der Mitte für Luft und Kabel. Gesamthöhe 11,6 mm.</p>
+<p>Gedruckt mit 0,2 mm Schichthöhe, drei Außenlinien, 20 % Füllung, ohne Stützen. PLA reicht, PETG ist in einer Box, die in der Sonne im Auto steht, die sicherere Wahl.</p>
+<p>Der Pi liegt waagrecht darauf, die Anschlüsse zeigen nach unten zur Tür. So kommt man im Notfall an HDMI und USB, ohne etwas auszubauen.</p>
+<figure><img src="images/pi-on-mount.jpg" alt="Der Pi auf dem Druckteil" loading="lazy"><figcaption>Der Pi auf dem Druckteil</figcaption></figure>
+<h3>Kamera</h3>
+<figure><img src="images/camera-module.jpg" alt="Das Kameramodul" loading="lazy"><figcaption>Das Kameramodul</figcaption></figure>
+<p>Das Modul sitzt auf einer kleinen Scheibe hinter dem Loch in der Front. Das Flachbandkabel ist empfindlich: nicht knicken, nicht spannen, und den Stecker am Pi erst schließen, wenn das Band gerade liegt. Zwischen Kamera und Bildschirmrückseite muss Luft bleiben, sonst sieht die Kamera später ihre eigene Halterung im Bild.</p>
+<h3>Netzteile und Kabel</h3>
+<figure><img src="images/power-supplies.jpg" alt="Die Netzteile" loading="lazy"><figcaption>Die Netzteile</figcaption></figure>
+<p>Beide Netzteile liegen auf der Querleiste und sind mit einem Kabelbinder gesichert. Für die Kabel sind kleine Kerben in die Leisten gefeilt, damit nichts gequetscht wird, wenn die Tür zugeht.</p>
+<figure><img src="images/cable-groove.jpg" alt="Kerbe für das Kabel" loading="lazy"><figcaption>Kerbe für das Kabel</figcaption></figure>
+<h2>Strom und Kabel</h2>
+<figure class="plan"><a href="drawing-wiring.svg" target="_blank" rel="noopener"><img src="drawing-wiring.svg" alt="Kabelplan" loading="lazy"></a><figcaption>Kabelplan (anklicken für groß)</figcaption></figure>
+<blockquote><p><strong>230 Volt.</strong> Was hinter der Kaltgerätebuchse liegt, ist Netzspannung in einer Holzkiste, die Gäste anfassen. Wenn du dir dabei nicht sicher bist, lass diesen Teil von jemandem machen, der es gelernt hat. Alle Klemmstellen gehören in die geschlossene Dose, keine freien Litzen, keine Lüsterklemme auf dem Boden der Box, und der Schutzleiter wird nirgends unterbrochen.</p></blockquote>
+<figure><img src="images/junction-box.jpg" alt="Die Verteilerdose" loading="lazy"><figcaption>Die Verteilerdose</figcaption></figure>
+<p>Der Weg ist kurz: Kaltgerätebuchse mit Schalter und Sicherung, von dort in die Verteilerdose mit der Steckklemme, und von der Dose aus an die Schuko-Steckdose im Boden, an die beiden Netzteile und durch die M20-Verschraubung im Deckel zur Leuchte.</p>
+<p>Die Daten laufen getrennt davon: HDMI vom Pi zum Display, ein USB-Kabel zurück für den Touch, das Flachband zur Kamera, und ein kurzes USB-Kabel vom Pi zur Einbaubuchse im Boden. Dort steckt im Betrieb der Drucker, und daneben der USB-Stick für die Sicherung.</p>
+<h2>Die Leuchte</h2>
+<figure><img src="images/light-mount.jpg" alt="Die Leuchte auf dem Deckel" loading="lazy"><figcaption>Die Leuchte auf dem Deckel</figcaption></figure>
+<p>Auf dem Deckel sitzt die Halterung mit 5/8-Zoll-Zapfen, darauf die Leuchte. Das Panel lässt sich kippen, der Winkel bleibt stehen.</p>
+<p>Die Leuchte ist bewusst nicht an der Box angeschraubt, sondern nur aufgesteckt. Für den Transport kommt sie ab, und beim Aufbau wird sie zuletzt aufgesetzt.</p>
+<p>In den Einstellungen der Box steht unter <code>light.kind</code>, wie die Leuchte angesteuert wird. Bei einer Godox über Bluetooth ist das <code>godox</code>, bei einer Leuchte, die nur von Hand gedimmt wird, <code>none</code>. Die Software blendet dann alle Regler aus, die nichts bewirken würden.</p>
+<h2>Die Software auf den Pi</h2>
+<h3>Image schreiben</h3>
+<p>Empfohlen ist <strong>Raspberry Pi OS Lite (64-bit)</strong>, geschrieben mit dem Raspberry Pi Imager. Im Imager vor dem Schreiben auf das Zahnrad gehen und gleich setzen:</p>
+<ul><li>Rechnername, zum Beispiel <code>fotobox</code></li><li>Benutzername und Passwort</li><li>SSH einschalten</li><li>WLAN deines Arbeitsplatzes eintragen, damit die Box beim ersten Start erreichbar ist</li></ul>
+<p>Der Desktop wird nicht gebraucht. Die Oberfläche der Box ist ein eigenes Qt-Programm und startet ohne Desktop.</p>
+<h3>Software holen und einrichten</h3>
+<p>Am Pi, über SSH oder mit Tastatur:</p>
+<pre><code>sudo apt update &amp;&amp; sudo apt install -y unzip
+curl -LO https://event.pics/downloads/EventPics-Photobooth-v0.7.0.zip
+unzip EventPics-Photobooth-v0.7.0.zip
+cd eventpics-photobooth
+bash install-pi.sh
+bash autostart/setup.sh
+sudo reboot</code></pre>
+<p><code>install-pi.sh</code> holt die Pakete aus den Quellen von Raspberry Pi OS, nichts über pip: picamera2 und PySide6 sind dort passend für den Pi gebaut. <code>autostart/setup.sh</code> richtet den Start beim Einschalten ein, den Touch, das Einhängen des USB-Sticks und fragt nach der <strong>PIN für die Einstellungen</strong>. Die vier Ziffern merken, sie sind später der einzige Weg in die Einstellungen.</p>
+<p>Nach dem Neustart steht die Fotobox auf dem Bildschirm.</p>
+<p>Wer die Software aus dem Repository nimmt statt aus dem ZIP:</p>
+<pre><code>git clone https://github.com/eventpics/photobooth.git eventpics-photobooth</code></pre>
+<h3>Nützlich im Betrieb</h3>
+<pre><code>systemctl status photobooth
+journalctl -t photobooth -f
+sudo systemctl restart photobooth</code></pre>
+<h2>Die Box einrichten</h2>
+<p>Alles Weitere passiert am Bildschirm der Box, hinter dem Zahnrad und der PIN.</p>
+<ol><li><strong>WLAN.</strong> Netz auswählen, Passwort auf der Tastatur eingeben. Die Box merkt sich das Netz.</li><li><strong>Drucker.</strong> Den Selphy anstecken und einschalten, dann in den Einstellungen suchen lassen. Der Selphy meldet sich als USB-Drucker, nicht im Netz.</li><li><strong>Einmessen.</strong> Stell jemanden dorthin, wo später die Gäste stehen, mach das Licht wie am Abend und tippe auf „Automatisch einmessen". Die Box sucht sich das Aufnahmelicht, misst Belichtung, Weißabgleich und Fokus und gleicht zum Schluss die Aufnahme an die Vorschau an. Das dauert etwa zwölf Sekunden.</li><li><strong>EventPics.</strong> Den API-Schlüssel des Events per QR-Code vor die Kamera halten oder als Datei auf dem USB-Stick einlesen. Danach Event und Album auswählen.</li><li><strong>USB-Stick.</strong> Einen Stick anstecken, die Box legt dort jede Aufnahme ab. Das ist die Sicherung, die auch ohne Netz funktioniert.</li></ol>
+<p>Die Einzelheiten zu jedem Punkt stehen in der <a href="https://github.com/eventpics/photobooth/blob/main/README.de.md" target="_blank" rel="noopener">README</a>.</p>
+<h2>WLAN unterwegs</h2>
+<p>Zum Hochladen braucht die Box Internet, und das WLAN des Veranstaltungsorts ist selten brauchbar: ein Gästenetz mit Anmeldeseite, ein Passwort, das niemand weiß, oder gar nichts. Darum gehört ein kleiner <strong>travel router</strong> ins Gepäck.</p>
+<p>So sieht der Weg aus:</p>
+<ul><li>Der Router baut ein eigenes WLAN auf, immer mit demselben Namen und demselben</li></ul>
+<p>Passwort. Die Box kennt dieses Netz und verbindet sich beim Einschalten von selbst, egal wo sie steht.</p>
+<ul><li>Der Router holt sich das Internet, wie er es gerade bekommt: über ein LTE-Modem</li></ul>
+<p>mit eigener SIM, über ein Netzwerkkabel am Veranstaltungsort oder über das Gäste-WLAN, bei dem er die Anmeldeseite für alle einmal erledigt.</p>
+<ul><li>Fällt das Internet aus, läuft die Box trotzdem weiter. Aufnehmen, Drucken und</li></ul>
+<p>Sichern brauchen kein Netz, die Uploads stehen in der Warteschlange und gehen los, sobald wieder eine Verbindung da ist.</p>
+<p>Meine Box hat den Router noch nicht. Wer ihn gleich mitplant, legt ihn zum Drucker auf die Ablage und hängt ihn an die Schuko-Steckdose im Boden. Ein Gerät mit eigenem Akku ist dabei angenehmer als eins mehr am Strom.</p>
+<p>Ohne Router geht es auch: der Hotspot eines Telefons tut dasselbe, nur muss ihn jemand einschalten, und der Name des Netzes ändert sich schnell einmal.</p>
+<h2>Aufbauen und abbauen</h2>
+<p><strong>Aufbauen</strong>, in dieser Reihenfolge:</p>
+<ol><li>Ständer aufstellen, Beine weit auseinander, auf festem Boden</li><li>Box aufsetzen und am Flansch klemmen</li><li>Ablage auf das Rohr schieben, Höhe wählen, Flügelmutter anziehen</li><li>Drucker darauf, Papier und Farbband einlegen</li><li>Leuchte aufstecken und ausrichten</li><li>Kaltgerätekabel anstecken, Schalter an</li><li>Einmessen, Probebild, fertig</li></ol>
+<p><strong>Abbauen</strong> ist dieselbe Liste rückwärts. Den Drucker nie mit eingelegtem Papier transportieren, und die Box nie am Bildschirm anheben.</p>
+<h2>Mitmachen</h2>
+<p>Die Software steht unter der MIT-Lizenz im Repository &lt;https://github.com/eventpics/photobooth&gt;. Zeichnungen, Druckteil und diese Anleitung liegen im selben Repository unter <code>docs/</code>.</p>
+<p>Wenn du die Box nachbaust und etwas anders löst, freue ich mich über einen Hinweis. Besonders über Maße, die bei dir besser passen als meine.</p>
+</div></main>
+<footer><div class="wrap">
+  Software, Zeichnungen und Druckteil liegen unter der MIT-Lizenz im Repository
+  <a href="https://github.com/eventpics/photobooth" target="_blank" rel="noopener">github.com/eventpics/photobooth</a>.
+</div></footer>
+</body>
+</html>
